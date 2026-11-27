@@ -78,3 +78,43 @@ matter for Lean. Each says what was done and what a human may want to decide.
 17. **G0's interface condition** is shown with `backends/mock.py` and the evaluator (`eval/runner.py`,
     `eval/metrics.py`). The trainer (`dt/`, `train/`) does not exist before S1; the same import rule
     (only `backends/base.py`) should be tested for it then.
+
+## S1 (baselines on the toy stream)
+
+No protocol element was changed in S1. The calibration steps are in CHANGES.md ("S1 calibration").
+
+18. **Full-parameter training instead of adapters.** Table 3 gives B2, B5 and B6 low-rank adapters on the
+    base. With the toy's 0.83M-parameter model on two cores, LoRA r=16 underfits (it cannot even reproduce
+    its own training proofs; CHANGES.md step 1), so S1 trains all weights, which the S1 order allows for
+    the toy. The trainer keeps both modes (`adapt.mode`). For S2 the cap of A.4 is again a set of trainable
+    blocks on a frozen base, so the B2 reference in S2 may need to be the cap-only arm B2c, or a larger
+    adapter, for GC to compare like with like. Human decision wanted before S2.
+19. **B0's "curated context" in the toy is the obligation's statement only.** The model's window
+    (192 tokens) cannot hold a snapshot's file prefix, and no lemma statements are added to the prompt.
+    Consequence: FWD in reports/S1.md is measured with no snapshot context, not with "the snapshot of
+    stage j as context" as section 7 defines it; a model learns a project's lemma names only by training
+    on that project. The S1 targets (gap on ACC, forgetting F) do not involve FWD. If FWD is to be a
+    primary S2 metric, a toy context (for example the statements of the k lemmas whose left-hand side
+    matches a subterm of the goal, which needs no proof information) should be decided first.
+20. **B1 is not an S1 arm.** The order's acceptance says "B6 minus max(B0, B1-equivalent)"; plan 8.1
+    lists B0, B2, B5-10 and B6 for S1, and a retrieval-context B1 has no meaning for a base trained
+    without context (item 19). The gap is therefore B6 minus B0.
+21. **Gate metric for the gap.** 8.1 says "joint retraining should beat the frozen base by at least 20
+    points" without naming the metric. The report evaluates it on ACC (end-of-stream accuracy over all
+    in-window test sets, the quantity GC uses) and also shows LA.
+22. **Base material excluded by the guard.** One prelude lemma (`pre_d174`, proof
+    `simp induct xs { simp refl } { simp rw IH refl }`) is rejected by HoldoutGuard because the same
+    generic proof is the "distinctive" proof of a test obligation (`fm_d278`): the free-text rule of
+    item 11 has false positives on generic proofs. The lemma is left out of base pretraining
+    (conservative) and listed in meta.json. Wake examples of the stream are never filtered; a guard raise
+    during an arm aborts the run.
+23. **The prelude shares the lists template with the stream project toy-lists** (S0 design, `PRELUDE_TEMPLATE`).
+    Part of B0's accuracy on toy-lists can come from the analogy `pre_*` to `al_*` names; this
+    favours B0 and so makes the gap conservative.
+24. **One training seed.** Stage S uses one seed; the intervals are bootstrap intervals over obligations
+    (section 7) and do not include training-seed variance. Test sets are small (15 to 25 obligations per
+    stage), so single cells a[t, j] are noisy.
+25. **Sampling seeds and batches.** R6 is implemented with a per-sample Gumbel-noise generator seeded by
+    sha256(run|stage|obligation|sample), so a sample depends only on the model, the prompt and its seed,
+    not on batch composition (tests/test_G0_trainer.py). Bit-identical reruns additionally need the same
+    torch build and thread count (logged in meta.json).
