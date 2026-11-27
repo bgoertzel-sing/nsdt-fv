@@ -1,0 +1,7 @@
+base 8adcff289bb9ebbb cap layers [0, 1, 2, 3] r 256 trainable 281088
+  step 300/902 loss 1.1407 (108s)
+  step 600/902 loss 0.7160 (215s)
+  step 900/902 loss 0.5980 (317s)
+train 319 0.559550940990448 base unchanged True
+test pass@8 (0.22083333333333333, 40, 13)
+train-sample pass@8 (0.25, 19, 11)

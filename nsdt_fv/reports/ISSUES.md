@@ -118,3 +118,35 @@ No protocol element was changed in S1. The calibration steps are in CHANGES.md (
     sha256(run|stage|obligation|sample), so a sample depends only on the model, the prompt and its seed,
     not on batch composition (tests/test_G0_trainer.py). Bit-identical reruns additionally need the same
     torch build and thread count (logged in meta.json).
+
+## S2 (DT-ref on the toy stream)
+
+No protocol element was changed in S2. DT-ref's free parameters and the cap size are in CHANGES.md ("S2").
+
+26. **A.4's cap underfits on the toy.** With S1's base (pretrained on 159 prelude lemmas) frozen, residual MLP
+    adapters on the top third plus a head cannot fit even the training proofs (CHANGES.md probes: 0
+    non-trivial test proofs after 30 epochs on the whole stream). The cap was sized up as the order allows;
+    see CHANGES.md for the rule and the probe that decided it. Consequence: S2 measures DT-ref with a
+    larger cap than A.4 states, and still a much weaker learner than S1's full-parameter B2. Whether this is a
+    property of A.4's design or of a base pretrained on so little is not separable here; on Colab the base is
+    a real pretrained prover, so this toy result says little about Stage C.
+27. **Conjecture sleep needs a statement-writing skill.** A.4 prompts the model with three store statements;
+    a model trained only to map statements to proofs answers with a proof. DT-ref therefore trains an
+    auxiliary wake task on the window's own statements (no proofs). The S1 model's 192-token context forces
+    the three prompt statements to be short. A human may prefer conjectures from the channels only (S3).
+28. **D2 definition.** "Without the kernel filter" is implemented as: every generated candidate (deduplicated,
+    guard-passed) is learned, and the learner never sees a verdict (no fading term, no negatives, no dream
+    library). Verdicts are still computed and logged so that the share of wrong proofs D2 trains on is
+    measured. Another reading (verdicts used for fading or the library, only the training filter removed)
+    would make D2 closer to D1.
+29. **GC reference.** GC uses S1's B2 and B6, which train all weights (item 18), while every D arm trains a
+    cap on a frozen base. The supplementary B2c (cap-only sequential fine-tuning, S1's recipe) is reported
+    alongside so that D1 can be compared with a sequential learner of the same capacity.
+30. **D3 budget.** D3 removes conjecture sleep without giving its 160 attempts to re-derivation; it has 240
+    attempts per stage against D1's 400. An NSDT-style equal-budget D3 would reallocate them.
+31. **Guard on dreams.** HoldoutGuard.check runs on every dream candidate before checking; refused candidates
+    count as failed attempts and are never learned. The L1 free-text rule has false positives on generic
+    proofs (item 22): a model-written generic proof that happens to equal a "distinctive" test proof is
+    refused. The counts are in reports/S2.md.
+32. **Seeds.** Seed 1 of a D arm uses S1's seed-1 base (as S1's replicate did), so seed-1 rows compare with
+    S1's seed-1 B0 and B2; S1 has no seed-1 B6, so GC of seed-1 rows uses the seed-0 B2 and B6.

@@ -1,0 +1,49 @@
+# Experiment S2 (plan 8.1): DT on the toy stream, arms D1-D4 with DT-ref (A.4).
+# Stream, model, base, evaluation sets and sampling settings are those of S1 (configs/S1.yaml), unchanged.
+# Choices this file fixes and why: reports/CHANGES.md, section "S2".
+experiment: S2
+seed: 0                  # run seed: selects S1's base of the same seed, cap init, sleep sampling (R6)
+run_dir: runs/S2         # seed s > 0 writes to runs/S2_seed<s>
+threads: 2               # 8.1: two cores
+stream:                  # = S1
+  seed: 0
+  projects: 6
+model:                   # = S1 (the base architecture; weights are S1's base.pt)
+  d: 128
+  layers: 4
+  heads: 4
+  ff: 512
+  max_len: 192
+  dropout: 0.1
+t4_reference: 1a4285664e122c05   # S1's eval-set digest (reports/S1.md, T4); every S2 run must reproduce it
+base_hash:               # S1 meta.json base hash per seed (runs/S1, runs/S1_seed1); checked at load and every stage (T8)
+  0: 8adcff289bb9ebbb
+  1: 73ef74288b05955d
+cap:                     # A.4: residual adapter blocks + trainable output head; sized up (CHANGES.md, S2 calibration)
+  kind: block            # residual adapter blocks with attention (full transformer blocks, zero-initialised outputs)
+  layers: [0, 1, 2, 3]   # after every base layer (A.4's top third, layers 2-3, underfits: probes 1, 3, 4)
+  r: 512                 # feed-forward width of each adapter block
+  lr: 1.0e-3             # AdamW, constant, one optimiser for the whole stream (cap state only)
+  wake_batch: 1          # wake = one epoch over the window; one step per example, as in sleep
+dream:
+  nrem_statements: 60    # re-derivation sleep: statements drawn per stage (A.4 weights), without replacement
+  rem_conjectures: 40    # conjecture sleep: at most 40 new statements attempted per stage
+  rem_raw: 120           # conjecture generations per stage (each prompted with three store statements of one module)
+  candidates: 4          # A.4: up to four candidates per statement
+  temperature: 0.8       # A.4
+  max_new: 128           # proof candidates (= eval)
+  conj_max_new: 64       # statement generations
+  pref_weight: 0.1       # A.4 negative phase
+  aux_conj: true         # wake also trains "three window statements -> a fourth" (needed for conjecture sleep)
+b2c:                     # supplementary arm B2c (Table 3): S1's B2 recipe on the cap only
+  epochs: 30
+  batch: 32
+  lr: 1.0e-3
+eval:                    # = S1
+  k: 8
+  temperature: 1.0
+  max_new: 128
+  timeout_s: 120
+bootstrap:
+  resamples: 10000
+  seed: 0
