@@ -193,3 +193,37 @@ choices are in CHANGES.md ("S3").
     before, and one training seed is run (item 24).
 41. **Store duplicates are arm-dependent.** The 'dup' column counts statements equal to a store statement, and the
     store includes the arm's own dream library, so a channel's yield is measured inside its N arm, not stand-alone.
+
+## S4 (PLN reference on the toy property tables)
+
+42. **Where the shapes come from.** The plan names HasProperty(f, T) and "lemma shapes (templates with holes)" but no
+    shape list for the toy. S4 takes them from channel C's S3 output (as S3's notes suggested), abstracted at one
+    function each. The vocabulary therefore inherits C's enumeration limits (terms up to size 6-7, 4,000 terms per
+    stage) and C's bias toward equations among small terms; a hand-written shape catalogue (involution, idempotence,
+    commutativity, homomorphism over app, length preservation, ...) would give a different, smaller table.
+43. **Template functions are shared across projects.** A shape names template functions by their template name
+    (len, app, add, ...), and functions with the same template name have the same definition in every project
+    (checked). Functions such as add appear in several projects; their rows are near-identical, which helps every
+    ranker that uses other functions' rows (PLN transfer, nearest neighbour, frequency) through near-duplicates
+    rather than analogy. The per-project table in reports/S4.md shows the overlap; a cross-project-disjoint variant
+    was not run.
+44. **"True" is "proved within budget", not "holds".** A cell is positive iff the checker accepts a proof the baseline
+    tactics or the reference prover (2,000 nodes) find; true but unproved instances count as negatives, as in the
+    plan's PLN metric. The random-test column shows how many negatives have no counterexample.
+45. **Positive-unlabelled setting.** The rankers see the visible true cells and nothing about the candidates (no
+    refutations, no test counts), so a non-visible cell is "not known true" to them; the calibration population (the
+    candidates) has fewer positives than the table as a whole, because 80% of the true cells are visible and not
+    candidates. Calibration against the checker is measured on that population, as the order asks; it is not the
+    calibration a deployed PLN would face, where refutations and test evidence are in the store.
+46. **Implies by direct evaluation.** Implies(T1, T) is the share of T1-holders that hold T in the visible table (plan
+    9.3's "induction over the property table"); Appendix E's per-instance induction (inversion then deduction) is in
+    ref.py and T11 but not used for the table (CHANGES.md, S4).
+47. **Overlap discount.** "The smaller count is discounted by the overlap of their premise sets" is read as
+    n_small * (1 - |P1 & P2| / |P_small|). Every transfer conclusion for f reads f's own row (for Similar(f, g)), so
+    transfer conclusions overlap heavily and the discount removes most of their combined weight; revision order is
+    fixed (decreasing count) because the discounted revision is not associative. T11's associativity check is on
+    independent evidence (disjoint premises), as A.5 states it "on counts".
+48. **First run aborted.** Labelling workers died with a segmentation fault (C-stack overflow in the ground evaluator
+    on deep unary recursions such as tri(tri(tri(n))) under ToyEq's recursion limit of 20,000) and the process pool
+    hung; logs in runs/S4/logs/aborted/. Labelling now runs each job in a thread with a 1 GiB stack; evaluator or
+    prover RecursionErrors are recorded (counterexample 'limit', how 'prover_recursion'), never raised.
