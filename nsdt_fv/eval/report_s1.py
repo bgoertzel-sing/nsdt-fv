@@ -206,6 +206,20 @@ def build(run_dir, out_path):
     w(f"**S1 condition {'met' if allok else 'not met'}** (gap: {gate.get('gap')}, forgetting: {gate.get('forgetting')}, "
       f"T4: {gate.get('T4')}, canary: {gate.get('canary')}).")
     w("")
+    rep_dir = os.path.join(os.path.dirname(run_dir), "S1_seed1")
+    if os.path.exists(os.path.join(rep_dir, "meta.json")):
+        rmeta, _, rts, _, rarms = load(rep_dir)
+        w("## Replicate with another training seed (supplementary)")
+        w("")
+        w(f"Same stream and evaluation sets, run seed {rmeta['seed']} (new base and arm initialisation), arms "
+          f"{', '.join(rarms)}; logs in `nsdt_fv/runs/S1_seed1/`, code `{rmeta['code_commit']}`. Not used for the gate.")
+        w("")
+        w("| Arm | LA | FWD | ACC | F | BWT |")
+        w("|---|---|---|---|---|---|")
+        for arm, d in rarms.items():
+            mm, _ = M.metrics_from_log(d["lines"], rts, k, run=rmeta["arms"][arm]["run"])
+            w(f"| {arm} | " + " | ".join(pct(mm[x]) for x in ("LA", "FWD", "ACC", "F", "BWT")) + " |")
+        w("")
     w("## Accuracy matrices a[t, j] (points)")
     w("")
     w("Rows: model after stage t (0 = base). Columns: E_j. Only the cells the metrics use are evaluated (j <= t + 1).")

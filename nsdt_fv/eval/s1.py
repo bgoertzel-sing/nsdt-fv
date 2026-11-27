@@ -196,6 +196,7 @@ def run_all(cfg, out_dir=None, arms=None):
     os.makedirs(out_dir, exist_ok=True)
     seed = int(cfg["seed"])
     T0 = time.time()
+    commit_at_start = git_commit()          # the code that runs; edits made while it runs do not count
     sc = cfg["stream"]
     lo, hi = sc["lemmas_per_project"]
     sizes = None
@@ -379,7 +380,8 @@ def run_all(cfg, out_dir=None, arms=None):
     old_arms.update(arm_meta)
     import numpy, yaml
     meta = {
-        "experiment": "S1", "seed": seed, "config": cfg, "code_commit": git_commit(),
+        "experiment": "S1", "seed": seed, "config": cfg, "code_commit": commit_at_start,
+        "code_commit_at_end": git_commit(),
         "data_version": winfo["data_version"], "stream": winfo, "stages": [s for s, _ in stream.stages],
         "stream_build_s": round(t_stream, 1),
         "versions": {"python": sys.version.split()[0], "torch": torch.__version__, "numpy": numpy.__version__,
@@ -406,10 +408,13 @@ def main(argv=None):
     ap.add_argument("--config", required=True)
     ap.add_argument("--out", default=None)
     ap.add_argument("--arms", default=None)
+    ap.add_argument("--seed", type=int, default=None, help="override the run seed (replicates)")
     a = ap.parse_args(argv)
     import yaml
     with open(a.config) as f:
         cfg = yaml.safe_load(f)
+    if a.seed is not None:
+        cfg["seed"] = a.seed
     if cfg.get("experiment") != "S1":
         raise SystemExit("config is not an S1 config")
     run_all(cfg, out_dir=a.out, arms=a.arms.split(",") if a.arms else None)
