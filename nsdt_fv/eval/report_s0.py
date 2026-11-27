@@ -84,6 +84,8 @@ def build(run_dir: str) -> str:
     L.append("")
     L.append("## Results")
     L.append("")
+    L.append("S0 trains no model, so there are no sampled metrics and no bootstrap intervals; every table below is an exact count over the logs.")
+    L.append("")
     L.append("### T1: ToyEq checker")
     L.append("")
     L.append(_table(["quantity", "count"], [
