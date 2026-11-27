@@ -155,18 +155,26 @@ def build(out_path):
                     vals += [sum(1 for r in acc if r.get("trivial") is False), sum(1 for r in rs if r.get("dup_store"))]
                 for name, x in zip(["cand", "refused", "emitted", "acc", "nt", "dup"], vals):
                     tot[(kd, name)] += x
+                claim = any(r["accepted"] is not None for r in rs)
+                if not claim:                      # D's priorities point at store statements; they assert nothing
+                    vals[3] = "-"
+                    if kd in STMT:
+                        vals[4] = "-"
                 row += [str(x) for x in vals]
             w("| " + " | ".join(row) + " |")
         row = ["all"]
         for kd in KINDS[cid]:
+            claim = any(r["accepted"] is not None for r in recs if r["what"] == kd)
             for name in ["cand", "refused", "emitted", "acc"] + (["nt", "dup"] if kd in STMT else []):
-                row.append(str(tot[(kd, name)]))
+                row.append(str(tot[(kd, name)]) if claim or name not in ("acc", "nt") else "-")
         w("| " + " | ".join(row) + " |")
         w("")
         ysum[cid] = {"tot": dict(tot), "rules": dict(rules)}
         extra = (" Guard refusals by kind and rule: " + ", ".join(f"{r_} {n}" for r_, n in sorted(rules.items())) + ".") if rules else ""
+        noclaim = [kd for kd in KINDS[cid] if not any(r["accepted"] is not None for r in recs if r["what"] == kd)]
         w(f"Emitted {sum(tot[(kd, 'emitted')] for kd in KINDS[cid])} items, of which checker-accepted "
-          f"{sum(tot[(kd, 'acc')] for kd in KINDS[cid])}.{extra}")
+          f"{sum(tot[(kd, 'acc')] for kd in KINDS[cid])}" +
+          (f" ({', '.join(noclaim)}: pointers to store statements, no claim to check)" if noclaim else "") + f".{extra}")
         w("")
     w("**Channel B** candidates without a checker-accepted machine proof (never emitted), per stage: " +
       ", ".join(str(sum(1 for r in runs["N-B"]["channels"] if r["stage"] == t and r["what"] == "unproved")) for t in range(1, T + 1)) + ".")

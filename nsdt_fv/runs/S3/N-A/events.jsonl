@@ -1,0 +1,102 @@
+{"model_stage": 0, "set": 1, "type": "eval"}
+{"stage": 1, "type": "train"}
+{"model_stage": 1, "set": 1, "type": "eval"}
+{"model_stage": 1, "set": 2, "type": "eval"}
+{"stage": 2, "type": "train"}
+{"model_stage": 2, "set": 1, "type": "eval"}
+{"model_stage": 2, "set": 2, "type": "eval"}
+{"model_stage": 2, "set": 3, "type": "eval"}
+{"stage": 3, "type": "train"}
+{"model_stage": 3, "set": 1, "type": "eval"}
+{"model_stage": 3, "set": 2, "type": "eval"}
+{"model_stage": 3, "set": 3, "type": "eval"}
+{"model_stage": 3, "set": 4, "type": "eval"}
+{"stage": 4, "type": "train"}
+{"model_stage": 4, "set": 1, "type": "eval"}
+{"model_stage": 4, "set": 2, "type": "eval"}
+{"model_stage": 4, "set": 3, "type": "eval"}
+{"model_stage": 4, "set": 4, "type": "eval"}
+{"model_stage": 4, "set": 5, "type": "eval"}
+{"stage": 5, "type": "train"}
+{"model_stage": 5, "set": 1, "type": "eval"}
+{"model_stage": 5, "set": 2, "type": "eval"}
+{"model_stage": 5, "set": 3, "type": "eval"}
+{"model_stage": 5, "set": 4, "type": "eval"}
+{"model_stage": 5, "set": 5, "type": "eval"}
+{"model_stage": 5, "set": 6, "type": "eval"}
+{"stage": 6, "type": "train"}
+{"model_stage": 6, "set": 1, "type": "eval"}
+{"model_stage": 6, "set": 2, "type": "eval"}
+{"model_stage": 6, "set": 3, "type": "eval"}
+{"model_stage": 6, "set": 4, "type": "eval"}
+{"model_stage": 6, "set": 5, "type": "eval"}
+{"model_stage": 6, "set": 6, "type": "eval"}
+{"model_stage": 6, "set": 7, "type": "eval"}
+{"stage": 7, "type": "train"}
+{"model_stage": 7, "set": 1, "type": "eval"}
+{"model_stage": 7, "set": 2, "type": "eval"}
+{"model_stage": 7, "set": 3, "type": "eval"}
+{"model_stage": 7, "set": 4, "type": "eval"}
+{"model_stage": 7, "set": 5, "type": "eval"}
+{"model_stage": 7, "set": 6, "type": "eval"}
+{"model_stage": 7, "set": 7, "type": "eval"}
+{"model_stage": 7, "set": 8, "type": "eval"}
+{"stage": 8, "type": "train"}
+{"model_stage": 8, "set": 1, "type": "eval"}
+{"model_stage": 8, "set": 2, "type": "eval"}
+{"model_stage": 8, "set": 3, "type": "eval"}
+{"model_stage": 8, "set": 4, "type": "eval"}
+{"model_stage": 8, "set": 5, "type": "eval"}
+{"model_stage": 8, "set": 6, "type": "eval"}
+{"model_stage": 8, "set": 7, "type": "eval"}
+{"model_stage": 8, "set": 8, "type": "eval"}
+{"model_stage": 8, "set": 9, "type": "eval"}
+{"stage": 9, "type": "train"}
+{"model_stage": 9, "set": 1, "type": "eval"}
+{"model_stage": 9, "set": 2, "type": "eval"}
+{"model_stage": 9, "set": 3, "type": "eval"}
+{"model_stage": 9, "set": 4, "type": "eval"}
+{"model_stage": 9, "set": 5, "type": "eval"}
+{"model_stage": 9, "set": 6, "type": "eval"}
+{"model_stage": 9, "set": 7, "type": "eval"}
+{"model_stage": 9, "set": 8, "type": "eval"}
+{"model_stage": 9, "set": 9, "type": "eval"}
+{"model_stage": 9, "set": 10, "type": "eval"}
+{"stage": 10, "type": "train"}
+{"model_stage": 10, "set": 1, "type": "eval"}
+{"model_stage": 10, "set": 2, "type": "eval"}
+{"model_stage": 10, "set": 3, "type": "eval"}
+{"model_stage": 10, "set": 4, "type": "eval"}
+{"model_stage": 10, "set": 5, "type": "eval"}
+{"model_stage": 10, "set": 6, "type": "eval"}
+{"model_stage": 10, "set": 7, "type": "eval"}
+{"model_stage": 10, "set": 8, "type": "eval"}
+{"model_stage": 10, "set": 9, "type": "eval"}
+{"model_stage": 10, "set": 10, "type": "eval"}
+{"model_stage": 10, "set": 11, "type": "eval"}
+{"stage": 11, "type": "train"}
+{"model_stage": 11, "set": 1, "type": "eval"}
+{"model_stage": 11, "set": 2, "type": "eval"}
+{"model_stage": 11, "set": 3, "type": "eval"}
+{"model_stage": 11, "set": 4, "type": "eval"}
+{"model_stage": 11, "set": 5, "type": "eval"}
+{"model_stage": 11, "set": 6, "type": "eval"}
+{"model_stage": 11, "set": 7, "type": "eval"}
+{"model_stage": 11, "set": 8, "type": "eval"}
+{"model_stage": 11, "set": 9, "type": "eval"}
+{"model_stage": 11, "set": 10, "type": "eval"}
+{"model_stage": 11, "set": 11, "type": "eval"}
+{"model_stage": 11, "set": 12, "type": "eval"}
+{"stage": 12, "type": "train"}
+{"model_stage": 12, "set": 1, "type": "eval"}
+{"model_stage": 12, "set": 2, "type": "eval"}
+{"model_stage": 12, "set": 3, "type": "eval"}
+{"model_stage": 12, "set": 4, "type": "eval"}
+{"model_stage": 12, "set": 5, "type": "eval"}
+{"model_stage": 12, "set": 6, "type": "eval"}
+{"model_stage": 12, "set": 7, "type": "eval"}
+{"model_stage": 12, "set": 8, "type": "eval"}
+{"model_stage": 12, "set": 9, "type": "eval"}
+{"model_stage": 12, "set": 10, "type": "eval"}
+{"model_stage": 12, "set": 11, "type": "eval"}
+{"model_stage": 12, "set": 12, "type": "eval"}

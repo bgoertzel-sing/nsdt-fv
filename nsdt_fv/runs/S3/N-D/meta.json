@@ -1,0 +1,384 @@
+{
+ "arm": "N-D",
+ "base": {
+  "hash": "8adcff289bb9ebbb",
+  "params": 834304,
+  "path": "runs/S3/base/base.pt"
+ },
+ "canary": {
+  "cells": 90,
+  "metrics": {
+   "ACC": 1.0,
+   "BWT": 0.0,
+   "F": 0.0,
+   "FWD": 1.0,
+   "LA": 1.0
+  },
+  "passed": true,
+  "run": "S1/canary-oracle"
+ },
+ "cap": {
+  "kind": "block",
+  "layers": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "r": 512,
+  "trainable_params": 809472
+ },
+ "channel": "D",
+ "channel_s": 8.5,
+ "channel_stats": {
+  "1": {
+   "emitted": 107,
+   "guard_refused": 0,
+   "items": 150,
+   "prio": 60,
+   "seconds": 0.29,
+   "seeds": 0,
+   "wake": 47
+  },
+  "2": {
+   "emitted": 108,
+   "guard_refused": 0,
+   "items": 150,
+   "prio": 60,
+   "seconds": 0.59,
+   "seeds": 0,
+   "wake": 48
+  },
+  "3": {
+   "emitted": 111,
+   "guard_refused": 0,
+   "items": 141,
+   "prio": 60,
+   "seconds": 0.31,
+   "seeds": 0,
+   "wake": 51
+  },
+  "4": {
+   "emitted": 120,
+   "guard_refused": 0,
+   "items": 167,
+   "prio": 60,
+   "seconds": 0.43,
+   "seeds": 0,
+   "wake": 60
+  },
+  "5": {
+   "emitted": 117,
+   "guard_refused": 0,
+   "items": 151,
+   "prio": 60,
+   "seconds": 0.64,
+   "seeds": 0,
+   "wake": 57
+  },
+  "6": {
+   "emitted": 98,
+   "guard_refused": 0,
+   "items": 148,
+   "prio": 60,
+   "seconds": 0.61,
+   "seeds": 0,
+   "wake": 38
+  },
+  "7": {
+   "emitted": 93,
+   "guard_refused": 0,
+   "items": 141,
+   "prio": 60,
+   "seconds": 0.64,
+   "seeds": 0,
+   "wake": 33
+  },
+  "8": {
+   "emitted": 106,
+   "guard_refused": 0,
+   "items": 136,
+   "prio": 56,
+   "seconds": 0.52,
+   "seeds": 0,
+   "wake": 50
+  },
+  "9": {
+   "emitted": 95,
+   "guard_refused": 0,
+   "items": 138,
+   "prio": 58,
+   "seconds": 1.77,
+   "seeds": 0,
+   "wake": 37
+  },
+  "10": {
+   "emitted": 99,
+   "guard_refused": 0,
+   "items": 136,
+   "prio": 56,
+   "seconds": 1.27,
+   "seeds": 0,
+   "wake": 43
+  },
+  "11": {
+   "emitted": 100,
+   "guard_refused": 0,
+   "items": 131,
+   "prio": 51,
+   "seconds": 0.4,
+   "seeds": 0,
+   "wake": 49
+  },
+  "12": {
+   "emitted": 93,
+   "guard_refused": 0,
+   "items": 142,
+   "prio": 60,
+   "seconds": 1.02,
+   "seeds": 0,
+   "wake": 33
+  }
+ },
+ "code_commit": "6ea08b705b02efd4f021590e79a6ed892fcd001a",
+ "code_commit_at_end": "6ea08b705b02efd4f021590e79a6ed892fcd001a",
+ "config": {
+  "base_hash": {
+   "0": "8adcff289bb9ebbb",
+   "1": "73ef74288b05955d"
+  },
+  "bootstrap": {
+   "resamples": 10000,
+   "seed": 0
+  },
+  "cap": {
+   "kind": "block",
+   "layers": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "lr": 0.001,
+   "r": 512,
+   "wake_batch": 1
+  },
+  "channels": {
+   "A": {
+    "cap_nextstate": 100,
+    "cap_premise": 100,
+    "cap_statements": 60,
+    "cap_unfold": 60,
+    "prover_nodes": 2000
+   },
+   "B": {
+    "cap_statements": 100,
+    "k_max": 3,
+    "max_candidates": 400,
+    "prover_nodes": 2000
+   },
+   "C": {
+    "cap_statements": 100,
+    "eval_budget": 20000,
+    "fresh_seed": 1,
+    "inputs": 200,
+    "max_size": 7,
+    "max_terms": 4000,
+    "prover_nodes": 2000
+   },
+   "D": {
+    "cap_mutants": 80,
+    "cap_priorities": 60,
+    "cap_repairs": 80,
+    "per_proof": 2,
+    "prover_nodes": 2000
+   },
+   "E": {
+    "cap_plans": 100,
+    "cap_priorities": 60,
+    "max_targets": 60,
+    "min_count": 5,
+    "tries": 8
+   }
+  },
+  "dream": {
+   "aux_conj": true,
+   "candidates": 4,
+   "conj_max_new": 64,
+   "max_new": 128,
+   "nrem_statements": 60,
+   "pref_weight": 0.1,
+   "rem_conjectures": 40,
+   "rem_raw": 120,
+   "temperature": 0.8
+  },
+  "eval": {
+   "k": 8,
+   "max_new": 128,
+   "temperature": 1.0,
+   "timeout_s": 120
+  },
+  "experiment": "S3",
+  "model": {
+   "d": 128,
+   "dropout": 0.1,
+   "ff": 512,
+   "heads": 4,
+   "layers": 4,
+   "max_len": 192
+  },
+  "prio_weight": 4.0,
+  "run_dir": "runs/S3",
+  "seed": 0,
+  "stream": {
+   "projects": 6,
+   "seed": 0
+  },
+  "t4_reference": "1a4285664e122c05",
+  "threads": 2
+ },
+ "cpu_affinity": [
+  6,
+  7
+ ],
+ "data_version": "e2673a78d60e6531",
+ "dt_steps": 2317,
+ "dt_tokens": 55534,
+ "eval_generate_s": 355.7,
+ "experiment": "S3",
+ "guard": {
+  "canaries": [
+   {
+    "id": "toy-mix-listarith@e772bb74aad0:em_d064",
+    "rule": "L1",
+    "what": "test obligation as wake example"
+   },
+   {
+    "id": "toy-mix-listarith@e772bb74aad0:em_d064",
+    "rule": "L3",
+    "what": "dream whose statement is a test statement"
+   },
+   {
+    "id": "toy-trees@589ab1821b5d:ct_d268",
+    "rule": "L1",
+    "what": "test obligation as wake example"
+   },
+   {
+    "id": "toy-trees@589ab1821b5d:ct_d268",
+    "rule": "L3",
+    "what": "dream whose statement is a test statement"
+   },
+   {
+    "id": "toy-lists@7221e93f79ff:al_d073",
+    "rule": "L1",
+    "what": "dream whose proof text is a distinctive test proof"
+   }
+  ],
+  "channel_canaries": [
+   {
+    "channel": "A",
+    "items": 45,
+    "refused": 45,
+    "rules": {
+     "L1": 45
+    },
+    "test_ids": [
+     "toy-lists@7221e93f79ff:al_d073",
+     "toy-arith@6a335793a641:ba_d275",
+     "toy-arith@6a335793a641:ba_d276"
+    ]
+   },
+   {
+    "channel": "B",
+    "items": 3,
+    "refused": 3,
+    "rules": {
+     "L3": 3
+    },
+    "test_ids": [
+     "toy-lists@7221e93f79ff:al_d073",
+     "toy-arith@6a335793a641:ba_d275",
+     "toy-arith@6a335793a641:ba_d276"
+    ]
+   },
+   {
+    "channel": "C",
+    "items": 3,
+    "refused": 3,
+    "rules": {
+     "L3": 3
+    },
+    "test_ids": [
+     "toy-lists@7221e93f79ff:al_d073",
+     "toy-arith@6a335793a641:ba_d275",
+     "toy-arith@6a335793a641:ba_d276"
+    ]
+   },
+   {
+    "channel": "D",
+    "items": 6,
+    "refused": 6,
+    "rules": {
+     "L1": 6
+    },
+    "test_ids": [
+     "toy-lists@7221e93f79ff:al_d073",
+     "toy-arith@6a335793a641:ba_d275",
+     "toy-arith@6a335793a641:ba_d276"
+    ]
+   },
+   {
+    "channel": "E",
+    "items": 3,
+    "refused": 3,
+    "rules": {
+     "L1": 3
+    },
+    "test_ids": [
+     "toy-lists@7221e93f79ff:al_d073",
+     "toy-arith@6a335793a641:ba_d275",
+     "toy-arith@6a335793a641:ba_d276"
+    ]
+   }
+  ],
+  "l3_dropped_conjectures": 0,
+  "training_checked": 2377,
+  "training_raised": 0
+ },
+ "run": "S3/N-D/tiny-8adcff289bb9ebbb/s0",
+ "seed": 0,
+ "seed_run": "S2/D1/tiny-8adcff289bb9ebbb/s0",
+ "sleep_s": 234.6,
+ "stages": [
+  "toy-mix-listarith@w1",
+  "toy-mix-treelist@w1",
+  "toy-bits@w1",
+  "toy-arith@w1",
+  "toy-trees@w1",
+  "toy-lists@w1",
+  "toy-mix-treelist@w2",
+  "toy-mix-listarith@w2",
+  "toy-lists@w2",
+  "toy-arith@w2",
+  "toy-bits@w2",
+  "toy-trees@w2"
+ ],
+ "stream": {
+  "data_version": "e2673a78d60e6531",
+  "edges": 6238,
+  "obligations": 1202
+ },
+ "threads": 2,
+ "toolchain": {
+  "toyeq_checker_sha": "1000f3b0cf3d3c23"
+ },
+ "train_s": 440.7,
+ "versions": {
+  "numpy": "2.2.6",
+  "platform": "Linux-7.1.1-76070101-generic-x86_64-with-glibc2.35",
+  "python": "3.10.12",
+  "pyyaml": "6.0.3",
+  "torch": "2.12.1+cpu"
+ },
+ "wall_s": 855.2
+}

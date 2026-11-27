@@ -1,0 +1,2 @@
+[N-E s0] stage 0: {1: 0.167} (58s)
+[N-E s0] stage 1: {1: 0.167, 2: 0.19} nrem 9/240 rem 0/0 conj 0 ch {'items': 73, 'emitted': 72, 'guard_refused': 0, 'wake': 49, 'seeds': 0, 'prio': 23, 'seconds': 0.16} (90s)
