@@ -1,0 +1,452 @@
+def ct_add : Nat Nat -> Nat
+  ct_add(Z, m) = m
+  ct_add(S(n), m) = S(ct_add(n, m))
+def ct_app : List List -> List
+  ct_app(Nil, ys) = ys
+  ct_app(Cons(h, t), ys) = Cons(h, ct_app(t, ys))
+def ct_len : List -> Nat
+  ct_len(Nil) = Z
+  ct_len(Cons(h, t)) = S(ct_len(t))
+def ct_rev : List -> List
+  ct_rev(Nil) = Nil
+  ct_rev(Cons(h, t)) = ct_app(ct_rev(t), Cons(h, Nil))
+def ct_size : Tree -> Nat
+  ct_size(Leaf) = Z
+  ct_size(Node(l, v, r)) = S(ct_add(ct_size(l), ct_size(r)))
+def ct_mirror : Tree -> Tree
+  ct_mirror(Leaf) = Leaf
+  ct_mirror(Node(l, v, r)) = Node(ct_mirror(r), v, ct_mirror(l))
+def ct_flat : Tree -> List
+  ct_flat(Leaf) = Nil
+  ct_flat(Node(l, v, r)) = ct_app(ct_flat(l), Cons(v, ct_flat(r)))
+def ct_sumt : Tree -> Nat
+  ct_sumt(Leaf) = Z
+  ct_sumt(Node(l, v, r)) = ct_add(ct_sumt(l), ct_add(v, ct_sumt(r)))
+def ct_leaves : Tree -> Nat
+  ct_leaves(Leaf) = S(Z)
+  ct_leaves(Node(l, v, r)) = ct_add(ct_leaves(l), ct_leaves(r))
+def ct_inct : Tree -> Tree
+  ct_inct(Leaf) = Leaf
+  ct_inct(Node(l, v, r)) = Node(ct_inct(l), S(v), ct_inct(r))
+def ct_w0 : Tree Nat -> Nat
+  ct_w0(x0, x1) = ct_add(ct_sumt(x0), x1)
+def ct_w1 : Tree List -> Nat
+  ct_w1(x0, x1) = ct_w0(x0, ct_len(x1))
+def ct_w2 : Tree -> Tree
+  ct_w2(x0) = ct_inct(ct_mirror(x0))
+def ct_w3 : Tree -> List
+  ct_w3(x0) = ct_flat(x0)
+def ct_w4 : Tree -> Nat
+  ct_w4(x0) = ct_size(ct_w2(x0))
+def ct_w5 : Tree -> Nat
+  ct_w5(x0) = ct_leaves(x0)
+def ct_w6 : Tree -> Nat
+  ct_w6(x0) = ct_leaves(ct_inct(x0))
+def ct_w7 : Tree -> Nat
+  ct_w7(x0) = ct_w6(x0)
+lemma ct_add_z_r : forall n. ct_add(n, Z) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma ct_add_s_r : forall n m. ct_add(n, S(m)) = S(ct_add(n, m))
+  by induct n { simp refl } { simp rw IH refl }
+lemma ct_add_assoc : forall n m k. ct_add(ct_add(n, m), k) = ct_add(n, ct_add(m, k))
+  by induct n { simp refl } { simp rw IH refl }
+lemma ct_add_comm : forall n m. ct_add(n, m) = ct_add(m, n)
+  by induct n { simp rw ct_add_z_r refl } { simp rw IH rw ct_add_s_r refl }
+lemma ct_app_nil_r : forall xs. ct_app(xs, Nil) = xs
+  by induct xs { simp refl } { simp rw IH refl }
+lemma ct_app_assoc : forall xs ys zs. ct_app(ct_app(xs, ys), zs) = ct_app(xs, ct_app(ys, zs))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma ct_len_app : forall xs ys. ct_len(ct_app(xs, ys)) = ct_add(ct_len(xs), ct_len(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma ct_rev_app : forall xs ys. ct_rev(ct_app(xs, ys)) = ct_app(ct_rev(ys), ct_rev(xs))
+  by induct xs { simp rw ct_app_nil_r refl } { simp rw IH rw ct_app_assoc refl }
+lemma ct_mirror_mirror : forall t. ct_mirror(ct_mirror(t)) = t
+  by induct t { simp refl } { simp rw IH2 rw IH1 refl }
+lemma ct_size_mirror : forall t. ct_size(ct_mirror(t)) = ct_size(t)
+  by induct t { simp refl } { simp rw IH2 rw IH1 rw ct_add_comm refl }
+lemma ct_leaves_size : forall t. ct_leaves(t) = S(ct_size(t))
+  by induct t { simp refl } { simp rw IH2 rw IH1 simp rw ct_add_s_r refl }
+lemma ct_len_flat : forall t. ct_len(ct_flat(t)) = ct_size(t)
+  by induct t { simp refl } { simp rw<- IH2 rw<- IH1 rw ct_len_app simp rw ct_add_s_r refl }
+lemma ct_flat_mirror : forall t. ct_flat(ct_mirror(t)) = ct_rev(ct_flat(t))
+  by induct t { simp refl } { simp rw IH2 rw IH1 rw ct_rev_app simp rw ct_app_assoc simp refl }
+lemma ct_size_inct : forall t. ct_size(ct_inct(t)) = ct_size(t)
+  by induct t { simp refl } { simp rw IH2 rw IH1 refl }
+lemma ct_mirror_inct : forall t. ct_mirror(ct_inct(t)) = ct_inct(ct_mirror(t))
+  by induct t { simp refl } { simp rw IH2 rw IH1 refl }
+lemma ct_leaves_mirror : forall t. ct_leaves(ct_mirror(t)) = ct_leaves(t)
+  by rw ct_leaves_size rw ct_leaves_size rw ct_size_mirror refl
+lemma ct_d001 : forall t. ct_leaves(ct_w2(t)) = S(ct_size(ct_w2(t)))
+  by simp rw ct_leaves_size refl
+lemma ct_d002 : forall t. ct_w3(t) = ct_flat(t)
+  by simp refl
+lemma ct_d005 : forall t n u. ct_leaves(ct_mirror(Node(t, n, u))) = ct_leaves(Node(t, n, u))
+  by simp rw ct_leaves_mirror rw ct_leaves_mirror rw ct_add_comm refl
+lemma ct_d007 : ct_len(ct_flat(Leaf)) = ct_size(Leaf)
+  by simp refl
+lemma ct_d008 : forall n m t. ct_add(ct_add(n, m), ct_size(t)) = ct_add(n, ct_add(m, ct_size(t)))
+  by rw ct_add_assoc refl
+lemma ct_d009 : forall t. ct_mirror(ct_mirror(ct_w2(t))) = ct_w2(t)
+  by simp rw ct_mirror_mirror refl
+lemma ct_d010 : forall t n. ct_w0(t, n) = ct_add(ct_sumt(t), n)
+  by simp refl
+lemma ct_d011 : forall t. ct_len(ct_w3(t)) = ct_size(t)
+  by simp rw ct_len_flat refl
+lemma ct_d012 : forall t. ct_leaves(ct_mirror(ct_w2(t))) = ct_leaves(ct_w2(t))
+  by simp rw ct_leaves_mirror refl
+lemma ct_d015 : forall xs ys zs ws. ct_app(ct_app(xs, ct_app(ys, zs)), ws) = ct_app(xs, ct_app(ct_app(ys, zs), ws))
+  by rw ct_app_assoc refl
+lemma ct_d016 : forall xs. ct_rev(ct_app(xs, Nil)) = ct_app(ct_rev(Nil), ct_rev(xs))
+  by simp rw ct_rev_app simp refl
+lemma ct_d017 : forall xs. ct_rev(ct_app(Nil, xs)) = ct_app(ct_rev(xs), ct_rev(Nil))
+  by simp rw ct_app_nil_r refl
+lemma ct_d018 : forall n xs ys. ct_rev(ct_app(Cons(n, xs), ys)) = ct_app(ct_rev(ys), ct_rev(Cons(n, xs)))
+  by simp rw ct_rev_app rw ct_app_assoc refl
+lemma ct_d019 : forall t. ct_len(ct_flat(ct_inct(t))) = ct_size(ct_inct(t))
+  by rw ct_len_flat refl
+lemma ct_d021 : forall t. ct_size(ct_mirror(ct_mirror(t))) = ct_size(ct_mirror(t))
+  by rw ct_size_mirror refl
+lemma ct_d022 : forall n. ct_add(S(n), Z) = S(n)
+  by simp rw ct_add_z_r refl
+lemma ct_d023 : forall n m. ct_add(ct_add(n, Z), m) = ct_add(n, ct_add(Z, m))
+  by simp rw ct_add_z_r refl
+lemma ct_d024 : forall t. ct_w3(ct_mirror(t)) = ct_rev(ct_flat(t))
+  by simp rw ct_flat_mirror refl
+lemma ct_d025 : forall n t m. ct_add(n, ct_w0(t, m)) = ct_add(ct_w0(t, m), n)
+  by simp rw ct_add_comm refl
+lemma ct_d026 : ct_leaves(ct_mirror(Leaf)) = ct_leaves(Leaf)
+  by simp refl
+lemma ct_d027 : forall t. ct_len(ct_flat(ct_w2(t))) = ct_size(ct_w2(t))
+  by simp rw ct_d019 refl
+lemma ct_d028 : forall xs n. ct_add(ct_len(xs), n) = ct_add(n, ct_len(xs))
+  by rw ct_add_comm refl
+lemma ct_d030 : forall n. ct_add(n, Z) = ct_add(Z, n)
+  by simp rw ct_add_z_r refl
+lemma ct_d031 : ct_w3(ct_mirror(Leaf)) = ct_rev(ct_flat(Leaf))
+  by simp refl
+lemma ct_d032 : forall t. ct_leaves(ct_mirror(t)) = S(ct_size(t))
+  by rw ct_leaves_size rw ct_size_mirror refl
+lemma ct_d033 : forall t. ct_w2(t) = ct_inct(ct_mirror(t))
+  by simp refl
+lemma ct_d034 : forall t n u. ct_mirror(ct_mirror(Node(t, n, u))) = Node(t, n, u)
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d035 : forall t n. ct_w0(t, S(n)) = ct_add(ct_sumt(t), S(n))
+  by simp refl
+lemma ct_d036 : ct_len(ct_flat(ct_inct(Leaf))) = ct_size(ct_inct(Leaf))
+  by simp refl
+lemma ct_d037 : forall t. ct_add(ct_size(t), Z) = ct_size(t)
+  by rw ct_d030 simp refl
+lemma ct_d038 : ct_w3(Leaf) = ct_flat(Leaf)
+  by simp refl
+lemma ct_d039 : ct_app(Nil, Nil) = Nil
+  by simp refl
+lemma ct_d041 : forall t. ct_mirror(ct_mirror(ct_w2(ct_w2(t)))) = ct_w2(ct_w2(t))
+  by simp rw ct_mirror_mirror refl
+lemma ct_d043 : forall t n. ct_w0(ct_w2(t), n) = ct_add(ct_sumt(ct_w2(t)), n)
+  by simp refl
+lemma ct_d044 : ct_rev(ct_app(Nil, Nil)) = ct_app(ct_rev(Nil), ct_rev(Nil))
+  by simp refl
+lemma ct_d045 : ct_len(ct_w3(Leaf)) = ct_size(Leaf)
+  by simp refl
+lemma ct_d046 : forall n. ct_add(ct_len(Nil), n) = ct_add(n, ct_len(Nil))
+  by simp rw ct_d030 simp refl
+lemma ct_d047 : forall n. ct_w0(Leaf, n) = ct_add(ct_sumt(Leaf), n)
+  by simp refl
+lemma ct_d048 : forall xs ys n zs. ct_app(ct_app(xs, ys), Cons(n, zs)) = ct_app(xs, ct_app(ys, Cons(n, zs)))
+  by rw ct_app_assoc refl
+lemma ct_d049 : ct_size(ct_mirror(ct_mirror(Leaf))) = ct_size(ct_mirror(Leaf))
+  by simp refl
+lemma ct_d050 : forall n. ct_add(Z, S(n)) = S(ct_add(Z, n))
+  by simp refl
+lemma ct_d052 : forall xs n. ct_add(ct_add(ct_len(xs), Z), n) = ct_add(ct_len(xs), ct_add(Z, n))
+  by simp rw ct_d030 simp refl
+lemma ct_d053 : forall xs ys. ct_rev(ct_app(Nil, ct_app(xs, ys))) = ct_app(ct_rev(ct_app(xs, ys)), ct_rev(Nil))
+  by simp rw ct_app_nil_r refl
+lemma ct_d054 : forall t. ct_w3(ct_mirror(t)) = ct_flat(ct_mirror(t))
+  by simp refl
+lemma ct_d055 : ct_w0(Leaf, Z) = ct_add(ct_sumt(Leaf), Z)
+  by simp refl
+lemma ct_d056 : forall t xs. ct_w1(t, xs) = ct_w0(t, ct_len(xs))
+  by simp refl
+lemma ct_d058 : forall t. ct_size(ct_inct(ct_inct(t))) = ct_size(ct_inct(t))
+  by rw ct_size_inct refl
+lemma ct_d059 : forall n t xs. ct_rev(ct_app(Cons(n, ct_flat(t)), xs)) = ct_app(ct_rev(xs), ct_rev(Cons(n, ct_flat(t))))
+  by simp rw<- ct_d048 rw ct_rev_app refl
+lemma ct_d061 : forall xs. ct_len(ct_app(Nil, xs)) = ct_add(ct_len(Nil), ct_len(xs))
+  by simp refl
+lemma ct_d062 : forall t. ct_size(ct_inct(ct_w2(t))) = ct_size(ct_w2(t))
+  by simp rw ct_d058 refl
+lemma ct_d064 : ct_leaves(ct_mirror(ct_w2(Leaf))) = ct_leaves(ct_w2(Leaf))
+  by simp refl
+lemma ct_d065 : forall xs ys. ct_add(ct_len(xs), ct_len(ys)) = ct_add(ct_len(ys), ct_len(xs))
+  by rw ct_d028 refl
+lemma ct_d067 : ct_w2(Leaf) = ct_inct(ct_mirror(Leaf))
+  by simp refl
+lemma ct_d068 : forall t. ct_size(ct_mirror(ct_mirror(ct_w2(t)))) = ct_size(ct_mirror(ct_w2(t)))
+  by simp rw ct_d021 refl
+lemma ct_d070 : ct_mirror(ct_mirror(Leaf)) = Leaf
+  by simp refl
+lemma ct_d071 : forall t n m k. ct_add(ct_add(ct_w0(t, n), m), k) = ct_add(ct_w0(t, n), ct_add(m, k))
+  by simp rw ct_add_assoc refl
+lemma ct_d072 : forall t n u. ct_w3(ct_mirror(Node(t, n, u))) = ct_flat(ct_mirror(Node(t, n, u)))
+  by simp refl
+lemma ct_d073 : forall t xs n ys. ct_app(ct_app(ct_w3(t), xs), Cons(n, ys)) = ct_app(ct_w3(t), ct_app(xs, Cons(n, ys)))
+  by simp rw ct_d048 refl
+lemma ct_d075 : forall t n. ct_w0(Leaf, ct_w0(t, n)) = ct_add(ct_sumt(Leaf), ct_w0(t, n))
+  by simp refl
+lemma ct_d076 : forall t u. ct_w0(ct_w2(t), ct_sumt(u)) = ct_add(ct_sumt(ct_w2(t)), ct_sumt(u))
+  by simp refl
+lemma ct_d078 : forall t n u. ct_mirror(ct_mirror(ct_w2(Node(t, n, u)))) = ct_w2(Node(t, n, u))
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d080 : forall t u n. ct_w0(t, ct_w0(u, n)) = ct_add(ct_sumt(t), ct_w0(u, n))
+  by simp refl
+lemma ct_d084 : ct_w3(ct_mirror(Leaf)) = ct_rev(ct_w3(Leaf))
+  by simp refl
+lemma ct_d085 : forall n xs ys. ct_rev(ct_app(Cons(S(n), xs), ys)) = ct_app(ct_rev(ys), ct_rev(Cons(S(n), xs)))
+  by simp rw<- ct_d048 rw ct_rev_app refl
+lemma ct_d086 : forall t xs n m. ct_add(ct_add(ct_w1(t, xs), n), m) = ct_add(ct_w1(t, xs), ct_add(n, m))
+  by simp rw ct_add_assoc refl
+lemma ct_d088 : forall t n u. ct_len(ct_flat(ct_inct(Node(t, n, u)))) = ct_size(ct_inct(Node(t, n, u)))
+  by simp rw<- ct_d019 rw<- ct_d019 rw ct_len_app simp rw ct_add_s_r refl
+lemma ct_d089 : forall t n u. ct_w3(ct_mirror(Node(t, S(n), u))) = ct_flat(ct_mirror(Node(t, S(n), u)))
+  by simp refl
+lemma ct_d092 : forall xs ys n zs. ct_app(ct_app(ct_rev(xs), ys), Cons(n, zs)) = ct_app(ct_rev(xs), ct_app(ys, Cons(n, zs)))
+  by rw ct_d048 refl
+lemma ct_d094 : forall n. ct_w0(Leaf, S(n)) = ct_add(ct_sumt(Leaf), S(n))
+  by simp refl
+lemma ct_d095 : forall xs. ct_len(ct_app(Nil, xs)) = ct_add(ct_len(xs), ct_len(Nil))
+  by simp rw ct_d030 simp refl
+lemma ct_d097 : forall xs ys. ct_rev(ct_app(Nil, ct_app(ct_rev(xs), ys))) = ct_app(ct_rev(ct_app(ct_rev(xs), ys)), ct_rev(Nil))
+  by simp rw ct_app_nil_r refl
+lemma ct_d098 : forall n m t. ct_add(ct_add(n, m), ct_size(ct_w2(t))) = ct_add(n, ct_add(m, ct_size(ct_w2(t))))
+  by simp rw ct_d008 refl
+lemma ct_d099 : forall xs. ct_len(ct_app(xs, Nil)) = ct_add(ct_len(xs), ct_len(Nil))
+  by simp rw ct_len_app simp refl
+lemma ct_d103 : forall xs ys n. ct_add(ct_len(ct_app(xs, ys)), n) = ct_add(n, ct_len(ct_app(xs, ys)))
+  by rw ct_d028 refl
+lemma ct_d104 : ct_len(ct_w3(ct_inct(Leaf))) = ct_size(ct_inct(Leaf))
+  by simp refl
+lemma ct_d105 : forall t. ct_add(ct_len(Nil), ct_leaves(t)) = ct_add(ct_leaves(t), ct_len(Nil))
+  by simp rw ct_d030 simp refl
+lemma ct_d106 : forall t. ct_len(ct_w3(ct_inct(t))) = ct_size(t)
+  by simp rw ct_d019 rw ct_size_inct refl
+lemma ct_d109 : forall t u n m. ct_w0(t, ct_w0(u, ct_add(n, m))) = ct_add(ct_sumt(t), ct_w0(u, ct_add(n, m)))
+  by simp refl
+lemma ct_d112 : forall xs. ct_rev(ct_app(ct_rev(xs), Nil)) = ct_app(ct_rev(Nil), ct_rev(ct_rev(xs)))
+  by simp rw ct_d016 simp refl
+lemma ct_d114 : forall t xs n m. ct_add(ct_add(ct_w1(t, xs), n), m) = ct_add(ct_add(n, m), ct_w1(t, xs))
+  by simp rw ct_add_assoc rw ct_add_comm refl
+lemma ct_d115 : ct_add(ct_len(Nil), ct_leaves(Leaf)) = ct_add(ct_leaves(Leaf), ct_len(Nil))
+  by simp refl
+lemma ct_d116 : forall t n. ct_w0(t, n) = ct_add(n, ct_sumt(t))
+  by simp rw ct_add_comm refl
+lemma ct_d117 : forall t. ct_w3(ct_mirror(ct_mirror(t))) = ct_flat(ct_mirror(ct_mirror(t)))
+  by simp refl
+lemma ct_d118 : forall xs n. ct_add(ct_len(ct_app(Nil, xs)), n) = ct_add(n, ct_len(ct_app(Nil, xs)))
+  by simp rw ct_d028 refl
+lemma ct_d119 : ct_len(ct_app(Nil, Nil)) = ct_add(ct_len(Nil), ct_len(Nil))
+  by simp refl
+lemma ct_d120 : forall t. ct_w4(t) = ct_size(ct_w2(t))
+  by simp refl
+lemma ct_d121 : forall t. ct_w5(t) = ct_leaves(t)
+  by simp refl
+lemma ct_d122 : forall t. ct_w6(t) = ct_leaves(ct_inct(t))
+  by simp refl
+lemma ct_d123 : forall t. ct_w7(t) = ct_w6(t)
+  by simp refl
+lemma ct_d126 : forall t n. ct_w0(Leaf, ct_w0(t, S(n))) = ct_add(ct_sumt(Leaf), ct_w0(t, S(n)))
+  by simp refl
+lemma ct_d127 : forall n t. ct_add(n, S(ct_leaves(t))) = S(ct_add(n, ct_leaves(t)))
+  by rw ct_add_s_r refl
+lemma ct_d130 : forall n t m. ct_add(ct_add(n, ct_w6(t)), m) = ct_add(n, ct_add(ct_w6(t), m))
+  by simp rw ct_add_assoc refl
+lemma ct_d131 : forall t. ct_w5(ct_mirror(ct_w2(t))) = ct_leaves(ct_w2(t))
+  by simp rw ct_leaves_mirror refl
+lemma ct_d133 : forall n. ct_add(ct_len(Nil), S(n)) = ct_add(S(n), ct_len(Nil))
+  by simp rw<- ct_d022 simp refl
+lemma ct_d134 : forall t. ct_mirror(ct_mirror(ct_w2(ct_w2(ct_inct(t))))) = ct_w2(ct_w2(ct_inct(t)))
+  by simp rw ct_mirror_mirror refl
+lemma ct_d136 : forall t n u. ct_leaves(ct_mirror(ct_w2(Node(t, n, u)))) = ct_leaves(ct_w2(Node(t, n, u)))
+  by simp rw ct_leaves_mirror rw ct_leaves_mirror rw ct_add_comm refl
+lemma ct_d137 : forall t. ct_len(ct_flat(ct_w2(t))) = ct_w4(t)
+  by simp rw ct_d019 refl
+lemma ct_d138 : forall t n u. ct_mirror(ct_mirror(ct_w2(Node(t, S(n), u)))) = ct_w2(Node(t, S(n), u))
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d140 : forall xs ys. ct_rev(ct_app(Nil, ct_app(ct_rev(xs), ct_rev(ys)))) = ct_app(ct_rev(ct_app(ct_rev(xs), ct_rev(ys))), ct_rev(Nil))
+  by simp rw ct_app_nil_r refl
+lemma ct_d141 : forall t. ct_w2(ct_w2(t)) = ct_inct(ct_mirror(ct_w2(t)))
+  by simp refl
+lemma ct_d142 : forall xs. ct_rev(ct_app(Nil, ct_app(Nil, xs))) = ct_app(ct_rev(ct_app(Nil, xs)), ct_rev(Nil))
+  by simp rw ct_app_nil_r refl
+lemma ct_d144 : forall xs ys n. ct_add(ct_len(ct_app(xs, ys)), S(n)) = ct_add(S(n), ct_len(ct_app(xs, ys)))
+  by simp rw ct_d103 simp refl
+lemma ct_d145 : forall t n u. ct_size(ct_mirror(Node(t, n, u))) = ct_size(Node(t, n, u))
+  by simp rw ct_size_mirror rw ct_size_mirror rw ct_add_comm refl
+lemma ct_d146 : forall t. ct_len(ct_w3(ct_inct(ct_inct(t)))) = ct_size(ct_inct(t))
+  by simp rw<- ct_d106 simp refl
+lemma ct_d147 : forall t n u. ct_w6(Node(t, n, u)) = ct_leaves(ct_inct(Node(t, n, u)))
+  by simp refl
+lemma ct_d148 : forall t. ct_w0(Leaf, S(ct_leaves(t))) = ct_add(ct_sumt(Leaf), S(ct_leaves(t)))
+  by simp refl
+lemma ct_d149 : forall t n u. ct_mirror(ct_mirror(ct_w2(Node(t, n, ct_w2(u))))) = ct_w2(Node(t, n, ct_w2(u)))
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d150 : forall n t. ct_len(ct_flat(ct_inct(Node(Leaf, n, t)))) = ct_size(ct_inct(Node(Leaf, n, t)))
+  by simp rw ct_d019 refl
+lemma ct_d151 : ct_mirror(ct_mirror(ct_w2(ct_w2(Leaf)))) = ct_w2(ct_w2(Leaf))
+  by simp refl
+lemma ct_d152 : ct_w3(ct_mirror(ct_mirror(Leaf))) = ct_flat(ct_mirror(ct_mirror(Leaf)))
+  by simp refl
+lemma ct_d153 : forall t n u m. ct_w0(Node(t, n, u), S(m)) = ct_add(ct_sumt(Node(t, n, u)), S(m))
+  by simp refl
+lemma ct_d154 : ct_rev(ct_app(ct_rev(Nil), Nil)) = ct_app(ct_rev(Nil), ct_rev(ct_rev(Nil)))
+  by simp refl
+lemma ct_d157 : ct_leaves(ct_mirror(Leaf)) = S(ct_size(Leaf))
+  by simp refl
+lemma ct_d158 : forall xs ys t n. ct_add(ct_len(ct_app(xs, ys)), S(ct_w0(t, n))) = ct_add(S(ct_w0(t, n)), ct_len(ct_app(xs, ys)))
+  by simp rw ct_d144 simp refl
+lemma ct_d159 : forall t u. ct_w0(t, S(ct_sumt(u))) = ct_add(ct_sumt(t), S(ct_sumt(u)))
+  by simp refl
+lemma ct_d164 : forall t. ct_w6(t) = ct_w5(ct_inct(t))
+  by simp refl
+lemma ct_d167 : forall n. ct_add(n, S(Z)) = S(ct_add(n, Z))
+  by rw ct_add_s_r refl
+lemma ct_d168 : forall t. ct_size(ct_inct(ct_w2(ct_inct(t)))) = ct_size(ct_w2(ct_inct(t)))
+  by simp rw ct_d058 refl
+lemma ct_d169 : forall t u s. ct_mirror(ct_mirror(Node(t, ct_leaves(u), s))) = Node(t, ct_leaves(u), s)
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d170 : forall n t. ct_add(n, S(ct_w5(t))) = S(ct_add(n, ct_leaves(t)))
+  by simp rw ct_d127 refl
+lemma ct_d171 : forall t. ct_add(ct_w6(t), Z) = ct_add(Z, ct_w6(t))
+  by simp rw ct_d030 simp refl
+lemma ct_d172 : forall n t. ct_len(ct_flat(ct_inct(ct_mirror(ct_mirror(Node(Leaf, n, t)))))) = ct_size(ct_inct(Node(Leaf, n, t)))
+  by simp rw<- ct_d019 rw ct_mirror_mirror refl
+lemma ct_d174 : forall t. ct_mirror(ct_inct(t)) = ct_w2(t)
+  by simp rw ct_mirror_inct refl
+lemma ct_d176 : forall t xs n. ct_add(ct_add(ct_w1(t, xs), Z), n) = ct_add(ct_w1(t, xs), ct_add(Z, n))
+  by simp rw ct_d030 simp refl
+lemma ct_d177 : forall t xs. ct_add(ct_len(ct_flat(t)), ct_len(xs)) = ct_add(ct_len(xs), ct_len(ct_flat(t)))
+  by rw ct_d065 refl
+lemma ct_d178 : forall t. ct_add(ct_len(Nil), S(ct_w4(t))) = ct_add(S(ct_w4(t)), ct_len(Nil))
+  by simp rw ct_d037 refl
+lemma ct_d179 : forall t n u. ct_leaves(ct_mirror(ct_w2(Node(t, S(n), u)))) = ct_leaves(ct_w2(Node(t, S(n), u)))
+  by simp rw ct_leaves_mirror rw ct_leaves_mirror rw ct_add_comm refl
+lemma ct_d180 : forall t. ct_w0(ct_w2(t), Z) = ct_add(ct_sumt(ct_w2(t)), Z)
+  by simp refl
+lemma ct_d182 : forall t u s. ct_mirror(ct_mirror(Node(t, ct_leaves(ct_mirror(u)), s))) = Node(t, ct_leaves(ct_mirror(u)), s)
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d184 : forall xs ys zs. ct_rev(ct_app(xs, ct_app(ys, zs))) = ct_app(ct_rev(ct_app(ys, zs)), ct_rev(xs))
+  by rw ct_rev_app refl
+lemma ct_d189 : forall xs t. ct_len(ct_app(xs, ct_w3(t))) = ct_add(ct_len(xs), ct_len(ct_w3(t)))
+  by simp rw ct_len_app refl
+lemma ct_d190 : forall t n u. ct_leaves(ct_mirror(Node(t, n, u))) = S(ct_size(Node(t, n, u)))
+  by simp rw ct_d032 simp rw ct_d032 rw ct_add_comm simp refl
+lemma ct_d191 : forall xs n t. ct_add(ct_add(ct_len(xs), n), ct_size(t)) = ct_add(ct_len(xs), ct_add(n, ct_size(t)))
+  by rw ct_d008 refl
+lemma ct_d192 : forall t xs u ys. ct_app(ct_app(ct_w3(t), xs), Cons(ct_w7(u), ys)) = ct_app(ct_w3(t), ct_app(xs, Cons(ct_w7(u), ys)))
+  by simp rw ct_d048 refl
+lemma ct_d196 : forall t n u. ct_size(ct_inct(ct_inct(Node(t, n, u)))) = ct_size(ct_inct(Node(t, n, u)))
+  by simp rw ct_d058 rw ct_d058 refl
+lemma ct_d197 : forall t. ct_mirror(ct_mirror(ct_w2(ct_w2(ct_inct(ct_inct(t)))))) = ct_w2(ct_w2(ct_inct(ct_inct(t))))
+  by simp rw ct_mirror_mirror refl
+lemma ct_d203 : forall n t. ct_add(n, S(ct_w5(t))) = S(ct_add(n, ct_w5(t)))
+  by simp rw ct_d127 refl
+lemma ct_d204 : forall t n u. ct_len(ct_w3(ct_inct(Node(t, n, u)))) = ct_size(ct_inct(Node(t, n, u)))
+  by simp rw<- ct_d019 rw<- ct_d019 rw ct_len_app simp rw ct_add_s_r refl
+lemma ct_d205 : forall t. ct_size(ct_mirror(ct_inct(t))) = ct_size(ct_inct(t))
+  by rw ct_size_mirror refl
+lemma ct_d206 : forall xs n. ct_add(ct_add(ct_len(xs), n), ct_size(Leaf)) = ct_add(ct_len(xs), ct_add(n, ct_size(Leaf)))
+  by simp rw ct_d030 simp rw ct_d030 simp refl
+lemma ct_d207 : forall xs n m. ct_add(ct_add(ct_w1(Leaf, xs), n), m) = ct_add(ct_add(n, m), ct_w1(Leaf, xs))
+  by simp rw<- ct_d028 rw ct_add_assoc refl
+lemma ct_d208 : forall t xs. ct_add(S(ct_w1(t, xs)), Z) = S(ct_w1(t, xs))
+  by simp rw ct_d030 simp refl
+lemma ct_d209 : forall t n u. ct_len(ct_flat(ct_w2(Node(t, n, u)))) = ct_w4(Node(t, n, u))
+  by simp rw<- ct_d019 rw<- ct_d019 rw ct_len_app simp rw ct_add_s_r refl
+lemma ct_d214 : forall t n u. ct_add(ct_size(Node(t, n, u)), Z) = ct_size(Node(t, n, u))
+  by simp rw ct_d030 simp refl
+lemma ct_d216 : forall xs ys zs n. ct_add(ct_len(ct_app(ct_app(xs, ys), zs)), S(n)) = ct_add(S(n), ct_len(ct_app(ct_app(xs, ys), zs)))
+  by simp rw ct_d144 simp refl
+lemma ct_d217 : forall t n xs. ct_add(ct_len(ct_flat(t)), ct_len(Cons(n, xs))) = ct_add(ct_len(Cons(n, xs)), ct_len(ct_flat(t)))
+  by simp rw ct_d028 simp refl
+lemma ct_d219 : forall t. ct_size(ct_inct(ct_inct(ct_mirror(t)))) = ct_size(ct_inct(ct_mirror(t)))
+  by rw ct_d058 refl
+lemma ct_d220 : forall t. ct_len(ct_w3(ct_inct(t))) = ct_size(ct_inct(t))
+  by simp rw ct_d019 refl
+lemma ct_d222 : forall t. ct_mirror(ct_mirror(ct_w2(ct_mirror(t)))) = ct_w2(ct_mirror(t))
+  by simp rw ct_mirror_mirror refl
+lemma ct_d223 : forall xs ys zs. ct_app(ct_app(xs, ct_app(ys, Nil)), zs) = ct_app(xs, ct_app(ct_app(ys, Nil), zs))
+  by rw ct_d015 refl
+lemma ct_d228 : forall t. ct_mirror(ct_inct(ct_mirror(t))) = ct_w2(ct_mirror(t))
+  by simp rw ct_mirror_inct refl
+lemma ct_d229 : forall t. ct_size(ct_inct(ct_w2(ct_mirror(t)))) = ct_size(ct_w2(ct_mirror(t)))
+  by simp rw ct_d219 refl
+lemma ct_d232 : forall t n u. ct_mirror(ct_inct(Node(t, n, u))) = ct_w2(Node(t, n, u))
+  by simp rw ct_mirror_inct rw ct_mirror_inct refl
+lemma ct_d233 : forall t. ct_size(ct_inct(ct_w2(ct_w2(t)))) = ct_size(ct_w2(ct_w2(t)))
+  by simp rw ct_d219 refl
+lemma ct_d235 : forall t xs u ys. ct_app(ct_app(ct_w3(t), xs), Cons(ct_w7(ct_mirror(u)), ys)) = ct_app(ct_w3(t), ct_app(xs, Cons(ct_w7(ct_mirror(u)), ys)))
+  by simp rw ct_d048 refl
+lemma ct_d236 : forall t. ct_len(ct_w3(ct_mirror(t))) = ct_size(ct_mirror(t))
+  by simp rw ct_len_flat refl
+lemma ct_d237 : forall t n u. ct_add(ct_len(Nil), S(ct_w4(Node(t, n, u)))) = ct_add(S(ct_w4(Node(t, n, u))), ct_len(Nil))
+  by simp rw<- ct_d022 simp refl
+lemma ct_d243 : forall xs. ct_len(ct_app(Nil, ct_rev(xs))) = ct_add(ct_len(ct_rev(xs)), ct_len(Nil))
+  by simp rw ct_d030 simp refl
+lemma ct_d244 : forall xs. ct_add(ct_len(xs), ct_len(Nil)) = ct_add(ct_len(Nil), ct_len(xs))
+  by simp rw ct_d030 simp refl
+lemma ct_d247 : forall xs n ys m. ct_add(ct_len(ct_app(xs, Cons(n, ys))), S(m)) = ct_add(S(m), ct_len(ct_app(xs, Cons(n, ys))))
+  by simp rw ct_d144 simp refl
+lemma ct_d251 : forall t n u. ct_len(ct_flat(ct_w2(Node(t, n, ct_w2(u))))) = ct_w4(Node(t, n, ct_w2(u)))
+  by simp rw<- ct_d019 rw<- ct_d019 rw ct_len_app simp rw ct_add_s_r refl
+lemma ct_d256 : forall t n u. ct_leaves(ct_mirror(ct_w2(Node(ct_inct(t), S(n), u)))) = ct_leaves(ct_w2(Node(ct_inct(t), S(n), u)))
+  by simp rw ct_leaves_mirror rw ct_leaves_mirror rw ct_add_comm refl
+lemma ct_d263 : forall t n u. ct_mirror(ct_mirror(ct_w2(ct_w2(ct_inct(Node(t, n, u)))))) = ct_w2(ct_w2(ct_inct(Node(t, n, u))))
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d264 : forall xs t n. ct_add(ct_len(ct_app(Nil, xs)), S(ct_w0(t, n))) = ct_add(S(ct_w0(t, n)), ct_len(ct_app(Nil, xs)))
+  by simp rw ct_d028 simp refl
+lemma ct_d265 : forall t n xs. ct_add(ct_len(ct_w3(t)), ct_len(Cons(n, xs))) = ct_add(ct_len(Cons(n, xs)), ct_len(ct_flat(t)))
+  by simp rw ct_d028 simp refl
+lemma ct_d266 : forall xs t n u. ct_len(ct_app(xs, ct_w3(Node(t, n, u)))) = ct_add(ct_len(xs), ct_len(ct_w3(Node(t, n, u))))
+  by simp rw ct_len_app refl
+lemma ct_d267 : forall t n u. ct_mirror(ct_inct(Node(t, n, u))) = ct_inct(ct_mirror(Node(t, n, u)))
+  by simp rw ct_mirror_inct rw ct_mirror_inct refl
+lemma ct_d268 : forall t. ct_len(ct_w3(ct_inct(ct_inct(t)))) = ct_size(ct_inct(ct_inct(t)))
+  by simp rw ct_d019 refl
+lemma ct_d269 : forall t u s. ct_mirror(ct_mirror(Node(t, ct_w5(ct_mirror(u)), s))) = Node(t, ct_leaves(ct_mirror(u)), s)
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d271 : forall t n. ct_leaves(ct_mirror(ct_w2(Node(t, S(n), Leaf)))) = ct_leaves(ct_w2(Node(t, S(n), Leaf)))
+  by simp rw ct_d167 rw ct_d030 simp rw ct_leaves_mirror refl
+lemma ct_d273 : forall t. ct_add(ct_w6(ct_inct(t)), Z) = ct_add(Z, ct_w6(ct_inct(t)))
+  by simp rw ct_d030 simp refl
+lemma ct_d275 : forall n t m. ct_add(ct_add(n, ct_w7(t)), m) = ct_add(n, ct_add(ct_w6(t), m))
+  by simp rw ct_add_assoc refl
+lemma ct_d276 : forall t xs u ys. ct_app(ct_app(ct_w3(t), ct_rev(xs)), Cons(ct_w7(ct_mirror(u)), ys)) = ct_app(ct_w3(t), ct_app(ct_rev(xs), Cons(ct_w7(ct_mirror(u)), ys)))
+  by simp rw ct_d048 refl
+lemma ct_d277 : forall t. ct_size(ct_mirror(ct_mirror(ct_mirror(t)))) = ct_size(ct_mirror(ct_mirror(t)))
+  by rw ct_d021 refl
+lemma ct_d279 : forall t. ct_size(ct_inct(ct_w2(ct_mirror(t)))) = ct_len(ct_w3(ct_inct(ct_w2(ct_mirror(t)))))
+  by simp rw ct_d019 refl
+lemma ct_d280 : forall t n u. ct_leaves(ct_w2(Node(t, n, u))) = S(ct_size(ct_w2(Node(t, n, u))))
+  by simp rw ct_leaves_size simp rw ct_leaves_size rw ct_add_s_r refl
+lemma ct_d281 : forall xs ys. ct_app(ct_app(xs, Nil), ys) = ct_app(xs, ct_app(Nil, ys))
+  by simp rw ct_app_nil_r refl
+lemma ct_d284 : forall t xs ys. ct_app(ct_app(ct_w3(t), xs), Cons(Z, ys)) = ct_app(ct_w3(t), ct_app(xs, Cons(Z, ys)))
+  by simp rw ct_d048 refl
+lemma ct_d285 : forall t. ct_len(ct_flat(ct_w2(ct_mirror(t)))) = ct_size(ct_w2(ct_mirror(t)))
+  by simp rw ct_d019 refl
+lemma ct_d288 : forall t. ct_size(ct_mirror(ct_w2(t))) = ct_size(ct_w2(t))
+  by simp rw ct_d205 refl
+lemma ct_d289 : forall t. ct_len(ct_w3(ct_inct(ct_inct(ct_inct(t))))) = ct_size(ct_inct(ct_inct(ct_inct(t))))
+  by simp rw ct_d019 refl
+lemma ct_d290 : forall xs n t. ct_len(ct_app(xs, ct_w3(Node(Leaf, n, t)))) = ct_add(ct_len(xs), ct_len(ct_w3(Node(Leaf, n, t))))
+  by simp rw ct_len_app simp refl
+lemma ct_d293 : forall t n u. ct_mirror(ct_mirror(ct_w2(ct_w2(ct_inct(Node(t, n, ct_w2(u))))))) = ct_w2(ct_w2(ct_inct(Node(t, n, ct_w2(u)))))
+  by simp rw ct_mirror_mirror rw ct_mirror_mirror refl
+lemma ct_d294 : forall t u. ct_leaves(ct_w2(Node(t, Z, u))) = S(ct_size(ct_w2(Node(t, Z, u))))
+  by simp rw ct_leaves_size simp rw ct_leaves_size rw ct_add_s_r refl
+lemma ct_d295 : forall xs ys t. ct_app(ct_app(xs, ct_app(ys, Nil)), ct_flat(t)) = ct_app(xs, ct_app(ct_app(ys, Nil), ct_flat(t)))
+  by rw ct_d223 refl
+lemma ct_d299 : forall t n u. ct_add(ct_len(Nil), ct_leaves(Node(t, n, u))) = ct_add(ct_leaves(Node(t, n, u)), ct_len(Nil))
+  by simp rw ct_d030 simp refl
+lemma ct_d306 : forall t. ct_w5(t) = S(ct_size(t))
+  by simp rw ct_leaves_size refl

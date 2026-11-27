@@ -1,0 +1,17 @@
+# Experiment S0 (plan 8.1): ToyEq, checker, generators, harness, metrics, hold-out guard.
+experiment: S0
+seed: 0
+run_dir: runs/S0
+stream:
+  projects: 6            # C.3: six projects, two windows each
+  lemmas_per_project: [150, 250]
+  test_fraction: 0.2     # 5.2: last 20% of each window's new theorems
+t1:
+  mutants: 1000          # A.5 T1
+  statement_only: 300    # supplementary probe, reported separately
+  instances: 200         # A.5 T1
+t3:
+  min_tokens: 8          # distinctive test proofs for free-text overlap (see reports/ISSUES.md)
+timeouts:
+  stream_s: 120          # R7
+  benchmark_s: 300       # R7

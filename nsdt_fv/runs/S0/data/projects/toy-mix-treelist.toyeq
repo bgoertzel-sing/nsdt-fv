@@ -1,0 +1,485 @@
+def fm_add : Nat Nat -> Nat
+  fm_add(Z, m) = m
+  fm_add(S(n), m) = S(fm_add(n, m))
+def fm_app : List List -> List
+  fm_app(Nil, ys) = ys
+  fm_app(Cons(h, t), ys) = Cons(h, fm_app(t, ys))
+def fm_len : List -> Nat
+  fm_len(Nil) = Z
+  fm_len(Cons(h, t)) = S(fm_len(t))
+def fm_rev : List -> List
+  fm_rev(Nil) = Nil
+  fm_rev(Cons(h, t)) = fm_app(fm_rev(t), Cons(h, Nil))
+def fm_sum : List -> Nat
+  fm_sum(Nil) = Z
+  fm_sum(Cons(h, t)) = fm_add(h, fm_sum(t))
+def fm_size : Tree -> Nat
+  fm_size(Leaf) = Z
+  fm_size(Node(l, v, r)) = S(fm_add(fm_size(l), fm_size(r)))
+def fm_mirror : Tree -> Tree
+  fm_mirror(Leaf) = Leaf
+  fm_mirror(Node(l, v, r)) = Node(fm_mirror(r), v, fm_mirror(l))
+def fm_flat : Tree -> List
+  fm_flat(Leaf) = Nil
+  fm_flat(Node(l, v, r)) = fm_app(fm_flat(l), Cons(v, fm_flat(r)))
+def fm_sumt : Tree -> Nat
+  fm_sumt(Leaf) = Z
+  fm_sumt(Node(l, v, r)) = fm_add(fm_sumt(l), fm_add(v, fm_sumt(r)))
+def fm_leaves : Tree -> Nat
+  fm_leaves(Leaf) = S(Z)
+  fm_leaves(Node(l, v, r)) = fm_add(fm_leaves(l), fm_leaves(r))
+def fm_inct : Tree -> Tree
+  fm_inct(Leaf) = Leaf
+  fm_inct(Node(l, v, r)) = Node(fm_inct(l), S(v), fm_inct(r))
+def fm_isleaf : Tree -> Bool
+  fm_isleaf(Leaf) = T
+  fm_isleaf(Node(l, v, r)) = F
+def fm_lsum : List -> List
+  fm_lsum(Nil) = Nil
+  fm_lsum(Cons(h, t)) = Cons(S(h), fm_lsum(t))
+def fm_w0 : Tree -> Nat
+  fm_w0(x0) = fm_leaves(fm_inct(x0))
+def fm_w1 : List -> List
+  fm_w1(x0) = fm_lsum(x0)
+def fm_w2 : Tree -> Nat
+  fm_w2(x0) = fm_w0(x0)
+def fm_w3 : Nat Nat -> Nat
+  fm_w3(x0, x1) = fm_add(x0, x1)
+def fm_w4 : Tree -> Nat
+  fm_w4(x0) = fm_w2(fm_mirror(x0))
+def fm_w5 : Nat Nat -> Nat
+  fm_w5(x0, x1) = fm_add(x0, x1)
+def fm_w6 : List -> List
+  fm_w6(x0) = fm_w1(x0)
+def fm_w7 : List -> List
+  fm_w7(x0) = fm_w6(x0)
+lemma fm_add_z_r : forall n. fm_add(n, Z) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma fm_add_s_r : forall n m. fm_add(n, S(m)) = S(fm_add(n, m))
+  by induct n { simp refl } { simp rw IH refl }
+lemma fm_add_assoc : forall n m k. fm_add(fm_add(n, m), k) = fm_add(n, fm_add(m, k))
+  by induct n { simp refl } { simp rw IH refl }
+lemma fm_add_comm : forall n m. fm_add(n, m) = fm_add(m, n)
+  by induct n { simp rw fm_add_z_r refl } { simp rw IH rw fm_add_s_r refl }
+lemma fm_app_nil_r : forall xs. fm_app(xs, Nil) = xs
+  by induct xs { simp refl } { simp rw IH refl }
+lemma fm_app_assoc : forall xs ys zs. fm_app(fm_app(xs, ys), zs) = fm_app(xs, fm_app(ys, zs))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma fm_len_app : forall xs ys. fm_len(fm_app(xs, ys)) = fm_add(fm_len(xs), fm_len(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma fm_sum_app : forall xs ys. fm_sum(fm_app(xs, ys)) = fm_add(fm_sum(xs), fm_sum(ys))
+  by induct xs { simp refl } { simp rw IH rw fm_add_assoc refl }
+lemma fm_rev_app : forall xs ys. fm_rev(fm_app(xs, ys)) = fm_app(fm_rev(ys), fm_rev(xs))
+  by induct xs { simp rw fm_app_nil_r refl } { simp rw IH rw fm_app_assoc refl }
+lemma fm_len_flat : forall t. fm_len(fm_flat(t)) = fm_size(t)
+  by induct t { simp refl } { simp rw<- IH2 rw<- IH1 rw fm_len_app simp rw fm_add_s_r refl }
+lemma fm_sum_flat : forall t. fm_sum(fm_flat(t)) = fm_sumt(t)
+  by induct t { simp refl } { simp rw<- IH2 rw<- IH1 rw fm_sum_app simp refl }
+lemma fm_mirror_mirror : forall t. fm_mirror(fm_mirror(t)) = t
+  by induct t { simp refl } { simp rw IH2 rw IH1 refl }
+lemma fm_flat_mirror : forall t. fm_flat(fm_mirror(t)) = fm_rev(fm_flat(t))
+  by induct t { simp refl } { simp rw IH2 rw IH1 rw fm_rev_app simp rw fm_app_assoc simp refl }
+lemma fm_isleaf_mirror : forall t. fm_isleaf(fm_mirror(t)) = fm_isleaf(t)
+  by induct t { simp refl } { simp refl }
+lemma fm_lsum_app : forall xs ys. fm_lsum(fm_app(xs, ys)) = fm_app(fm_lsum(xs), fm_lsum(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma fm_len_lsum : forall xs. fm_len(fm_lsum(xs)) = fm_len(xs)
+  by induct xs { simp refl } { simp rw IH refl }
+lemma fm_size_mirror : forall t. fm_size(fm_mirror(t)) = fm_size(t)
+  by induct t { simp refl } { simp rw IH2 rw IH1 rw fm_add_comm refl }
+lemma fm_rev_rev : forall xs. fm_rev(fm_rev(xs)) = xs
+  by induct xs { simp refl } { simp rw fm_rev_app simp rw IH refl }
+lemma fm_d001 : forall xs ys. fm_sum(fm_app(xs, ys)) = fm_add(fm_sum(ys), fm_sum(xs))
+  by rw fm_sum_app rw fm_add_comm refl
+lemma fm_d002 : fm_isleaf(fm_mirror(Leaf)) = fm_isleaf(Leaf)
+  by simp refl
+lemma fm_d003 : forall n m k. fm_add(fm_add(n, m), S(k)) = fm_add(n, fm_add(m, S(k)))
+  by rw fm_add_assoc refl
+lemma fm_d004 : fm_app(Nil, Nil) = Nil
+  by simp refl
+lemma fm_d005 : forall xs. fm_w1(xs) = fm_lsum(xs)
+  by simp refl
+lemma fm_d006 : forall n xs ys zs. fm_app(fm_app(Cons(n, xs), ys), zs) = fm_app(Cons(n, xs), fm_app(ys, zs))
+  by simp rw fm_app_assoc refl
+lemma fm_d007 : forall xs ys. fm_len(fm_app(fm_lsum(xs), ys)) = fm_add(fm_len(fm_lsum(xs)), fm_len(ys))
+  by rw fm_len_app refl
+lemma fm_d008 : fm_len(fm_flat(Leaf)) = fm_size(Leaf)
+  by simp refl
+lemma fm_d009 : forall n xs. fm_app(Cons(n, xs), Nil) = Cons(n, xs)
+  by simp rw fm_app_nil_r refl
+lemma fm_d010 : forall t xs ys. fm_app(fm_app(fm_flat(t), xs), ys) = fm_app(fm_flat(t), fm_app(xs, ys))
+  by rw fm_app_assoc refl
+lemma fm_d011 : forall t n u. fm_flat(fm_mirror(Node(t, n, u))) = fm_rev(fm_flat(Node(t, n, u)))
+  by simp rw fm_flat_mirror rw fm_flat_mirror rw fm_rev_app simp rw fm_app_assoc simp refl
+lemma fm_d012 : forall n m. fm_w3(n, m) = fm_add(m, n)
+  by simp rw fm_add_comm refl
+lemma fm_d013 : fm_size(fm_mirror(Leaf)) = fm_size(Leaf)
+  by simp refl
+lemma fm_d014 : forall xs t. fm_len(fm_app(xs, fm_flat(t))) = fm_add(fm_len(xs), fm_len(fm_flat(t)))
+  by rw fm_len_app refl
+lemma fm_d015 : forall t. fm_len(fm_flat(fm_inct(t))) = fm_size(fm_inct(t))
+  by rw fm_len_flat refl
+lemma fm_d016 : fm_len(fm_lsum(Nil)) = fm_len(Nil)
+  by simp refl
+lemma fm_d018 : forall t n u. fm_mirror(fm_mirror(Node(t, n, u))) = Node(t, n, u)
+  by simp rw fm_mirror_mirror rw fm_mirror_mirror refl
+lemma fm_d019 : forall xs ys. fm_w1(fm_app(xs, ys)) = fm_app(fm_lsum(xs), fm_lsum(ys))
+  by simp rw fm_lsum_app refl
+lemma fm_d020 : forall n m. fm_w3(n, m) = fm_add(n, m)
+  by simp refl
+lemma fm_d021 : forall t n u. fm_sum(fm_flat(Node(t, n, u))) = fm_sumt(Node(t, n, u))
+  by simp rw<- fm_sum_flat rw<- fm_sum_flat rw fm_sum_app simp refl
+lemma fm_d022 : forall n m. fm_w3(n, S(m)) = S(fm_add(n, m))
+  by simp rw fm_add_s_r refl
+lemma fm_d023 : forall t. fm_len(fm_lsum(fm_flat(t))) = fm_len(fm_flat(t))
+  by rw fm_len_lsum refl
+lemma fm_d024 : forall xs n ys. fm_rev(fm_app(xs, Cons(n, ys))) = fm_app(fm_rev(Cons(n, ys)), fm_rev(xs))
+  by simp rw fm_rev_app simp refl
+lemma fm_d025 : forall t. fm_w2(t) = fm_w0(t)
+  by simp refl
+lemma fm_d027 : forall t n u. fm_isleaf(fm_mirror(Node(t, n, u))) = fm_isleaf(Node(t, n, u))
+  by simp refl
+lemma fm_d028 : forall xs ys. fm_len(fm_app(xs, fm_rev(ys))) = fm_add(fm_len(xs), fm_len(fm_rev(ys)))
+  by rw fm_len_app refl
+lemma fm_d029 : forall xs ys. fm_sum(fm_app(xs, ys)) = fm_w3(fm_sum(xs), fm_sum(ys))
+  by simp rw fm_sum_app refl
+lemma fm_d032 : forall n xs. fm_len(fm_lsum(Cons(n, xs))) = fm_len(Cons(n, xs))
+  by simp rw fm_len_lsum refl
+lemma fm_d033 : forall t. fm_mirror(fm_mirror(fm_inct(t))) = fm_inct(t)
+  by rw fm_mirror_mirror refl
+lemma fm_d035 : forall xs. fm_app(fm_rev(xs), Nil) = fm_rev(xs)
+  by rw fm_app_nil_r refl
+lemma fm_d038 : forall xs t. fm_len(fm_app(xs, fm_flat(t))) = fm_w3(fm_len(xs), fm_len(fm_flat(t)))
+  by simp rw fm_d014 refl
+lemma fm_d039 : forall xs. fm_len(fm_w1(xs)) = fm_len(xs)
+  by simp rw fm_len_lsum refl
+lemma fm_d040 : forall t. fm_w0(t) = fm_leaves(fm_inct(t))
+  by simp refl
+lemma fm_d042 : forall t n u. fm_len(fm_lsum(fm_flat(Node(t, n, u)))) = fm_len(fm_flat(Node(t, n, u)))
+  by simp rw fm_len_lsum refl
+lemma fm_d045 : forall n xs. fm_len(fm_w1(Cons(n, xs))) = fm_len(Cons(n, xs))
+  by simp rw fm_len_lsum refl
+lemma fm_d046 : forall t n u. fm_len(fm_flat(Node(t, n, u))) = fm_size(Node(t, n, u))
+  by simp rw<- fm_len_flat rw<- fm_len_flat rw fm_len_app simp rw fm_add_s_r refl
+lemma fm_d047 : fm_sum(fm_flat(Leaf)) = fm_sumt(Leaf)
+  by simp refl
+lemma fm_d048 : forall xs ys. fm_w1(fm_app(xs, ys)) = fm_lsum(fm_app(xs, ys))
+  by simp refl
+lemma fm_d049 : forall xs ys. fm_len(fm_app(xs, fm_rev(ys))) = fm_w3(fm_len(xs), fm_len(fm_rev(ys)))
+  by simp rw fm_d028 refl
+lemma fm_d051 : forall xs. fm_len(fm_lsum(fm_lsum(xs))) = fm_len(fm_lsum(xs))
+  by rw fm_len_lsum refl
+lemma fm_d052 : fm_app(fm_rev(Nil), Nil) = fm_rev(Nil)
+  by simp refl
+lemma fm_d053 : forall n m. fm_add(fm_add(Z, n), m) = fm_add(Z, fm_add(n, m))
+  by simp refl
+lemma fm_d054 : forall xs n. fm_w3(fm_len(xs), n) = fm_add(n, fm_len(xs))
+  by simp rw fm_add_comm refl
+lemma fm_d055 : forall xs ys. fm_sum(fm_app(fm_rev(xs), ys)) = fm_add(fm_sum(fm_rev(xs)), fm_sum(ys))
+  by rw fm_sum_app refl
+lemma fm_d056 : forall n m k. fm_w3(fm_add(n, m), S(k)) = fm_add(n, fm_add(m, S(k)))
+  by simp rw fm_d003 refl
+lemma fm_d057 : forall xs n m. fm_add(fm_add(fm_len(xs), n), m) = fm_add(fm_len(xs), fm_add(n, m))
+  by rw fm_add_assoc refl
+lemma fm_d058 : forall t. fm_sum(fm_flat(fm_mirror(t))) = fm_sumt(fm_mirror(t))
+  by rw fm_sum_flat refl
+lemma fm_d061 : forall xs. fm_lsum(fm_app(xs, Nil)) = fm_app(fm_lsum(xs), fm_lsum(Nil))
+  by simp rw fm_lsum_app simp refl
+lemma fm_d062 : fm_len(fm_w1(Nil)) = fm_len(Nil)
+  by simp refl
+lemma fm_d063 : forall xs. fm_w1(fm_app(Nil, xs)) = fm_app(fm_lsum(Nil), fm_lsum(xs))
+  by simp refl
+lemma fm_d064 : forall xs ys. fm_sum(fm_app(xs, ys)) = fm_w3(fm_sum(ys), fm_sum(xs))
+  by simp rw fm_d001 refl
+lemma fm_d065 : forall n xs. fm_rev(fm_rev(Cons(n, xs))) = Cons(n, xs)
+  by simp rw fm_d024 simp rw fm_rev_rev refl
+lemma fm_d066 : forall xs ys. fm_len(fm_lsum(Cons(fm_len(xs), ys))) = fm_len(Cons(fm_len(xs), ys))
+  by simp rw fm_len_lsum refl
+lemma fm_d067 : forall xs. fm_len(fm_w1(fm_lsum(xs))) = fm_len(fm_lsum(xs))
+  by simp rw fm_d051 refl
+lemma fm_d068 : forall xs ys. fm_w1(fm_app(fm_rev(xs), ys)) = fm_lsum(fm_app(fm_rev(xs), ys))
+  by simp refl
+lemma fm_d070 : forall t. fm_isleaf(fm_mirror(fm_mirror(t))) = fm_isleaf(fm_mirror(t))
+  by rw fm_isleaf_mirror refl
+lemma fm_d071 : forall n. fm_add(S(n), Z) = S(n)
+  by simp rw fm_add_z_r refl
+lemma fm_d073 : forall xs n. fm_w3(fm_len(xs), n) = fm_w3(n, fm_len(xs))
+  by simp rw<- fm_d054 simp refl
+lemma fm_d074 : forall n m k. fm_add(fm_add(n, m), S(k)) = S(fm_add(fm_add(n, m), k))
+  by rw fm_add_s_r refl
+lemma fm_d076 : forall xs. fm_app(Cons(Z, xs), Nil) = Cons(Z, xs)
+  by simp rw fm_app_nil_r refl
+lemma fm_d077 : forall n xs. fm_len(fm_lsum(Cons(n, xs))) = fm_len(fm_w1(Cons(n, xs)))
+  by simp refl
+lemma fm_d079 : forall xs t. fm_len(fm_app(fm_w1(xs), fm_flat(t))) = fm_w3(fm_len(fm_w1(xs)), fm_len(fm_flat(t)))
+  by simp rw fm_d014 refl
+lemma fm_d081 : forall t xs. fm_w1(fm_app(fm_flat(t), xs)) = fm_lsum(fm_app(fm_flat(t), xs))
+  by simp refl
+lemma fm_d083 : forall t. fm_len(fm_flat(fm_mirror(t))) = fm_size(fm_mirror(t))
+  by rw fm_len_flat refl
+lemma fm_d084 : forall xs ys. fm_sum(fm_app(fm_rev(xs), ys)) = fm_w3(fm_sum(fm_rev(xs)), fm_sum(ys))
+  by simp rw fm_d055 refl
+lemma fm_d085 : forall n xs ys. fm_lsum(fm_app(Cons(n, xs), ys)) = fm_app(fm_lsum(Cons(n, xs)), fm_lsum(ys))
+  by simp rw fm_lsum_app refl
+lemma fm_d087 : fm_mirror(fm_mirror(fm_inct(Leaf))) = fm_inct(Leaf)
+  by simp refl
+lemma fm_d090 : forall xs ys zs. fm_sum(fm_app(xs, fm_app(ys, zs))) = fm_add(fm_sum(fm_app(ys, zs)), fm_sum(xs))
+  by rw fm_d001 refl
+lemma fm_d091 : forall t n u. fm_isleaf(fm_mirror(fm_mirror(Node(t, n, u)))) = fm_isleaf(fm_mirror(Node(t, n, u)))
+  by simp refl
+lemma fm_d092 : forall xs. fm_len(fm_app(xs, fm_flat(Leaf))) = fm_add(fm_len(xs), fm_len(fm_flat(Leaf)))
+  by simp rw fm_len_app simp refl
+lemma fm_d096 : forall n xs. fm_lsum(fm_app(Cons(n, xs), Nil)) = fm_app(fm_lsum(Cons(n, xs)), fm_lsum(Nil))
+  by simp rw fm_d061 simp refl
+lemma fm_d097 : forall t xs n ys. fm_app(fm_app(fm_flat(t), xs), Cons(n, ys)) = fm_app(fm_flat(t), fm_app(xs, Cons(n, ys)))
+  by rw fm_d010 refl
+lemma fm_d099 : forall n xs ys. fm_len(fm_app(Cons(n, xs), fm_rev(ys))) = fm_add(fm_len(Cons(n, xs)), fm_len(fm_rev(ys)))
+  by simp rw fm_d028 refl
+lemma fm_d101 : forall t n. fm_w3(fm_w2(t), n) = fm_add(fm_w2(t), n)
+  by simp refl
+lemma fm_d104 : forall n. fm_add(n, S(Z)) = S(fm_add(n, Z))
+  by rw fm_add_s_r refl
+lemma fm_d105 : fm_len(fm_w1(fm_lsum(Nil))) = fm_len(fm_lsum(Nil))
+  by simp refl
+lemma fm_d107 : forall n xs ys. fm_sum(fm_app(Cons(n, xs), ys)) = fm_add(fm_sum(Cons(n, xs)), fm_sum(ys))
+  by simp rw fm_sum_app rw fm_add_assoc refl
+lemma fm_d108 : forall t. fm_sum(fm_flat(fm_mirror(fm_mirror(t)))) = fm_sumt(fm_mirror(fm_mirror(t)))
+  by rw fm_d058 refl
+lemma fm_d111 : forall n. fm_w3(S(n), Z) = S(n)
+  by simp rw fm_add_z_r refl
+lemma fm_d112 : forall xs ys. fm_app(fm_app(Nil, xs), ys) = fm_app(Nil, fm_app(xs, ys))
+  by simp refl
+lemma fm_d114 : forall t n m. fm_add(fm_add(fm_leaves(t), n), S(m)) = S(fm_add(fm_add(fm_leaves(t), n), m))
+  by rw fm_d074 refl
+lemma fm_d116 : forall n m xs ys. fm_lsum(fm_app(Cons(n, Cons(m, xs)), ys)) = fm_app(fm_lsum(Cons(n, Cons(m, xs))), fm_lsum(ys))
+  by simp rw fm_lsum_app refl
+lemma fm_d117 : forall xs. fm_len(fm_lsum(Cons(Z, xs))) = fm_len(fm_w1(Cons(Z, xs)))
+  by simp refl
+lemma fm_d118 : fm_w1(Nil) = fm_lsum(Nil)
+  by simp refl
+lemma fm_d119 : forall n xs. fm_len(fm_w1(fm_lsum(Cons(n, xs)))) = fm_len(fm_lsum(Cons(n, xs)))
+  by simp rw fm_d051 refl
+lemma fm_d122 : forall xs. fm_rev(fm_app(Nil, xs)) = fm_app(fm_rev(xs), fm_rev(Nil))
+  by simp rw fm_d035 refl
+lemma fm_d123 : forall t u. fm_len(fm_flat(Node(t, Z, u))) = fm_size(Node(t, Z, u))
+  by simp rw<- fm_len_flat rw<- fm_len_flat rw fm_len_app simp rw fm_add_s_r refl
+lemma fm_d124 : forall xs ys. fm_lsum(fm_app(xs, fm_lsum(ys))) = fm_app(fm_lsum(xs), fm_lsum(fm_lsum(ys)))
+  by rw fm_lsum_app refl
+lemma fm_d125 : forall xs ys zs. fm_app(fm_app(xs, ys), fm_rev(zs)) = fm_app(xs, fm_app(ys, fm_rev(zs)))
+  by rw fm_app_assoc refl
+lemma fm_d126 : forall t. fm_w4(t) = fm_w2(fm_mirror(t))
+  by simp refl
+lemma fm_d127 : forall n m. fm_w5(n, m) = fm_add(n, m)
+  by simp refl
+lemma fm_d128 : forall xs. fm_w6(xs) = fm_w1(xs)
+  by simp refl
+lemma fm_d129 : forall xs. fm_w7(xs) = fm_w6(xs)
+  by simp refl
+lemma fm_d131 : forall n m. fm_w3(n, S(S(m))) = S(fm_add(n, S(m)))
+  by simp rw fm_add_s_r refl
+lemma fm_d133 : forall n xs. fm_lsum(fm_app(Cons(S(n), xs), Nil)) = fm_app(fm_lsum(Cons(S(n), xs)), fm_lsum(Nil))
+  by simp rw fm_d061 simp refl
+lemma fm_d134 : forall n xs. fm_len(fm_lsum(fm_lsum(Cons(n, xs)))) = fm_len(fm_lsum(Cons(n, xs)))
+  by simp rw fm_d051 refl
+lemma fm_d135 : forall xs. fm_w1(fm_app(Nil, xs)) = fm_app(fm_w1(Nil), fm_lsum(xs))
+  by simp refl
+lemma fm_d136 : forall xs ys. fm_len(fm_app(fm_w1(xs), ys)) = fm_add(fm_len(fm_lsum(xs)), fm_len(ys))
+  by simp rw fm_d007 refl
+lemma fm_d137 : forall t n u xs. fm_w1(fm_app(fm_flat(Node(t, n, u)), xs)) = fm_lsum(fm_app(fm_flat(Node(t, n, u)), xs))
+  by simp refl
+lemma fm_d139 : forall t n. fm_sum(fm_flat(Node(t, n, Leaf))) = fm_sumt(Node(t, n, Leaf))
+  by simp rw<- fm_sum_flat rw fm_sum_app simp refl
+lemma fm_d142 : forall t. fm_w2(fm_mirror(t)) = fm_w0(fm_mirror(t))
+  by simp refl
+lemma fm_d143 : forall n m k. fm_add(fm_add(n, S(m)), S(k)) = S(fm_add(fm_add(n, S(m)), k))
+  by rw fm_d074 refl
+lemma fm_d144 : forall n xs ys. fm_len(fm_app(Cons(n, xs), fm_rev(ys))) = fm_w3(fm_len(Cons(n, xs)), fm_len(fm_rev(ys)))
+  by simp rw fm_d028 refl
+lemma fm_d145 : fm_len(fm_lsum(fm_lsum(Nil))) = fm_len(fm_lsum(Nil))
+  by simp refl
+lemma fm_d148 : forall n m xs. fm_len(fm_lsum(Cons(fm_add(n, m), xs))) = fm_len(Cons(fm_add(n, m), xs))
+  by simp rw fm_len_lsum refl
+lemma fm_d152 : forall t. fm_w1(fm_app(Nil, fm_flat(t))) = fm_app(fm_lsum(Nil), fm_lsum(fm_flat(t)))
+  by simp refl
+lemma fm_d153 : forall n xs. fm_len(fm_lsum(Cons(Z, Cons(n, xs)))) = fm_len(fm_w1(Cons(Z, Cons(n, xs))))
+  by simp refl
+lemma fm_d154 : forall xs. fm_len(fm_lsum(fm_w7(xs))) = fm_len(fm_w7(xs))
+  by simp rw fm_d051 refl
+lemma fm_d155 : forall t. fm_w0(fm_inct(t)) = fm_leaves(fm_inct(fm_inct(t)))
+  by simp refl
+lemma fm_d157 : forall t xs. fm_sum(fm_app(fm_flat(t), xs)) = fm_add(fm_sum(xs), fm_sum(fm_flat(t)))
+  by rw fm_d001 refl
+lemma fm_d158 : forall n xs m ys. fm_sum(fm_app(Cons(n, xs), Cons(m, ys))) = fm_add(fm_sum(Cons(n, xs)), fm_sum(Cons(m, ys)))
+  by simp rw fm_sum_app simp rw fm_add_assoc refl
+lemma fm_d159 : forall t. fm_len(fm_flat(fm_mirror(fm_inct(t)))) = fm_size(fm_mirror(fm_inct(t)))
+  by rw fm_d083 refl
+lemma fm_d160 : forall xs ys. fm_len(fm_app(fm_w1(fm_rev(xs)), ys)) = fm_add(fm_len(fm_lsum(fm_rev(xs))), fm_len(ys))
+  by simp rw fm_d007 refl
+lemma fm_d161 : forall xs ys. fm_w6(fm_app(fm_rev(xs), ys)) = fm_lsum(fm_app(fm_rev(xs), ys))
+  by simp refl
+lemma fm_d163 : forall t n u. fm_mirror(fm_mirror(Node(t, n, fm_mirror(u)))) = Node(t, n, fm_mirror(u))
+  by simp rw fm_mirror_mirror rw fm_mirror_mirror refl
+lemma fm_d166 : forall n m xs. fm_len(fm_w1(Cons(fm_add(n, m), xs))) = fm_len(Cons(fm_add(n, m), xs))
+  by simp rw fm_len_lsum refl
+lemma fm_d172 : forall t. fm_w2(fm_inct(t)) = fm_leaves(fm_inct(fm_inct(t)))
+  by simp refl
+lemma fm_d173 : forall n m xs. fm_len(fm_w1(Cons(n, Cons(m, xs)))) = fm_len(Cons(n, Cons(m, xs)))
+  by simp rw fm_len_lsum refl
+lemma fm_d174 : forall n m. fm_add(fm_add(n, m), S(Z)) = S(fm_add(fm_add(n, m), Z))
+  by rw fm_d104 refl
+lemma fm_d175 : forall t n. fm_w3(fm_size(t), S(S(n))) = S(fm_add(fm_size(t), S(n)))
+  by simp rw fm_add_s_r refl
+lemma fm_d176 : forall t xs. fm_w1(fm_app(fm_flat(fm_inct(t)), xs)) = fm_lsum(fm_app(fm_flat(fm_inct(t)), xs))
+  by simp refl
+lemma fm_d178 : forall n m k xs. fm_len(fm_lsum(Cons(fm_add(n, m), Cons(k, xs)))) = fm_len(Cons(fm_add(n, m), Cons(k, xs)))
+  by simp rw fm_len_lsum refl
+lemma fm_d179 : forall xs. fm_sum(fm_app(Nil, xs)) = fm_w3(fm_sum(xs), fm_sum(Nil))
+  by simp rw fm_add_z_r refl
+lemma fm_d180 : forall n m k. fm_w5(fm_add(n, m), S(k)) = S(fm_add(fm_add(n, m), k))
+  by simp rw fm_d074 refl
+lemma fm_d181 : forall t n m k. fm_add(fm_add(fm_leaves(t), fm_w3(n, m)), S(k)) = S(fm_add(fm_add(fm_leaves(t), fm_w3(n, m)), k))
+  by simp rw fm_d114 refl
+lemma fm_d182 : forall n m xs. fm_add(fm_add(n, S(m)), S(fm_sum(xs))) = S(fm_add(fm_add(n, S(m)), fm_sum(xs)))
+  by rw fm_d143 refl
+lemma fm_d184 : forall xs ys. fm_len(fm_w1(fm_lsum(fm_app(xs, ys)))) = fm_len(fm_lsum(fm_app(xs, ys)))
+  by simp rw fm_d051 refl
+lemma fm_d186 : forall xs n ys. fm_sum(fm_app(xs, Cons(n, ys))) = fm_add(fm_sum(xs), fm_sum(Cons(n, ys)))
+  by simp rw fm_sum_app simp refl
+lemma fm_d187 : forall t n m. fm_add(fm_add(fm_w2(t), S(n)), S(m)) = S(fm_add(fm_add(fm_w2(t), S(n)), m))
+  by simp rw fm_d114 refl
+lemma fm_d189 : fm_flat(fm_mirror(Leaf)) = fm_rev(fm_flat(Leaf))
+  by simp refl
+lemma fm_d191 : forall xs n ys. fm_lsum(fm_app(xs, fm_lsum(Cons(n, ys)))) = fm_app(fm_lsum(xs), fm_lsum(fm_lsum(Cons(n, ys))))
+  by simp rw fm_lsum_app simp refl
+lemma fm_d192 : forall t xs. fm_len(fm_app(fm_flat(t), fm_rev(xs))) = fm_add(fm_len(fm_flat(t)), fm_len(fm_rev(xs)))
+  by rw fm_d028 refl
+lemma fm_d193 : forall xs n ys. fm_len(fm_app(xs, fm_rev(Cons(n, ys)))) = fm_w3(fm_len(xs), fm_len(fm_rev(Cons(n, ys))))
+  by simp rw fm_len_app refl
+lemma fm_d194 : forall n m k i. fm_add(fm_add(fm_w3(n, m), k), S(i)) = S(fm_add(fm_add(fm_w3(n, m), k), i))
+  by simp rw fm_d074 refl
+lemma fm_d195 : forall n xs. fm_len(fm_lsum(Cons(Z, Cons(n, xs)))) = fm_len(fm_w6(Cons(Z, Cons(n, xs))))
+  by simp refl
+lemma fm_d197 : forall t n m k. fm_add(fm_add(fm_w2(t), S(fm_add(n, m))), S(k)) = S(fm_add(fm_add(fm_w2(t), S(fm_add(n, m))), k))
+  by simp rw fm_d114 refl
+lemma fm_d198 : forall t. fm_w2(fm_inct(fm_inct(t))) = fm_leaves(fm_inct(fm_inct(fm_inct(t))))
+  by simp refl
+lemma fm_d200 : forall t xs ys. fm_app(fm_app(fm_flat(fm_mirror(t)), xs), ys) = fm_app(fm_flat(fm_mirror(t)), fm_app(xs, ys))
+  by rw fm_d010 refl
+lemma fm_d202 : forall t n u. fm_w4(Node(t, n, u)) = fm_w2(fm_mirror(Node(t, n, u)))
+  by simp refl
+lemma fm_d203 : forall t. fm_w2(fm_inct(t)) = fm_w0(fm_inct(t))
+  by simp refl
+lemma fm_d204 : forall t xs n ys. fm_app(fm_app(fm_flat(t), fm_lsum(xs)), Cons(n, ys)) = fm_app(fm_flat(t), fm_app(fm_lsum(xs), Cons(n, ys)))
+  by rw fm_d097 refl
+lemma fm_d205 : forall n t. fm_flat(fm_mirror(Node(Leaf, n, t))) = fm_rev(fm_flat(Node(Leaf, n, t)))
+  by simp rw fm_flat_mirror refl
+lemma fm_d207 : forall xs t. fm_w1(fm_app(xs, fm_flat(t))) = fm_app(fm_lsum(xs), fm_lsum(fm_flat(t)))
+  by simp rw fm_lsum_app refl
+lemma fm_d210 : forall t. fm_len(fm_flat(fm_mirror(fm_mirror(t)))) = fm_size(fm_mirror(fm_mirror(t)))
+  by rw fm_d083 refl
+lemma fm_d212 : forall n xs ys. fm_len(fm_app(Cons(S(n), xs), fm_rev(ys))) = fm_w3(fm_len(Cons(S(n), xs)), fm_len(fm_rev(ys)))
+  by simp rw fm_d028 refl
+lemma fm_d214 : forall n xs. fm_len(fm_lsum(Cons(fm_add(Z, n), xs))) = fm_len(Cons(fm_add(Z, n), xs))
+  by simp rw fm_len_lsum refl
+lemma fm_d218 : forall xs. fm_w1(fm_app(xs, Nil)) = fm_app(fm_lsum(xs), fm_lsum(Nil))
+  by simp rw fm_d061 simp refl
+lemma fm_d219 : forall xs ys. fm_sum(fm_app(xs, fm_rev(ys))) = fm_w3(fm_sum(fm_rev(ys)), fm_sum(xs))
+  by simp rw fm_d001 refl
+lemma fm_d220 : forall n xs ys. fm_sum(fm_app(Cons(n, xs), ys)) = fm_w3(fm_sum(ys), fm_sum(Cons(n, xs)))
+  by simp rw fm_sum_app rw<- fm_add_assoc rw fm_add_comm refl
+lemma fm_d221 : forall t xs. fm_len(fm_app(fm_flat(t), fm_rev(xs))) = fm_w3(fm_len(fm_flat(t)), fm_len(fm_rev(xs)))
+  by simp rw fm_d192 refl
+lemma fm_d222 : forall xs n ys. fm_app(fm_app(Nil, xs), Cons(n, ys)) = fm_app(Nil, fm_app(xs, Cons(n, ys)))
+  by simp refl
+lemma fm_d223 : forall t xs n ys. fm_app(fm_app(fm_flat(fm_mirror(t)), xs), Cons(n, ys)) = fm_app(fm_flat(fm_mirror(t)), fm_app(xs, Cons(n, ys)))
+  by rw fm_d200 refl
+lemma fm_d224 : forall t. fm_len(fm_flat(fm_mirror(fm_inct(fm_inct(t))))) = fm_size(fm_mirror(fm_inct(fm_inct(t))))
+  by rw fm_d159 refl
+lemma fm_d225 : forall t xs. fm_sum(fm_app(fm_flat(t), xs)) = fm_w3(fm_sum(xs), fm_sum(fm_flat(t)))
+  by simp rw fm_d157 refl
+lemma fm_d226 : forall n m k. fm_add(fm_add(S(n), m), S(k)) = S(fm_add(fm_add(S(n), m), k))
+  by simp rw fm_d074 refl
+lemma fm_d227 : forall xs t. fm_w1(fm_app(xs, fm_flat(fm_mirror(t)))) = fm_app(fm_lsum(xs), fm_lsum(fm_flat(fm_mirror(t))))
+  by simp rw<- fm_d207 simp refl
+lemma fm_d228 : forall n m xs. fm_w3(fm_add(n, S(m)), S(fm_sum(xs))) = S(fm_add(fm_add(n, S(m)), fm_sum(xs)))
+  by simp rw fm_d182 refl
+lemma fm_d230 : forall t xs. fm_len(fm_app(fm_flat(t), fm_rev(fm_w7(xs)))) = fm_add(fm_len(fm_flat(t)), fm_len(fm_rev(fm_w7(xs))))
+  by simp rw fm_d192 refl
+lemma fm_d231 : forall t n u. fm_sum(fm_flat(Node(fm_inct(t), n, u))) = fm_sumt(Node(fm_inct(t), n, u))
+  by simp rw fm_d186 simp rw fm_sum_flat rw fm_sum_flat refl
+lemma fm_d232 : forall t n u. fm_w2(fm_mirror(Node(t, n, u))) = fm_w0(fm_mirror(Node(t, n, u)))
+  by simp refl
+lemma fm_d233 : forall n xs. fm_len(fm_lsum(fm_w7(Cons(n, xs)))) = fm_len(fm_w7(Cons(n, xs)))
+  by simp rw fm_d051 refl
+lemma fm_d234 : forall n xs. fm_w1(fm_app(Cons(n, xs), Nil)) = fm_app(fm_lsum(Cons(n, xs)), fm_lsum(Nil))
+  by simp rw fm_d061 simp refl
+lemma fm_d235 : forall xs n m. fm_add(fm_add(fm_len(xs), S(n)), m) = fm_add(fm_len(xs), fm_add(S(n), m))
+  by simp rw fm_d057 simp refl
+lemma fm_d236 : forall n m. fm_add(fm_add(n, S(m)), S(Z)) = S(fm_add(fm_add(n, S(m)), Z))
+  by rw fm_d174 refl
+lemma fm_d237 : forall t n u. fm_len(fm_flat(fm_inct(Node(t, n, u)))) = fm_size(fm_inct(Node(t, n, u)))
+  by simp rw<- fm_d015 rw<- fm_d015 rw fm_len_app simp rw fm_add_s_r refl
+lemma fm_d238 : forall xs ys. fm_sum(fm_app(fm_rev(xs), fm_rev(ys))) = fm_add(fm_sum(fm_rev(xs)), fm_sum(fm_rev(ys)))
+  by rw fm_d055 refl
+lemma fm_d239 : forall xs n m ys. fm_sum(fm_app(xs, Cons(fm_w3(n, m), ys))) = fm_add(fm_sum(xs), fm_sum(Cons(fm_w3(n, m), ys)))
+  by simp rw fm_d186 simp refl
+lemma fm_d241 : forall xs ys zs. fm_len(fm_app(xs, fm_rev(fm_app(ys, zs)))) = fm_add(fm_len(xs), fm_len(fm_rev(fm_app(ys, zs))))
+  by rw fm_d028 refl
+lemma fm_d242 : forall xs. fm_len(fm_app(Nil, xs)) = fm_add(fm_len(Nil), fm_len(xs))
+  by simp refl
+lemma fm_d244 : forall xs n ys. fm_sum(fm_app(xs, fm_rev(Cons(n, ys)))) = fm_w3(fm_sum(fm_rev(Cons(n, ys))), fm_sum(xs))
+  by simp rw fm_d090 refl
+lemma fm_d245 : forall t n m. fm_w5(fm_add(fm_leaves(t), n), S(m)) = S(fm_add(fm_add(fm_leaves(t), n), m))
+  by simp rw fm_d114 refl
+lemma fm_d246 : forall xs ys. fm_lsum(fm_app(Cons(fm_sum(xs), ys), Nil)) = fm_app(fm_lsum(Cons(fm_sum(xs), ys)), fm_lsum(Nil))
+  by simp rw fm_d061 simp refl
+lemma fm_d247 : forall xs ys. fm_sum(fm_app(fm_rev(xs), ys)) = fm_w5(fm_sum(fm_rev(xs)), fm_sum(ys))
+  by simp rw fm_d055 refl
+lemma fm_d249 : forall xs. fm_len(fm_w1(fm_w7(xs))) = fm_len(fm_w7(xs))
+  by simp rw fm_d051 refl
+lemma fm_d250 : forall xs. fm_w6(fm_app(xs, Nil)) = fm_app(fm_lsum(xs), fm_lsum(Nil))
+  by simp rw fm_d061 simp refl
+lemma fm_d251 : fm_w2(fm_mirror(Leaf)) = fm_w0(fm_mirror(Leaf))
+  by simp refl
+lemma fm_d252 : forall t xs. fm_sum(fm_flat(Node(t, fm_len(xs), Leaf))) = fm_sumt(Node(t, fm_len(xs), Leaf))
+  by simp rw fm_d186 simp rw fm_sum_flat refl
+lemma fm_d254 : forall n t. fm_w3(n, S(fm_leaves(t))) = S(fm_add(n, fm_leaves(t)))
+  by simp rw fm_add_s_r refl
+lemma fm_d255 : forall n. fm_w3(fm_len(Nil), n) = fm_w3(n, fm_len(Nil))
+  by simp rw fm_add_z_r refl
+lemma fm_d257 : forall n. fm_add(S(S(n)), Z) = S(S(n))
+  by simp rw fm_add_z_r refl
+lemma fm_d258 : forall xs ys. fm_app(fm_app(xs, ys), Nil) = fm_app(xs, fm_app(ys, Nil))
+  by rw fm_app_assoc refl
+lemma fm_d260 : forall n m xs ys. fm_lsum(fm_app(Cons(S(n), Cons(m, xs)), ys)) = fm_app(fm_lsum(Cons(S(n), Cons(m, xs))), fm_lsum(ys))
+  by simp rw fm_lsum_app refl
+lemma fm_d261 : forall t. fm_len(fm_flat(fm_inct(fm_inct(t)))) = fm_size(fm_inct(fm_inct(t)))
+  by rw fm_d015 refl
+lemma fm_d262 : forall t n u. fm_w0(Node(t, n, u)) = fm_leaves(fm_inct(Node(t, n, u)))
+  by simp refl
+lemma fm_d263 : forall t. fm_len(fm_flat(fm_mirror(fm_mirror(fm_inct(t))))) = fm_size(fm_mirror(fm_mirror(fm_inct(t))))
+  by rw fm_d210 refl
+lemma fm_d264 : forall n xs. fm_len(fm_w1(fm_lsum(Cons(S(n), xs)))) = fm_len(fm_lsum(Cons(S(n), xs)))
+  by simp rw fm_d051 refl
+lemma fm_d265 : forall t. fm_w4(fm_mirror(t)) = fm_w2(fm_mirror(fm_mirror(t)))
+  by simp refl
+lemma fm_d266 : forall xs ys. fm_len(fm_app(fm_lsum(xs), ys)) = fm_w5(fm_len(fm_lsum(xs)), fm_len(ys))
+  by simp rw fm_d007 refl
+lemma fm_d268 : forall xs t. fm_len(fm_app(fm_rev(xs), fm_flat(t))) = fm_add(fm_len(fm_rev(xs)), fm_len(fm_flat(t)))
+  by rw fm_d014 refl
+lemma fm_d269 : forall n xs. fm_lsum(fm_app(Nil, fm_lsum(Cons(n, xs)))) = fm_app(fm_lsum(Nil), fm_lsum(fm_lsum(Cons(n, xs))))
+  by simp refl
+lemma fm_d271 : forall n xs. fm_w7(Cons(n, xs)) = fm_w6(Cons(n, xs))
+  by simp refl
+lemma fm_d273 : forall xs n m ys. fm_sum(fm_app(xs, fm_rev(Cons(fm_add(n, m), ys)))) = fm_w3(fm_sum(fm_rev(Cons(fm_add(n, m), ys))), fm_sum(xs))
+  by simp rw fm_d090 refl
+lemma fm_d275 : forall xs ys. fm_len(fm_app(fm_lsum(xs), ys)) = fm_w3(fm_len(fm_lsum(xs)), fm_len(ys))
+  by simp rw fm_d007 refl
+lemma fm_d276 : forall n xs. fm_w1(fm_app(Cons(S(n), xs), Nil)) = fm_app(fm_lsum(Cons(S(n), xs)), fm_lsum(Nil))
+  by simp rw fm_d061 simp refl
+lemma fm_d277 : forall t n m. fm_w3(fm_add(fm_leaves(t), n), S(m)) = S(fm_add(fm_add(fm_leaves(t), n), m))
+  by simp rw fm_d114 refl
+lemma fm_d278 : forall n xs m ys. fm_len(fm_app(Cons(n, xs), fm_rev(Cons(m, ys)))) = fm_add(fm_len(Cons(n, xs)), fm_len(fm_rev(Cons(m, ys))))
+  by simp induct xs { simp refl } { simp rw IH refl }
+lemma fm_d279 : forall n m k. fm_add(fm_add(n, S(m)), S(k)) = fm_add(n, fm_add(S(m), S(k)))
+  by simp rw fm_d003 simp refl

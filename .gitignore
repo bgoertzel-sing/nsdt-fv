@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+# regenerated deterministically by the S0 run (data version in meta.json)
+nsdt_fv/runs/*/data/obligations.jsonl
+nsdt_fv/runs/*/data/edges.jsonl
+# S1: model weights and per-stage adapter checkpoints (hashes are logged in meta.json / train.jsonl)
+nsdt_fv/runs/*/base/*.pt
+nsdt_fv/runs/*/*/ckpt/

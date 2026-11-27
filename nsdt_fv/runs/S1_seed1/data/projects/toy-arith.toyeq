@@ -1,0 +1,537 @@
+def ba_add : Nat Nat -> Nat
+  ba_add(Z, m) = m
+  ba_add(S(n), m) = S(ba_add(n, m))
+def ba_mul : Nat Nat -> Nat
+  ba_mul(Z, m) = Z
+  ba_mul(S(n), m) = ba_add(m, ba_mul(n, m))
+def ba_dbl : Nat -> Nat
+  ba_dbl(Z) = Z
+  ba_dbl(S(n)) = S(S(ba_dbl(n)))
+def ba_pred : Nat -> Nat
+  ba_pred(Z) = Z
+  ba_pred(S(n)) = n
+def ba_sub : Nat Nat -> Nat
+  ba_sub(n, Z) = n
+  ba_sub(n, S(m)) = ba_pred(ba_sub(n, m))
+def ba_neg : Bool -> Bool
+  ba_neg(T) = F
+  ba_neg(F) = T
+def ba_even : Nat -> Bool
+  ba_even(Z) = T
+  ba_even(S(n)) = ba_neg(ba_even(n))
+def ba_andb : Bool Bool -> Bool
+  ba_andb(T, b) = b
+  ba_andb(F, b) = F
+def ba_tri : Nat -> Nat
+  ba_tri(Z) = Z
+  ba_tri(S(n)) = S(ba_add(n, ba_tri(n)))
+def ba_w0 : Nat Nat -> Nat
+  ba_w0(x0, x1) = ba_dbl(ba_add(x0, x1))
+def ba_w1 : Nat Nat -> Nat
+  ba_w1(x0, x1) = ba_sub(ba_pred(x0), ba_pred(x1))
+def ba_w2 : Nat Nat -> Nat
+  ba_w2(x0, x1) = ba_pred(ba_add(x0, x1))
+def ba_w3 : Nat Nat -> Bool
+  ba_w3(x0, x1) = ba_even(ba_add(x0, x1))
+def ba_w4 : Nat Nat -> Nat
+  ba_w4(x0, x1) = ba_tri(ba_sub(x0, x1))
+def ba_w5 : Nat -> Nat
+  ba_w5(x0) = ba_pred(x0)
+def ba_w6 : Nat Nat -> Nat
+  ba_w6(x0, x1) = ba_add(ba_w5(x0), ba_w5(x1))
+def ba_w7 : Nat Nat Nat -> Nat
+  ba_w7(x0, x1, x2) = ba_w2(x0, ba_add(x1, x2))
+lemma ba_add_z_r : forall n. ba_add(n, Z) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma ba_add_s_r : forall n m. ba_add(n, S(m)) = S(ba_add(n, m))
+  by induct n { simp refl } { simp rw IH refl }
+lemma ba_add_assoc : forall n m k. ba_add(ba_add(n, m), k) = ba_add(n, ba_add(m, k))
+  by induct n { simp refl } { simp rw IH refl }
+lemma ba_add_comm : forall n m. ba_add(n, m) = ba_add(m, n)
+  by induct n { simp rw ba_add_z_r refl } { simp rw IH rw ba_add_s_r refl }
+lemma ba_mul_z_r : forall n. ba_mul(n, Z) = Z
+  by induct n { simp refl } { simp rw IH refl }
+lemma ba_mul_one : forall n. ba_mul(n, S(Z)) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma ba_mul_add : forall n m k. ba_mul(ba_add(n, m), k) = ba_add(ba_mul(n, k), ba_mul(m, k))
+  by induct n { simp refl } { simp rw IH rw ba_add_assoc refl }
+lemma ba_mul_assoc : forall n m k. ba_mul(ba_mul(n, m), k) = ba_mul(n, ba_mul(m, k))
+  by induct n { simp refl } { simp rw<- IH rw ba_mul_add refl }
+lemma ba_dbl_add : forall n. ba_dbl(n) = ba_add(n, n)
+  by induct n { simp refl } { simp rw IH rw ba_add_s_r refl }
+lemma ba_neg_neg : forall b. ba_neg(ba_neg(b)) = b
+  by cases b { simp refl } { simp refl }
+lemma ba_even_dbl : forall n. ba_even(ba_dbl(n)) = T
+  by induct n { simp refl } { simp rw IH simp refl }
+lemma ba_sub_z_l : forall n. ba_sub(Z, n) = Z
+  by induct n { simp refl } { simp rw IH simp refl }
+lemma ba_andb_t_r : forall b. ba_andb(b, T) = b
+  by cases b { simp refl } { simp refl }
+lemma ba_andb_comm : forall b c. ba_andb(b, c) = ba_andb(c, b)
+  by cases b { simp rw ba_andb_t_r refl } { simp cases c { simp refl } { simp refl } }
+lemma ba_even_ss : forall n. ba_even(S(S(n))) = ba_even(n)
+  by simp rw ba_neg_neg refl
+lemma ba_pred_add_s : forall n m. ba_pred(ba_add(n, S(m))) = ba_add(n, m)
+  by rw ba_add_s_r simp refl
+lemma ba_d001 : forall n m. ba_even(S(S(ba_mul(n, m)))) = ba_even(ba_mul(n, m))
+  by simp rw ba_neg_neg refl
+lemma ba_d002 : forall n m. ba_even(ba_dbl(ba_add(n, m))) = T
+  by rw ba_even_dbl refl
+lemma ba_d003 : forall n. ba_add(n, Z) = ba_add(Z, n)
+  by simp rw ba_add_z_r refl
+lemma ba_d004 : forall n m. ba_neg(ba_neg(ba_w3(n, m))) = ba_w3(n, m)
+  by simp rw ba_neg_neg refl
+lemma ba_d005 : forall n. ba_mul(ba_pred(n), S(Z)) = ba_pred(n)
+  by rw ba_mul_one refl
+lemma ba_d006 : forall b. ba_andb(b, F) = ba_andb(F, b)
+  by simp rw ba_andb_comm simp refl
+lemma ba_d007 : forall n m. ba_mul(ba_mul(n, m), Z) = ba_mul(n, ba_mul(m, Z))
+  by rw ba_mul_assoc refl
+lemma ba_d008 : ba_neg(ba_neg(F)) = F
+  by simp refl
+lemma ba_d009 : forall n m. ba_w3(n, m) = ba_even(ba_add(n, m))
+  by simp refl
+lemma ba_d010 : ba_add(Z, Z) = Z
+  by simp refl
+lemma ba_d011 : forall n. ba_even(S(S(S(n)))) = ba_even(S(n))
+  by simp rw ba_neg_neg refl
+lemma ba_d012 : forall n m. ba_w0(n, m) = ba_dbl(ba_add(n, m))
+  by simp refl
+lemma ba_d015 : forall n m. ba_sub(Z, ba_w1(n, m)) = Z
+  by simp rw ba_sub_z_l refl
+lemma ba_d016 : forall n m. ba_add(ba_add(n, m), Z) = ba_add(n, m)
+  by rw ba_d003 simp refl
+lemma ba_d017 : forall n. ba_mul(ba_dbl(n), S(Z)) = ba_dbl(n)
+  by rw ba_mul_one refl
+lemma ba_d018 : forall n. ba_even(ba_add(n, n)) = T
+  by rw<- ba_dbl_add rw ba_even_dbl refl
+lemma ba_d019 : forall n m. ba_w2(n, S(m)) = ba_add(n, m)
+  by simp rw ba_pred_add_s refl
+lemma ba_d020 : forall n m k. ba_add(ba_add(ba_pred(n), m), k) = ba_add(ba_pred(n), ba_add(m, k))
+  by rw ba_add_assoc refl
+lemma ba_d021 : forall n m. ba_even(ba_dbl(ba_w1(n, m))) = T
+  by simp rw ba_even_dbl refl
+lemma ba_d022 : ba_neg(ba_neg(T)) = T
+  by simp refl
+lemma ba_d023 : forall b. ba_andb(b, T) = ba_andb(T, b)
+  by simp rw ba_andb_t_r refl
+lemma ba_d024 : forall n m k. ba_mul(ba_mul(S(n), m), k) = ba_mul(S(n), ba_mul(m, k))
+  by simp rw ba_mul_add rw ba_mul_assoc refl
+lemma ba_d025 : forall n m k. ba_pred(ba_add(ba_add(n, m), S(k))) = ba_add(ba_add(n, m), k)
+  by rw ba_pred_add_s refl
+lemma ba_d026 : forall n. ba_add(ba_tri(n), Z) = ba_tri(n)
+  by rw ba_d003 simp refl
+lemma ba_d028 : forall n m k. ba_add(n, ba_sub(m, k)) = ba_add(ba_sub(m, k), n)
+  by rw ba_add_comm refl
+lemma ba_d029 : forall n m k i. ba_add(ba_add(n, ba_sub(m, k)), i) = ba_add(n, ba_add(ba_sub(m, k), i))
+  by rw ba_add_assoc refl
+lemma ba_d030 : forall n. ba_pred(ba_add(Z, S(n))) = ba_add(Z, n)
+  by simp refl
+lemma ba_d032 : forall n. ba_sub(Z, ba_tri(n)) = Z
+  by rw ba_sub_z_l refl
+lemma ba_d033 : forall n. ba_neg(ba_neg(ba_w3(n, Z))) = ba_w3(n, Z)
+  by simp rw ba_neg_neg refl
+lemma ba_d034 : forall n b. ba_andb(ba_even(n), b) = ba_andb(b, ba_even(n))
+  by rw ba_andb_comm refl
+lemma ba_d035 : ba_sub(Z, Z) = Z
+  by simp refl
+lemma ba_d036 : forall n m k. ba_pred(ba_add(ba_w1(n, m), S(k))) = ba_add(ba_w1(n, m), k)
+  by simp rw ba_pred_add_s refl
+lemma ba_d037 : forall n. ba_dbl(S(n)) = ba_add(S(n), S(n))
+  by simp rw ba_dbl_add rw ba_add_s_r refl
+lemma ba_d038 : ba_mul(Z, S(Z)) = Z
+  by simp refl
+lemma ba_d039 : forall n m k. ba_pred(ba_add(n, S(ba_w0(m, k)))) = ba_add(n, ba_w0(m, k))
+  by simp rw ba_pred_add_s refl
+lemma ba_d040 : forall n m. ba_neg(ba_neg(ba_w3(n, ba_tri(m)))) = ba_w3(n, ba_tri(m))
+  by simp rw ba_neg_neg refl
+lemma ba_d043 : forall n m k i. ba_add(n, ba_sub(m, ba_w2(k, i))) = ba_add(ba_sub(m, ba_w2(k, i)), n)
+  by simp rw ba_d028 refl
+lemma ba_d045 : forall n m. ba_add(ba_add(n, m), Z) = ba_add(Z, ba_add(n, m))
+  by simp rw ba_d016 refl
+lemma ba_d046 : forall n. ba_even(S(S(ba_mul(n, Z)))) = ba_even(ba_mul(n, Z))
+  by simp rw ba_neg_neg refl
+lemma ba_d047 : forall n m. ba_andb(ba_w3(n, m), T) = ba_w3(n, m)
+  by simp rw ba_d034 simp refl
+lemma ba_d048 : forall n m. ba_add(S(n), S(m)) = S(ba_add(S(n), m))
+  by simp rw ba_add_s_r refl
+lemma ba_d049 : forall n m. ba_dbl(ba_sub(n, m)) = ba_add(ba_sub(n, m), ba_sub(n, m))
+  by rw ba_dbl_add refl
+lemma ba_d050 : forall n. ba_add(S(n), Z) = S(n)
+  by simp rw ba_d003 simp refl
+lemma ba_d051 : forall n m k. ba_w3(ba_w2(n, m), k) = ba_even(ba_add(ba_w2(n, m), k))
+  by simp refl
+lemma ba_d053 : forall n m k. ba_w2(ba_add(n, m), S(k)) = ba_add(ba_add(n, m), k)
+  by simp rw ba_d025 refl
+lemma ba_d054 : forall n m. ba_w1(n, m) = ba_sub(ba_pred(n), ba_pred(m))
+  by simp refl
+lemma ba_d055 : forall n m. ba_w2(n, m) = ba_pred(ba_add(n, m))
+  by simp refl
+lemma ba_d056 : forall n m k i. ba_add(n, ba_sub(m, ba_w0(k, i))) = ba_add(ba_sub(m, ba_w0(k, i)), n)
+  by simp rw ba_d028 refl
+lemma ba_d057 : forall n m. ba_even(ba_w0(n, m)) = T
+  by simp rw ba_d002 refl
+lemma ba_d058 : forall n m k. ba_w2(ba_w0(n, m), S(k)) = ba_add(ba_w0(n, m), k)
+  by simp rw ba_pred_add_s refl
+lemma ba_d059 : forall n. ba_even(S(S(S(S(n))))) = ba_even(S(S(n)))
+  by simp rw ba_neg_neg refl
+lemma ba_d061 : forall n. ba_w3(n, n) = T
+  by simp rw ba_d018 refl
+lemma ba_d062 : forall n m k. ba_neg(ba_neg(ba_w3(ba_sub(n, m), ba_tri(k)))) = ba_w3(ba_sub(n, m), ba_tri(k))
+  by simp rw ba_neg_neg refl
+lemma ba_d066 : forall n m k. ba_add(ba_w2(n, m), k) = ba_add(k, ba_w2(n, m))
+  by simp rw ba_add_comm refl
+lemma ba_d068 : forall n m k. ba_even(S(S(ba_mul(n, ba_w0(m, k))))) = ba_even(ba_mul(n, ba_w0(m, k)))
+  by simp rw ba_neg_neg refl
+lemma ba_d069 : forall n m. ba_sub(Z, ba_sub(n, m)) = Z
+  by rw ba_sub_z_l refl
+lemma ba_d070 : forall b. ba_andb(ba_neg(b), T) = ba_neg(b)
+  by rw ba_d023 simp refl
+lemma ba_d072 : forall n. ba_dbl(ba_sub(n, Z)) = ba_add(ba_sub(n, Z), ba_sub(n, Z))
+  by simp rw ba_dbl_add refl
+lemma ba_d073 : forall n m k. ba_add(ba_add(ba_pred(S(n)), m), k) = ba_add(ba_pred(S(n)), ba_add(m, k))
+  by simp rw ba_add_assoc refl
+lemma ba_d074 : forall n. ba_mul(ba_pred(S(n)), S(Z)) = ba_pred(S(n))
+  by simp rw ba_mul_one refl
+lemma ba_d076 : forall n m k. ba_pred(ba_add(n, S(ba_mul(m, k)))) = ba_add(n, ba_mul(m, k))
+  by rw ba_pred_add_s refl
+lemma ba_d078 : forall n m k. ba_even(ba_dbl(ba_add(n, ba_sub(m, k)))) = T
+  by rw ba_d002 refl
+lemma ba_d079 : forall n m. ba_neg(ba_neg(ba_w3(n, ba_tri(S(m))))) = ba_w3(n, ba_tri(S(m)))
+  by simp rw ba_add_s_r simp rw ba_add_s_r simp rw ba_neg_neg refl
+lemma ba_d080 : forall n. ba_andb(ba_even(n), F) = ba_andb(F, ba_even(n))
+  by simp rw ba_d034 simp refl
+lemma ba_d081 : forall n m. ba_even(S(S(ba_add(n, m)))) = ba_even(ba_add(n, m))
+  by simp rw ba_neg_neg refl
+lemma ba_d083 : forall b c. ba_andb(ba_neg(b), c) = ba_andb(c, ba_neg(b))
+  by rw ba_andb_comm refl
+lemma ba_d084 : forall n. ba_mul(n, ba_add(S(Z), Z)) = n
+  by simp rw ba_mul_one refl
+lemma ba_d085 : forall n m k. ba_add(ba_w2(n, S(m)), k) = ba_add(k, ba_w2(n, S(m)))
+  by simp rw ba_pred_add_s rw ba_pred_add_s rw ba_add_comm refl
+lemma ba_d087 : forall n m k. ba_dbl(ba_sub(n, ba_w2(m, k))) = ba_add(ba_sub(n, ba_w2(m, k)), ba_sub(n, ba_w2(m, k)))
+  by simp rw ba_d049 refl
+lemma ba_d088 : forall n m. ba_mul(ba_pred(ba_add(n, m)), S(Z)) = ba_pred(ba_add(n, m))
+  by rw ba_d005 refl
+lemma ba_d089 : forall n m k i. ba_w3(ba_w2(n, ba_w1(m, k)), i) = ba_even(ba_add(ba_w2(n, ba_w1(m, k)), i))
+  by simp refl
+lemma ba_d090 : forall n m. ba_add(ba_add(ba_tri(n), m), Z) = ba_add(Z, ba_add(ba_tri(n), m))
+  by simp rw ba_d045 simp refl
+lemma ba_d091 : forall n. ba_neg(ba_neg(ba_w3(Z, n))) = ba_w3(Z, n)
+  by simp rw ba_neg_neg refl
+lemma ba_d092 : forall n m k. ba_even(S(S(ba_mul(n, ba_w0(S(m), k))))) = ba_even(ba_mul(n, ba_w0(S(m), k)))
+  by simp induct n { simp refl } { simp rw<- ba_d076 rw<- ba_d081 simp rw ba_d076 refl }
+lemma ba_d093 : forall n m k. ba_dbl(ba_sub(n, ba_mul(m, k))) = ba_add(ba_sub(n, ba_mul(m, k)), ba_sub(n, ba_mul(m, k)))
+  by rw ba_d049 refl
+lemma ba_d094 : forall n m k. ba_even(ba_w0(n, ba_sub(m, k))) = T
+  by simp rw ba_d078 refl
+lemma ba_d095 : forall n m k. ba_w2(n, ba_sub(m, k)) = ba_pred(ba_add(n, ba_sub(m, k)))
+  by simp refl
+lemma ba_d096 : forall n. ba_add(S(n), Z) = ba_add(Z, S(n))
+  by simp rw ba_d003 simp refl
+lemma ba_d097 : forall n m. ba_w2(n, ba_pred(m)) = ba_pred(ba_add(n, ba_pred(m)))
+  by simp refl
+lemma ba_d098 : forall n m. ba_sub(Z, ba_tri(ba_w1(n, m))) = Z
+  by simp rw ba_d032 refl
+lemma ba_d099 : forall n m k. ba_neg(ba_neg(ba_w3(ba_sub(n, m), ba_tri(S(k))))) = ba_w3(ba_sub(n, m), ba_tri(S(k)))
+  by simp rw<- ba_d028 simp rw<- ba_d028 simp rw ba_neg_neg refl
+lemma ba_d101 : forall n. ba_pred(ba_add(Z, S(ba_pred(n)))) = ba_add(Z, ba_pred(n))
+  by simp refl
+lemma ba_d102 : forall n. ba_even(S(S(ba_mul(ba_pred(n), Z)))) = ba_even(ba_mul(ba_pred(n), Z))
+  by simp rw ba_neg_neg refl
+lemma ba_d103 : forall n. ba_pred(ba_add(Z, S(S(n)))) = ba_add(Z, S(n))
+  by simp refl
+lemma ba_d104 : forall n m. ba_pred(ba_add(Z, S(ba_mul(n, m)))) = ba_add(Z, ba_mul(n, m))
+  by simp refl
+lemma ba_d105 : forall n m k. ba_neg(ba_neg(ba_w3(n, ba_tri(ba_w2(m, k))))) = ba_w3(n, ba_tri(ba_w2(m, k)))
+  by simp rw ba_neg_neg refl
+lemma ba_d106 : forall n m k i. ba_pred(ba_add(ba_w2(n, m), S(ba_w0(k, i)))) = ba_add(ba_w2(n, m), ba_w0(k, i))
+  by simp rw ba_pred_add_s refl
+lemma ba_d107 : forall n. ba_even(ba_dbl(ba_add(Z, n))) = T
+  by simp rw ba_even_dbl refl
+lemma ba_d109 : ba_andb(ba_even(Z), F) = ba_andb(F, ba_even(Z))
+  by simp refl
+lemma ba_d110 : forall n m k. ba_add(ba_add(ba_pred(S(S(n))), m), k) = ba_add(ba_pred(S(S(n))), ba_add(m, k))
+  by simp rw ba_add_assoc refl
+lemma ba_d111 : forall n m k i. ba_w2(ba_w2(n, m), S(ba_w0(k, i))) = ba_add(ba_w2(n, m), ba_w0(k, i))
+  by simp rw ba_pred_add_s refl
+lemma ba_d112 : forall n m. ba_mul(ba_pred(ba_w0(n, m)), S(Z)) = ba_pred(ba_w0(n, m))
+  by simp rw ba_d005 refl
+lemma ba_d114 : forall n m. ba_even(ba_dbl(ba_w1(S(n), m))) = T
+  by simp rw ba_even_dbl refl
+lemma ba_d115 : forall n m. ba_add(S(ba_w0(n, m)), Z) = S(ba_w0(n, m))
+  by simp rw ba_d003 simp refl
+lemma ba_d116 : forall n m k i. ba_mul(ba_add(ba_add(n, m), k), i) = ba_add(ba_mul(ba_add(n, m), i), ba_mul(k, i))
+  by rw ba_mul_add refl
+lemma ba_d117 : forall n m. ba_even(ba_dbl(ba_add(Z, ba_w2(n, m)))) = T
+  by simp rw ba_even_dbl refl
+lemma ba_d118 : forall n. ba_pred(ba_add(Z, S(S(S(n))))) = ba_add(Z, S(S(n)))
+  by simp refl
+lemma ba_d119 : forall n m. ba_add(S(ba_w0(n, m)), Z) = ba_add(Z, S(ba_w0(n, m)))
+  by simp rw ba_d003 simp refl
+lemma ba_d120 : forall n m k. ba_mul(ba_mul(ba_dbl(n), m), k) = ba_mul(ba_dbl(n), ba_mul(m, k))
+  by rw ba_mul_assoc refl
+lemma ba_d121 : forall n m k. ba_add(ba_w2(n, m), k) = ba_add(k, ba_pred(ba_add(n, m)))
+  by simp rw ba_add_comm refl
+lemma ba_d123 : forall n m. ba_add(ba_add(ba_dbl(n), m), Z) = ba_add(Z, ba_add(ba_dbl(n), m))
+  by simp rw ba_d045 simp refl
+lemma ba_d124 : forall n m k. ba_w2(n, S(ba_w0(m, k))) = ba_add(n, ba_w0(m, k))
+  by simp rw ba_pred_add_s refl
+lemma ba_d125 : forall n m. ba_dbl(ba_sub(n, ba_w2(m, Z))) = ba_add(ba_sub(n, ba_w2(m, Z)), ba_sub(n, ba_w2(m, Z)))
+  by simp rw ba_d049 refl
+lemma ba_d126 : forall n m k i. ba_neg(ba_neg(ba_w3(n, ba_tri(ba_w2(m, ba_w2(k, i)))))) = ba_w3(n, ba_tri(ba_w2(m, ba_w2(k, i))))
+  by simp rw ba_neg_neg refl
+lemma ba_d127 : ba_even(S(S(S(S(Z))))) = ba_even(S(S(Z)))
+  by simp refl
+lemma ba_d129 : forall n. ba_dbl(ba_sub(S(n), Z)) = ba_add(ba_sub(S(n), Z), ba_sub(S(n), Z))
+  by simp rw ba_dbl_add rw ba_add_s_r refl
+lemma ba_d131 : forall n m. ba_even(ba_dbl(ba_add(n, S(m)))) = T
+  by rw ba_d002 refl
+lemma ba_d132 : forall n m. ba_w4(n, m) = ba_tri(ba_sub(n, m))
+  by simp refl
+lemma ba_d133 : forall n. ba_w5(n) = ba_pred(n)
+  by simp refl
+lemma ba_d134 : forall n m. ba_w6(n, m) = ba_add(ba_w5(n), ba_w5(m))
+  by simp refl
+lemma ba_d135 : forall n m k. ba_w7(n, m, k) = ba_w2(n, ba_add(m, k))
+  by simp refl
+lemma ba_d136 : forall n. ba_sub(Z, ba_tri(ba_w1(n, Z))) = Z
+  by simp rw ba_d032 refl
+lemma ba_d138 : forall n m k i. ba_even(ba_w0(ba_w4(n, m), ba_sub(k, i))) = T
+  by simp rw ba_d078 refl
+lemma ba_d139 : forall n m. ba_neg(ba_neg(ba_w3(ba_dbl(n), ba_tri(m)))) = ba_w3(ba_dbl(n), ba_tri(m))
+  by simp rw ba_neg_neg refl
+lemma ba_d140 : forall n m k. ba_add(ba_add(ba_dbl(ba_add(n, m)), k), Z) = ba_add(Z, ba_add(ba_dbl(ba_add(n, m)), k))
+  by simp rw ba_d123 simp refl
+lemma ba_d141 : forall n m k. ba_mul(ba_mul(ba_dbl(n), S(m)), k) = ba_mul(ba_dbl(n), ba_mul(S(m), k))
+  by simp rw ba_d120 simp refl
+lemma ba_d143 : forall n m k. ba_pred(ba_add(n, S(ba_w0(S(m), k)))) = ba_add(n, ba_w0(S(m), k))
+  by simp rw ba_pred_add_s refl
+lemma ba_d144 : forall n m k. ba_neg(ba_neg(ba_w3(n, ba_tri(ba_w2(m, ba_w2(k, Z)))))) = ba_w3(n, ba_tri(ba_w2(m, ba_w2(k, Z))))
+  by simp rw ba_d003 simp rw ba_d003 simp rw ba_neg_neg refl
+lemma ba_d145 : forall n m. ba_dbl(ba_sub(n, ba_w2(S(m), Z))) = ba_add(ba_sub(n, ba_w2(S(m), Z)), ba_sub(n, ba_w2(S(m), Z)))
+  by simp rw ba_d049 refl
+lemma ba_d148 : ba_andb(T, T) = T
+  by simp refl
+lemma ba_d149 : forall n m k i. ba_w2(ba_w0(ba_mul(n, m), k), S(i)) = ba_add(ba_w0(ba_mul(n, m), k), i)
+  by simp rw ba_pred_add_s refl
+lemma ba_d152 : forall n m k. ba_sub(Z, ba_tri(ba_w1(ba_w6(n, m), k))) = Z
+  by simp rw ba_d032 refl
+lemma ba_d153 : forall n m k. ba_add(ba_add(ba_w2(n, m), k), Z) = ba_add(ba_w2(n, m), k)
+  by simp rw ba_d045 simp refl
+lemma ba_d157 : forall n. ba_mul(ba_mul(Z, n), Z) = ba_mul(Z, ba_mul(n, Z))
+  by simp refl
+lemma ba_d158 : ba_andb(F, T) = ba_andb(T, F)
+  by simp refl
+lemma ba_d160 : forall n m. ba_dbl(ba_sub(S(n), ba_w2(m, Z))) = ba_add(ba_sub(S(n), ba_w2(m, Z)), ba_sub(S(n), ba_w2(m, Z)))
+  by simp induct m { simp rw ba_dbl_add rw ba_add_s_r refl } { simp rw ba_d049 refl }
+lemma ba_d161 : forall n m. ba_andb(ba_w3(S(n), m), T) = ba_w3(S(n), m)
+  by simp rw ba_d070 refl
+lemma ba_d162 : forall n m k i. ba_add(ba_add(n, m), ba_sub(k, i)) = ba_add(n, ba_add(m, ba_sub(k, i)))
+  by rw ba_add_assoc refl
+lemma ba_d163 : forall n m k. ba_neg(ba_neg(ba_w3(ba_sub(n, S(m)), ba_tri(S(k))))) = ba_w3(ba_sub(n, S(m)), ba_tri(S(k)))
+  by simp rw<- ba_pred_add_s rw<- ba_d081 simp rw ba_pred_add_s refl
+lemma ba_d164 : ba_andb(F, T) = F
+  by simp refl
+lemma ba_d165 : forall n m k. ba_even(S(S(ba_mul(n, ba_w4(m, k))))) = ba_even(ba_mul(n, ba_w4(m, k)))
+  by simp rw ba_neg_neg refl
+lemma ba_d166 : forall n m k i. ba_add(ba_add(ba_tri(ba_w7(n, m, k)), i), Z) = ba_add(Z, ba_add(ba_tri(ba_w7(n, m, k)), i))
+  by simp rw ba_d090 simp refl
+lemma ba_d167 : forall n m. ba_mul(ba_w5(ba_w0(n, m)), S(Z)) = ba_pred(ba_w0(n, m))
+  by simp rw ba_d005 refl
+lemma ba_d170 : forall n m k. ba_w6(ba_w6(n, m), k) = ba_add(ba_w5(ba_w6(n, m)), ba_w5(k))
+  by simp refl
+lemma ba_d171 : forall n m k i. ba_add(ba_add(ba_pred(ba_mul(n, m)), k), i) = ba_add(ba_pred(ba_mul(n, m)), ba_add(k, i))
+  by rw ba_d020 refl
+lemma ba_d174 : forall n m k. ba_w3(ba_w2(n, ba_pred(m)), k) = ba_even(ba_add(ba_w2(n, ba_pred(m)), k))
+  by simp refl
+lemma ba_d175 : forall n. ba_dbl(ba_sub(Z, n)) = ba_add(ba_sub(Z, n), ba_sub(Z, n))
+  by rw ba_d049 refl
+lemma ba_d176 : forall n m. ba_even(S(S(ba_add(n, m)))) = ba_w3(n, m)
+  by simp rw ba_neg_neg refl
+lemma ba_d177 : forall n. ba_neg(ba_neg(ba_w3(Z, S(n)))) = ba_w3(Z, S(n))
+  by simp rw ba_neg_neg refl
+lemma ba_d178 : forall n m k. ba_add(ba_add(ba_w6(n, m), k), Z) = ba_add(ba_w6(n, m), k)
+  by simp rw ba_d045 simp refl
+lemma ba_d179 : forall n m. ba_mul(ba_w2(n, m), S(Z)) = ba_pred(ba_add(n, m))
+  by simp rw ba_d088 refl
+lemma ba_d180 : forall n. ba_even(ba_w0(n, Z)) = T
+  by simp rw ba_d002 refl
+lemma ba_d181 : ba_dbl(ba_sub(S(Z), Z)) = ba_add(ba_sub(S(Z), Z), ba_sub(S(Z), Z))
+  by simp refl
+lemma ba_d182 : forall n m k. ba_w5(ba_add(ba_w1(n, m), S(k))) = ba_add(ba_w1(n, m), k)
+  by simp rw ba_pred_add_s refl
+lemma ba_d186 : forall n. ba_add(ba_add(ba_tri(Z), n), Z) = ba_add(Z, ba_add(ba_tri(Z), n))
+  by simp rw ba_d003 simp refl
+lemma ba_d187 : forall n m k. ba_even(S(S(ba_mul(S(n), ba_w0(S(m), k))))) = ba_even(ba_mul(S(n), ba_w0(S(m), k)))
+  by simp rw<- ba_d076 rw<- ba_d081 simp rw ba_d076 refl
+lemma ba_d190 : forall n. ba_mul(S(n), ba_add(S(Z), Z)) = S(n)
+  by simp rw ba_mul_one refl
+lemma ba_d193 : forall n m k. ba_even(ba_dbl(ba_add(ba_w4(n, m), S(k)))) = T
+  by simp rw ba_d131 refl
+lemma ba_d195 : forall n m. ba_sub(Z, ba_tri(ba_w6(n, m))) = Z
+  by simp rw ba_d032 refl
+lemma ba_d196 : forall n m k. ba_w3(ba_w2(n, ba_w5(m)), k) = ba_even(ba_add(ba_w2(n, ba_pred(m)), k))
+  by simp refl
+lemma ba_d197 : forall n m k. ba_add(ba_w2(n, m), k) = ba_add(k, ba_w5(ba_add(n, m)))
+  by simp rw<- ba_d121 simp refl
+lemma ba_d198 : forall n m k. ba_mul(ba_mul(S(ba_pred(n)), m), k) = ba_mul(S(ba_pred(n)), ba_mul(m, k))
+  by simp rw ba_mul_add induct n { simp refl } { simp rw ba_mul_assoc refl }
+lemma ba_d201 : forall n m. ba_add(ba_add(ba_pred(S(n)), Z), m) = ba_add(ba_pred(S(n)), ba_add(Z, m))
+  by simp rw ba_d003 simp refl
+lemma ba_d203 : forall n m. ba_w2(Z, S(ba_mul(n, m))) = ba_add(Z, ba_mul(n, m))
+  by simp refl
+lemma ba_d204 : forall n m. ba_dbl(ba_sub(n, ba_dbl(m))) = ba_add(ba_sub(n, ba_dbl(m)), ba_sub(n, ba_dbl(m)))
+  by rw ba_d049 refl
+lemma ba_d205 : forall n m k. ba_w3(ba_w2(n, m), S(k)) = ba_even(ba_add(ba_w2(n, m), S(k)))
+  by simp refl
+lemma ba_d207 : forall n m k. ba_mul(ba_mul(S(n), m), S(k)) = ba_mul(S(n), ba_mul(m, S(k)))
+  by simp rw ba_mul_add induct n { simp refl } { simp rw<- IH rw ba_mul_add refl }
+lemma ba_d208 : forall n m. ba_neg(ba_neg(ba_w3(ba_add(n, m), Z))) = ba_w3(ba_add(n, m), Z)
+  by simp rw ba_d045 simp rw ba_d045 simp rw ba_neg_neg refl
+lemma ba_d209 : forall n m. ba_mul(ba_mul(n, ba_dbl(m)), Z) = ba_mul(n, ba_mul(ba_dbl(m), Z))
+  by rw ba_d007 refl
+lemma ba_d210 : forall n m k. ba_w1(ba_sub(n, m), k) = ba_sub(ba_pred(ba_sub(n, m)), ba_pred(k))
+  by simp refl
+lemma ba_d211 : ba_even(ba_dbl(Z)) = T
+  by simp refl
+lemma ba_d213 : forall n m k i. ba_sub(Z, ba_sub(n, ba_w7(m, k, i))) = Z
+  by simp rw ba_d069 refl
+lemma ba_d214 : forall n m. ba_pred(ba_add(Z, S(ba_w0(n, m)))) = ba_add(Z, ba_w0(n, m))
+  by simp refl
+lemma ba_d217 : ba_add(S(Z), Z) = ba_add(Z, S(Z))
+  by simp refl
+lemma ba_d218 : forall n m k i. ba_even(ba_dbl(ba_add(ba_w4(ba_w4(n, m), k), S(i)))) = T
+  by simp rw ba_d131 refl
+lemma ba_d219 : forall n m k. ba_mul(ba_add(ba_add(Z, n), m), k) = ba_add(ba_mul(ba_add(Z, n), k), ba_mul(m, k))
+  by simp rw ba_mul_add refl
+lemma ba_d222 : forall n m k i. ba_w2(ba_add(n, ba_w4(m, k)), S(i)) = ba_add(ba_add(n, ba_w4(m, k)), i)
+  by simp rw ba_d025 refl
+lemma ba_d223 : forall n m. ba_add(ba_add(ba_dbl(S(n)), m), Z) = ba_add(Z, ba_add(ba_dbl(S(n)), m))
+  by simp rw ba_d123 simp refl
+lemma ba_d224 : forall n m. ba_even(ba_w0(n, S(m))) = T
+  by simp rw ba_d131 refl
+lemma ba_d225 : forall n m k i. ba_w2(n, ba_sub(ba_w2(m, k), i)) = ba_pred(ba_add(n, ba_sub(ba_w2(m, k), i)))
+  by simp refl
+lemma ba_d226 : forall n m k i. ba_even(ba_dbl(ba_add(n, ba_sub(m, ba_w1(k, i))))) = T
+  by simp rw ba_d078 refl
+lemma ba_d227 : forall n m. ba_sub(Z, ba_w1(n, ba_w5(m))) = Z
+  by simp rw ba_d069 refl
+lemma ba_d228 : forall n. ba_neg(ba_neg(ba_w3(ba_add(Z, n), Z))) = ba_w3(ba_add(Z, n), Z)
+  by simp induct n { simp refl } { simp rw IH refl }
+lemma ba_d229 : forall n m k i. ba_even(ba_dbl(ba_add(ba_w7(n, m, k), i))) = T
+  by simp rw ba_d002 refl
+lemma ba_d231 : forall n m. ba_mul(ba_mul(ba_dbl(Z), n), m) = ba_mul(ba_dbl(Z), ba_mul(n, m))
+  by simp refl
+lemma ba_d232 : forall n m k i. ba_add(ba_add(ba_tri(ba_w7(n, m, k)), S(i)), Z) = ba_add(Z, ba_add(ba_tri(ba_w7(n, m, k)), S(i)))
+  by simp rw ba_d090 simp refl
+lemma ba_d233 : forall n m k. ba_even(ba_dbl(ba_add(ba_w4(n, m), S(S(k))))) = T
+  by simp rw ba_d131 refl
+lemma ba_d234 : forall n m k. ba_even(S(S(ba_add(ba_mul(n, m), k)))) = ba_w3(ba_mul(n, m), k)
+  by simp rw ba_neg_neg refl
+lemma ba_d235 : forall n m k. ba_sub(Z, ba_tri(ba_w1(ba_w6(n, ba_w5(m)), k))) = Z
+  by simp rw ba_d032 refl
+lemma ba_d236 : forall n. ba_w4(Z, n) = ba_tri(ba_sub(Z, n))
+  by simp refl
+lemma ba_d237 : forall n m. ba_w1(n, m) = ba_sub(ba_w5(n), ba_pred(m))
+  by simp refl
+lemma ba_d238 : forall n m k i. ba_mul(ba_mul(ba_dbl(ba_sub(n, m)), k), i) = ba_mul(ba_dbl(ba_sub(n, m)), ba_mul(k, i))
+  by rw ba_d120 refl
+lemma ba_d240 : forall n m. ba_even(S(S(ba_mul(Z, ba_w0(S(n), m))))) = ba_even(ba_mul(Z, ba_w0(S(n), m)))
+  by simp refl
+lemma ba_d241 : forall n m k. ba_add(ba_add(ba_tri(ba_w7(n, m, Z)), k), Z) = ba_add(Z, ba_add(ba_tri(ba_w7(n, m, Z)), k))
+  by simp rw ba_d090 simp refl
+lemma ba_d242 : forall b. ba_andb(ba_neg(b), F) = ba_andb(F, ba_neg(b))
+  by simp rw ba_d083 simp refl
+lemma ba_d243 : forall n m k. ba_andb(ba_w3(n, ba_w2(m, k)), T) = ba_w3(n, ba_w2(m, k))
+  by simp rw ba_d034 simp refl
+lemma ba_d244 : forall b. ba_andb(ba_neg(ba_neg(b)), T) = ba_neg(ba_neg(b))
+  by rw ba_d070 refl
+lemma ba_d245 : forall n m. ba_dbl(ba_sub(n, S(m))) = ba_add(ba_sub(n, S(m)), ba_sub(n, S(m)))
+  by simp rw ba_dbl_add refl
+lemma ba_d246 : forall n m. ba_add(S(ba_w0(n, S(m))), Z) = ba_add(Z, S(ba_w0(n, S(m))))
+  by simp induct n { simp induct m { simp refl } { simp rw IH refl } } { simp rw IH refl }
+lemma ba_d249 : forall n m k. ba_even(ba_dbl(ba_add(n, ba_sub(m, ba_w1(k, Z))))) = T
+  by simp rw ba_d078 refl
+lemma ba_d250 : forall n m k i. ba_even(ba_w0(ba_w4(n, m), ba_sub(S(k), i))) = T
+  by simp rw ba_d078 refl
+lemma ba_d251 : forall n m k. ba_neg(ba_neg(ba_w3(ba_sub(n, S(m)), ba_tri(S(S(k)))))) = ba_w3(ba_sub(n, S(m)), ba_tri(S(S(k))))
+  by simp rw<- ba_pred_add_s rw<- ba_d081 simp rw ba_pred_add_s refl
+lemma ba_d252 : forall n m k i. ba_even(ba_dbl(ba_add(ba_w7(n, m, k), S(i)))) = T
+  by simp rw ba_d131 refl
+lemma ba_d253 : forall n m k. ba_even(ba_w0(ba_w4(n, m), S(k))) = T
+  by simp rw ba_d131 refl
+lemma ba_d255 : forall n. ba_mul(S(n), Z) = Z
+  by simp rw ba_mul_z_r refl
+lemma ba_d256 : forall n m k. ba_mul(ba_mul(ba_dbl(ba_pred(n)), S(m)), k) = ba_mul(ba_dbl(ba_pred(n)), ba_mul(S(m), k))
+  by simp rw ba_d141 simp refl
+lemma ba_d257 : forall n. ba_w3(S(n), S(n)) = T
+  by simp rw ba_add_s_r simp rw ba_d018 simp refl
+lemma ba_d259 : forall n m k. ba_even(ba_dbl(ba_add(n, ba_add(m, k)))) = T
+  by rw ba_d002 refl
+lemma ba_d260 : forall n m k. ba_add(ba_w2(n, ba_w5(m)), k) = ba_add(k, ba_w2(n, ba_w5(m)))
+  by simp rw<- ba_d121 simp refl
+lemma ba_d261 : forall n. ba_w5(ba_add(Z, S(ba_pred(n)))) = ba_add(Z, ba_pred(n))
+  by simp refl
+lemma ba_d262 : forall n m k. ba_pred(ba_add(ba_w1(S(n), m), S(k))) = ba_add(ba_w1(S(n), m), k)
+  by simp rw ba_pred_add_s refl
+lemma ba_d264 : forall n m k i. ba_mul(ba_mul(ba_dbl(ba_sub(n, ba_dbl(m))), k), i) = ba_mul(ba_dbl(ba_sub(n, ba_dbl(m))), ba_mul(k, i))
+  by rw ba_d238 refl
+lemma ba_d267 : forall b. ba_andb(ba_even(Z), b) = ba_andb(b, ba_even(Z))
+  by simp rw ba_d023 simp refl
+lemma ba_d268 : forall n m. ba_sub(Z, ba_sub(n, S(m))) = Z
+  by simp rw ba_sub_z_l refl
+lemma ba_d269 : forall n. ba_w1(n, Z) = ba_sub(ba_pred(n), ba_pred(Z))
+  by simp refl
+lemma ba_d270 : forall n m. ba_neg(ba_neg(ba_w3(Z, S(ba_sub(n, m))))) = ba_w3(Z, S(ba_sub(n, m)))
+  by simp rw ba_neg_neg refl
+lemma ba_d274 : forall n m. ba_mul(ba_pred(ba_w4(n, m)), S(Z)) = ba_pred(ba_w4(n, m))
+  by simp rw ba_d005 refl
+lemma ba_d275 : forall n m. ba_add(ba_add(ba_pred(S(n)), Z), S(m)) = ba_add(ba_pred(S(n)), ba_add(Z, S(m)))
+  by simp induct n { simp refl } { simp rw IH refl }
+lemma ba_d276 : forall n m k. ba_even(S(S(ba_mul(n, ba_w0(ba_pred(m), k))))) = ba_even(ba_mul(n, ba_w0(ba_pred(m), k)))
+  by simp induct n { simp refl } { simp rw<- ba_d076 rw<- ba_d081 simp rw ba_d076 refl }
+lemma ba_d280 : forall n m k i. ba_add(ba_add(ba_w5(ba_mul(n, m)), k), i) = ba_add(ba_pred(ba_mul(n, m)), ba_add(k, i))
+  by simp rw ba_d171 refl
+lemma ba_d281 : forall n m k. ba_even(ba_w0(n, ba_sub(m, ba_w1(k, Z)))) = T
+  by simp rw ba_d078 refl
+lemma ba_d283 : forall n. ba_even(ba_dbl(ba_add(Z, ba_w2(n, Z)))) = T
+  by simp rw ba_even_dbl refl
+lemma ba_d284 : forall n. ba_even(ba_dbl(S(n))) = T
+  by simp rw ba_even_dbl simp refl
+lemma ba_d285 : forall n. ba_w3(ba_tri(n), ba_tri(n)) = T
+  by simp rw ba_d018 refl
+lemma ba_d286 : forall n m k. ba_pred(ba_add(ba_add(n, m), S(S(k)))) = ba_add(ba_add(n, m), S(k))
+  by rw ba_d025 refl
+lemma ba_d287 : forall n m. ba_add(ba_add(ba_w5(S(n)), Z), m) = ba_add(ba_pred(S(n)), ba_add(Z, m))
+  by simp rw ba_d003 simp refl
+lemma ba_d288 : forall b. ba_andb(ba_neg(b), T) = ba_andb(T, ba_neg(b))
+  by simp rw ba_d070 refl
+lemma ba_d289 : forall n. ba_dbl(ba_sub(n, S(Z))) = ba_add(ba_sub(n, S(Z)), ba_sub(n, S(Z)))
+  by simp rw ba_dbl_add refl
+lemma ba_d290 : forall n m k. ba_add(ba_add(n, m), S(k)) = ba_add(n, ba_add(m, S(k)))
+  by induct n { simp refl } { simp rw IH refl }
+lemma ba_d291 : forall n m. ba_even(ba_w0(Z, ba_w2(n, m))) = T
+  by simp rw ba_even_dbl refl
+lemma ba_d292 : forall n m k. ba_mul(ba_add(n, m), S(k)) = ba_add(ba_mul(n, S(k)), ba_mul(m, S(k)))
+  by rw ba_mul_add refl
+lemma ba_d294 : forall n. ba_pred(ba_add(Z, S(ba_pred(ba_tri(n))))) = ba_add(Z, ba_pred(ba_tri(n)))
+  by simp refl
+lemma ba_d296 : forall n m. ba_neg(ba_neg(ba_w3(Z, S(ba_sub(n, ba_pred(m)))))) = ba_w3(Z, S(ba_sub(n, ba_pred(m))))
+  by simp rw ba_neg_neg refl
+lemma ba_d297 : forall n m k i. ba_andb(ba_w3(ba_w2(n, m), ba_w2(k, i)), T) = ba_w3(ba_w2(n, m), ba_w2(k, i))
+  by simp rw ba_d034 simp refl
+lemma ba_d298 : forall n m k. ba_add(ba_add(n, ba_w4(m, k)), Z) = ba_add(Z, ba_add(n, ba_w4(m, k)))
+  by simp rw ba_d045 simp refl
+lemma ba_d299 : forall n m k i. ba_even(ba_w0(ba_w4(n, m), ba_sub(k, S(i)))) = T
+  by simp rw ba_d002 refl
+lemma ba_d301 : forall n m k i. ba_w3(ba_w2(n, ba_w6(m, k)), S(i)) = ba_even(ba_add(ba_w2(n, ba_w6(m, k)), S(i)))
+  by simp refl
+lemma ba_d302 : forall n. ba_even(S(S(S(ba_pred(n))))) = ba_even(S(ba_pred(n)))
+  by simp rw ba_neg_neg refl
+lemma ba_d304 : forall n m k. ba_w1(ba_w0(n, m), k) = ba_sub(ba_w5(ba_w0(n, m)), ba_pred(k))
+  by simp refl
+lemma ba_d306 : forall n. ba_even(ba_w0(Z, n)) = T
+  by simp rw ba_even_dbl refl
+lemma ba_d307 : forall n m k i. ba_even(ba_w0(ba_w7(n, m, k), S(i))) = T
+  by simp rw ba_d131 refl

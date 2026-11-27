@@ -1,0 +1,220 @@
+{
+ "arms": {
+  "B0": {
+   "generate_s": 145.7,
+   "history_bytes": 0,
+   "run": "S1/B0/tiny-73ef74288b05955d/s1",
+   "train_s": 0.0,
+   "trainable_params": 0,
+   "wall_s": 146.9
+  },
+  "B2": {
+   "generate_s": 126.2,
+   "history_bytes": 0,
+   "run": "S1/B2/tiny-73ef74288b05955d/s1",
+   "train_s": 351.1,
+   "trainable_params": 834304,
+   "wall_s": 478.8
+  }
+ },
+ "base": {
+  "hash": "73ef74288b05955d",
+  "params": 834304,
+  "pretraining": "toy-prelude project only (from scratch, no pretrained weights)",
+  "stats": {
+   "base_hash": "73ef74288b05955d",
+   "examples_seen": 9568,
+   "excluded": [
+    {
+     "detail": "text overlaps the proof of test obligation toy-mix-treelist@4dfcd9d10cc3:fm_d278",
+     "rule": "L1",
+     "source_ids": [
+      "toy-prelude:pre_d174"
+     ]
+    }
+   ],
+   "guard_checked": 159,
+   "last_loss": 0.2021093025803566,
+   "n_examples": 159,
+   "params": 834304,
+   "steps": 299,
+   "train_tokens": 172123,
+   "wall_s": 114.96
+  }
+ },
+ "canary": {
+  "cells": 90,
+  "metrics": {
+   "ACC": 1.0,
+   "BWT": 0.0,
+   "F": 0.0,
+   "FWD": 1.0,
+   "LA": 1.0
+  },
+  "passed": true,
+  "run": "S1/canary-oracle"
+ },
+ "code_commit": "da2124da3a4312051cd54a009a6db0635fe004e3",
+ "code_commit_at_end": "da2124da3a4312051cd54a009a6db0635fe004e3+dirty",
+ "config": {
+  "adapt": {
+   "batch": 32,
+   "epochs": 30,
+   "joint_epochs": 30,
+   "lora_alpha": 32,
+   "lora_r": 16,
+   "lr": 0.001,
+   "mode": "full"
+  },
+  "arms": [
+   "B0",
+   "B2",
+   "B5-10",
+   "B6"
+  ],
+  "base": {
+   "batch": 32,
+   "epochs": 60,
+   "lr": 0.001
+  },
+  "bootstrap": {
+   "resamples": 10000,
+   "seed": 0
+  },
+  "eval": {
+   "k": 8,
+   "max_new": 128,
+   "temperature": 1.0,
+   "timeout_s": 120
+  },
+  "experiment": "S1",
+  "gate": {
+   "forgetting_points": 10,
+   "gap_points": 20
+  },
+  "model": {
+   "d": 128,
+   "dropout": 0.1,
+   "ff": 512,
+   "heads": 4,
+   "layers": 4,
+   "max_len": 192
+  },
+  "run_dir": "runs/S1",
+  "seed": 1,
+  "stream": {
+   "lemmas_per_project": [
+    150,
+    250
+   ],
+   "projects": 6,
+   "seed": 0,
+   "test_fraction": 0.2
+  },
+  "threads": 2
+ },
+ "cpu_affinity": [
+  0,
+  1
+ ],
+ "data_version": "e2673a78d60e6531",
+ "experiment": "S1",
+ "guard": {
+  "base_examples_excluded": [
+   {
+    "detail": "text overlaps the proof of test obligation toy-mix-treelist@4dfcd9d10cc3:fm_d278",
+    "rule": "L1",
+    "source_ids": [
+     "toy-prelude:pre_d174"
+    ]
+   }
+  ],
+  "checked": 1121,
+  "distinctive_test_proofs": 5,
+  "eval_ids": 240,
+  "leak_canaries": [
+   {
+    "detail": "test identifier toy-mix-listarith@e772bb74aad0:em_d064",
+    "id": "toy-mix-listarith@e772bb74aad0:em_d064",
+    "raised": true,
+    "rule": "L1"
+   },
+   {
+    "detail": "test identifier toy-trees@589ab1821b5d:ct_d268",
+    "id": "toy-trees@589ab1821b5d:ct_d268",
+    "raised": true,
+    "rule": "L1"
+   }
+  ],
+  "raised": 0,
+  "train_eval_id_overlap": 0,
+  "train_examples_with_test_statement": 0,
+  "train_ids": 962
+ },
+ "guard_note": "training examples checked by HoldoutGuard.check before use; any raise aborts the run",
+ "seed": 1,
+ "stages": [
+  "toy-mix-listarith@w1",
+  "toy-mix-treelist@w1",
+  "toy-bits@w1",
+  "toy-arith@w1",
+  "toy-trees@w1",
+  "toy-lists@w1",
+  "toy-mix-treelist@w2",
+  "toy-mix-listarith@w2",
+  "toy-lists@w2",
+  "toy-arith@w2",
+  "toy-bits@w2",
+  "toy-trees@w2"
+ ],
+ "stream": {
+  "data_version": "e2673a78d60e6531",
+  "edges": 6238,
+  "obligations": 1202
+ },
+ "stream_build_s": 23.6,
+ "threads": 2,
+ "tokenizer": {
+  "keywords": [
+   "Bool",
+   "Cons",
+   "F",
+   "IH",
+   "Leaf",
+   "List",
+   "Nat",
+   "Nil",
+   "Node",
+   "S",
+   "T",
+   "Tree",
+   "Z",
+   "admit",
+   "axiom",
+   "before",
+   "by",
+   "cases",
+   "def",
+   "forall",
+   "induct",
+   "lemma",
+   "refl",
+   "rw",
+   "rw<-",
+   "simp",
+   "sorry",
+   "theorem"
+  ],
+  "vocab": 128
+ },
+ "toolchain": {
+  "toyeq_checker_sha": "1000f3b0cf3d3c23"
+ },
+ "versions": {
+  "numpy": "2.2.6",
+  "platform": "Linux-7.1.1-76070101-generic-x86_64-with-glibc2.35",
+  "python": "3.10.12",
+  "pyyaml": "6.0.3",
+  "torch": "2.12.1+cpu"
+ }
+}

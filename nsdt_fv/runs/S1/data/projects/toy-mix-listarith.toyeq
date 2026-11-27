@@ -1,0 +1,409 @@
+def em_add : Nat Nat -> Nat
+  em_add(Z, m) = m
+  em_add(S(n), m) = S(em_add(n, m))
+def em_mul : Nat Nat -> Nat
+  em_mul(Z, m) = Z
+  em_mul(S(n), m) = em_add(m, em_mul(n, m))
+def em_dbl : Nat -> Nat
+  em_dbl(Z) = Z
+  em_dbl(S(n)) = S(S(em_dbl(n)))
+def em_app : List List -> List
+  em_app(Nil, ys) = ys
+  em_app(Cons(h, t), ys) = Cons(h, em_app(t, ys))
+def em_len : List -> Nat
+  em_len(Nil) = Z
+  em_len(Cons(h, t)) = S(em_len(t))
+def em_sum : List -> Nat
+  em_sum(Nil) = Z
+  em_sum(Cons(h, t)) = em_add(h, em_sum(t))
+def em_rep : Nat Nat -> List
+  em_rep(Z, x) = Nil
+  em_rep(S(n), x) = Cons(x, em_rep(n, x))
+def em_dbll : List -> List
+  em_dbll(Nil) = Nil
+  em_dbll(Cons(h, t)) = Cons(em_dbl(h), em_dbll(t))
+def em_scale : List Nat -> List
+  em_scale(Nil, k) = Nil
+  em_scale(Cons(h, t), k) = Cons(em_mul(h, k), em_scale(t, k))
+def em_w0 : List List -> Nat
+  em_w0(x0, x1) = em_mul(em_sum(x0), em_len(x1))
+def em_w1 : List List Nat -> Nat
+  em_w1(x0, x1, x2) = em_add(em_w0(x0, x1), em_dbl(x2))
+def em_w2 : Nat Nat Nat -> Nat
+  em_w2(x0, x1, x2) = em_mul(em_add(x0, x1), x2)
+def em_w3 : List -> Nat
+  em_w3(x0) = em_len(x0)
+def em_w4 : List -> Nat
+  em_w4(x0) = em_w3(x0)
+def em_w5 : Nat Nat -> List
+  em_w5(x0, x1) = em_rep(x0, x1)
+def em_w6 : List Nat -> List
+  em_w6(x0, x1) = em_scale(x0, x1)
+def em_w7 : List -> List
+  em_w7(x0) = em_dbll(x0)
+lemma em_add_z_r : forall n. em_add(n, Z) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma em_add_s_r : forall n m. em_add(n, S(m)) = S(em_add(n, m))
+  by induct n { simp refl } { simp rw IH refl }
+lemma em_add_assoc : forall n m k. em_add(em_add(n, m), k) = em_add(n, em_add(m, k))
+  by induct n { simp refl } { simp rw IH refl }
+lemma em_add_comm : forall n m. em_add(n, m) = em_add(m, n)
+  by induct n { simp rw em_add_z_r refl } { simp rw IH rw em_add_s_r refl }
+lemma em_app_nil_r : forall xs. em_app(xs, Nil) = xs
+  by induct xs { simp refl } { simp rw IH refl }
+lemma em_app_assoc : forall xs ys zs. em_app(em_app(xs, ys), zs) = em_app(xs, em_app(ys, zs))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma em_len_app : forall xs ys. em_len(em_app(xs, ys)) = em_add(em_len(xs), em_len(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma em_sum_app : forall xs ys. em_sum(em_app(xs, ys)) = em_add(em_sum(xs), em_sum(ys))
+  by induct xs { simp refl } { simp rw IH rw em_add_assoc refl }
+lemma em_dbl_add : forall n m. em_dbl(em_add(n, m)) = em_add(em_dbl(n), em_dbl(m))
+  by induct n { simp refl } { simp rw IH refl }
+lemma em_len_dbll : forall xs. em_len(em_dbll(xs)) = em_len(xs)
+  by induct xs { simp refl } { simp rw IH refl }
+lemma em_sum_dbll : forall xs. em_sum(em_dbll(xs)) = em_dbl(em_sum(xs))
+  by induct xs { simp refl } { simp rw IH rw em_dbl_add refl }
+lemma em_dbll_app : forall xs ys. em_dbll(em_app(xs, ys)) = em_app(em_dbll(xs), em_dbll(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma em_sum_rep : forall n m. em_sum(em_rep(n, m)) = em_mul(n, m)
+  by induct n { simp refl } { simp rw IH refl }
+lemma em_len_rep : forall n m. em_len(em_rep(n, m)) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma em_rep_add : forall n m k. em_rep(em_add(n, m), k) = em_app(em_rep(n, k), em_rep(m, k))
+  by induct n { simp refl } { simp rw IH refl }
+lemma em_len_scale : forall xs n. em_len(em_scale(xs, n)) = em_len(xs)
+  by induct xs { simp refl } { simp rw IH refl }
+lemma em_scale_app : forall xs ys n. em_scale(em_app(xs, ys), n) = em_app(em_scale(xs, n), em_scale(ys, n))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma em_mul_z_r : forall n. em_mul(n, Z) = Z
+  by induct n { simp refl } { simp rw IH refl }
+lemma em_scale_z : forall xs. em_sum(em_scale(xs, Z)) = Z
+  by induct xs { simp refl } { simp rw IH rw em_mul_z_r simp refl }
+lemma em_d001 : forall xs ys. em_len(em_app(xs, em_dbll(ys))) = em_add(em_len(xs), em_len(em_dbll(ys)))
+  by rw em_len_app refl
+lemma em_d002 : forall n xs ys m. em_scale(em_app(Cons(n, xs), ys), m) = em_app(em_scale(Cons(n, xs), m), em_scale(ys, m))
+  by simp rw em_scale_app refl
+lemma em_d003 : forall xs. em_sum(em_app(Nil, xs)) = em_add(em_sum(Nil), em_sum(xs))
+  by simp refl
+lemma em_d004 : em_sum(em_dbll(Nil)) = em_dbl(em_sum(Nil))
+  by simp refl
+lemma em_d005 : forall xs. em_sum(em_dbll(em_dbll(xs))) = em_dbl(em_sum(em_dbll(xs)))
+  by rw em_sum_dbll refl
+lemma em_d006 : forall xs. em_w3(xs) = em_len(xs)
+  by simp refl
+lemma em_d007 : forall xs n m. em_add(em_add(em_sum(xs), n), m) = em_add(em_sum(xs), em_add(n, m))
+  by rw em_add_assoc refl
+lemma em_d008 : forall n xs. em_app(Cons(n, xs), Nil) = Cons(n, xs)
+  by simp rw em_app_nil_r refl
+lemma em_d009 : forall xs. em_len(em_app(Nil, xs)) = em_add(em_len(Nil), em_len(xs))
+  by simp refl
+lemma em_d010 : em_sum(em_scale(Nil, Z)) = Z
+  by simp refl
+lemma em_d011 : forall xs n m k. em_scale(em_app(xs, em_rep(n, m)), k) = em_app(em_scale(xs, k), em_scale(em_rep(n, m), k))
+  by rw em_scale_app refl
+lemma em_d012 : forall xs n. em_len(em_scale(xs, S(n))) = em_len(xs)
+  by rw em_len_scale refl
+lemma em_d013 : forall n. em_add(n, S(Z)) = S(em_add(n, Z))
+  by rw em_add_s_r refl
+lemma em_d014 : forall n m. em_w3(em_rep(n, m)) = n
+  by simp rw em_len_rep refl
+lemma em_d015 : forall n m. em_add(S(n), S(m)) = S(em_add(S(n), m))
+  by simp rw em_add_s_r refl
+lemma em_d016 : forall xs n. em_w3(em_scale(xs, n)) = em_len(xs)
+  by simp rw em_len_scale refl
+lemma em_d017 : forall n m k. em_dbl(em_add(n, em_mul(m, k))) = em_add(em_dbl(n), em_dbl(em_mul(m, k)))
+  by rw em_dbl_add refl
+lemma em_d018 : forall xs ys n. em_w1(xs, ys, n) = em_add(em_w0(xs, ys), em_dbl(n))
+  by simp refl
+lemma em_d019 : forall xs ys. em_app(em_app(xs, Nil), ys) = em_app(xs, em_app(Nil, ys))
+  by simp rw em_app_nil_r refl
+lemma em_d020 : forall n. em_add(S(n), Z) = S(n)
+  by simp rw em_add_z_r refl
+lemma em_d021 : forall n m k. em_add(em_add(n, m), S(k)) = em_add(n, em_add(m, S(k)))
+  by rw em_add_assoc refl
+lemma em_d022 : forall xs ys. em_w3(em_app(xs, ys)) = em_add(em_len(xs), em_len(ys))
+  by simp rw em_len_app refl
+lemma em_d025 : forall xs. em_w3(em_dbll(xs)) = em_len(xs)
+  by simp rw em_len_dbll refl
+lemma em_d026 : em_mul(Z, Z) = Z
+  by simp refl
+lemma em_d028 : forall n. em_mul(S(n), Z) = Z
+  by simp rw em_mul_z_r refl
+lemma em_d029 : forall xs n ys m. em_scale(em_app(xs, Cons(n, ys)), m) = em_app(em_scale(xs, m), em_scale(Cons(n, ys), m))
+  by simp rw em_scale_app simp refl
+lemma em_d030 : forall xs ys. em_w0(xs, ys) = em_mul(em_sum(xs), em_len(ys))
+  by simp refl
+lemma em_d031 : forall xs n. em_sum(em_scale(em_scale(xs, n), Z)) = Z
+  by rw em_scale_z refl
+lemma em_d032 : forall n xs ys. em_sum(em_rep(n, em_w0(xs, ys))) = em_mul(n, em_w0(xs, ys))
+  by simp rw em_sum_rep refl
+lemma em_d033 : forall n m. em_add(S(em_mul(n, m)), Z) = S(em_mul(n, m))
+  by simp rw em_add_z_r refl
+lemma em_d034 : forall xs ys. em_sum(em_dbll(em_app(xs, ys))) = em_dbl(em_sum(em_app(xs, ys)))
+  by rw em_sum_dbll refl
+lemma em_d035 : forall xs n m. em_sum(em_app(xs, em_rep(n, m))) = em_add(em_sum(xs), em_sum(em_rep(n, m)))
+  by rw em_sum_app refl
+lemma em_d036 : forall xs. em_add(S(em_sum(xs)), Z) = S(em_sum(xs))
+  by simp rw em_add_z_r refl
+lemma em_d037 : forall n xs. em_sum(em_dbll(em_dbll(Cons(n, xs)))) = em_dbl(em_sum(em_dbll(Cons(n, xs))))
+  by simp rw em_d005 rw em_dbl_add refl
+lemma em_d039 : forall xs n ys. em_app(em_app(em_scale(xs, n), Nil), ys) = em_app(em_scale(xs, n), em_app(Nil, ys))
+  by simp rw em_d019 simp refl
+lemma em_d040 : forall n m. em_add(em_add(n, m), S(Z)) = em_add(n, em_add(m, S(Z)))
+  by rw em_d021 refl
+lemma em_d041 : forall xs ys. em_w3(em_app(xs, ys)) = em_add(em_w3(xs), em_len(ys))
+  by simp rw em_len_app refl
+lemma em_d042 : forall xs n m. em_len(em_scale(xs, S(em_mul(n, m)))) = em_len(xs)
+  by rw em_d012 refl
+lemma em_d044 : forall n. em_add(n, Z) = em_add(Z, n)
+  by simp rw em_add_z_r refl
+lemma em_d045 : forall n. em_len(em_scale(Nil, n)) = em_len(Nil)
+  by simp refl
+lemma em_d046 : forall n xs m. em_scale(em_app(Cons(n, xs), Nil), m) = em_app(em_scale(Cons(n, xs), m), em_scale(Nil, m))
+  by simp rw em_scale_app simp refl
+lemma em_d047 : forall xs n. em_w3(em_dbll(em_scale(xs, n))) = em_len(em_scale(xs, n))
+  by simp rw em_len_dbll refl
+lemma em_d048 : forall xs n ys m. em_scale(em_app(xs, Cons(S(n), ys)), m) = em_app(em_scale(xs, m), em_scale(Cons(S(n), ys), m))
+  by simp rw em_d029 simp refl
+lemma em_d049 : forall n xs. em_len(em_dbll(Cons(n, xs))) = em_len(Cons(n, xs))
+  by simp rw em_len_dbll refl
+lemma em_d050 : forall n xs. em_sum(em_app(Nil, Cons(n, xs))) = em_add(em_sum(Nil), em_sum(Cons(n, xs)))
+  by simp refl
+lemma em_d052 : forall xs ys. em_len(em_dbll(em_app(xs, ys))) = em_len(em_app(xs, ys))
+  by rw em_len_dbll refl
+lemma em_d053 : forall n m k. em_rep(em_add(S(n), m), k) = em_app(em_rep(S(n), k), em_rep(m, k))
+  by simp rw em_rep_add refl
+lemma em_d055 : forall xs ys. em_add(S(em_w0(xs, ys)), Z) = S(em_w0(xs, ys))
+  by simp rw<- em_d033 simp refl
+lemma em_d056 : forall n xs ys zs. em_app(em_app(Cons(n, xs), ys), zs) = em_app(Cons(n, xs), em_app(ys, zs))
+  by simp rw em_app_assoc refl
+lemma em_d057 : forall xs n. em_w3(em_scale(xs, n)) = em_w3(xs)
+  by simp rw em_len_scale refl
+lemma em_d058 : forall n m. em_mul(S(em_mul(n, m)), Z) = Z
+  by simp rw em_mul_z_r refl
+lemma em_d061 : forall n xs m. em_add(em_add(n, em_w3(xs)), m) = em_add(n, em_add(em_w3(xs), m))
+  by simp rw em_add_assoc refl
+lemma em_d062 : forall n xs ys m. em_w3(em_rep(n, em_w1(xs, ys, m))) = n
+  by simp rw em_len_rep refl
+lemma em_d063 : forall n xs ys m. em_scale(em_app(Cons(S(n), xs), ys), m) = em_app(em_scale(Cons(S(n), xs), m), em_scale(ys, m))
+  by simp rw em_scale_app refl
+lemma em_d064 : forall xs. em_w3(em_app(Nil, xs)) = em_add(em_len(Nil), em_len(xs))
+  by simp refl
+lemma em_d066 : forall xs n. em_scale(em_app(Nil, xs), n) = em_app(em_scale(Nil, n), em_scale(xs, n))
+  by simp refl
+lemma em_d067 : forall n m. em_len(em_rep(S(n), m)) = S(n)
+  by simp rw em_len_rep refl
+lemma em_d068 : forall xs n ys. em_len(em_app(xs, Cons(n, ys))) = em_add(em_len(xs), em_len(Cons(n, ys)))
+  by simp rw em_len_app simp refl
+lemma em_d070 : forall n xs ys. em_w0(Cons(n, xs), ys) = em_mul(em_sum(Cons(n, xs)), em_len(ys))
+  by simp refl
+lemma em_d073 : forall n m k. em_add(em_add(S(n), m), k) = em_add(S(n), em_add(m, k))
+  by simp rw em_add_assoc refl
+lemma em_d074 : forall xs. em_w3(em_dbll(xs)) = em_w3(xs)
+  by simp rw em_len_dbll refl
+lemma em_d075 : forall xs ys zs n. em_sum(em_app(xs, em_rep(em_w0(ys, zs), n))) = em_add(em_sum(xs), em_sum(em_rep(em_w0(ys, zs), n)))
+  by simp rw em_d035 refl
+lemma em_d077 : forall xs n ys. em_app(em_app(em_scale(xs, S(n)), Nil), ys) = em_app(em_scale(xs, S(n)), em_app(Nil, ys))
+  by simp rw em_d039 simp refl
+lemma em_d078 : forall n xs ys m. em_w3(em_rep(S(n), em_w1(xs, ys, m))) = S(n)
+  by simp rw<- em_sum_rep rw em_len_rep refl
+lemma em_d079 : forall xs ys n zs. em_app(em_app(xs, ys), Cons(n, zs)) = em_app(xs, em_app(ys, Cons(n, zs)))
+  by rw em_app_assoc refl
+lemma em_d080 : forall n xs m. em_w3(em_scale(Cons(n, xs), m)) = em_w3(Cons(n, xs))
+  by simp rw em_len_scale refl
+lemma em_d081 : forall xs n. em_w3(em_dbll(em_scale(xs, n))) = em_w3(em_scale(xs, n))
+  by simp rw<- em_d047 simp refl
+lemma em_d083 : forall xs ys zs n. em_sum(em_scale(em_scale(xs, em_w1(ys, zs, n)), Z)) = Z
+  by simp rw em_d031 refl
+lemma em_d084 : forall n m. em_app(em_rep(n, m), Nil) = em_rep(n, m)
+  by rw em_app_nil_r refl
+lemma em_d087 : forall n xs. em_dbl(em_add(n, em_len(xs))) = em_add(em_dbl(n), em_dbl(em_len(xs)))
+  by rw em_dbl_add refl
+lemma em_d089 : forall n m. em_dbl(em_add(n, em_mul(m, Z))) = em_add(em_dbl(n), em_dbl(em_mul(m, Z)))
+  by rw em_d017 refl
+lemma em_d091 : forall xs ys. em_w3(em_app(em_dbll(xs), ys)) = em_add(em_len(em_dbll(xs)), em_len(ys))
+  by simp rw em_len_app refl
+lemma em_d092 : forall xs. em_w4(xs) = em_w3(xs)
+  by simp refl
+lemma em_d093 : forall n m. em_w5(n, m) = em_rep(n, m)
+  by simp refl
+lemma em_d094 : forall xs n. em_w6(xs, n) = em_scale(xs, n)
+  by simp refl
+lemma em_d095 : forall xs. em_w7(xs) = em_dbll(xs)
+  by simp refl
+lemma em_d096 : forall xs n. em_add(em_add(em_sum(xs), Z), n) = em_add(em_sum(xs), em_add(Z, n))
+  by simp rw em_d044 simp refl
+lemma em_d097 : forall xs n ys. em_w3(em_app(xs, Cons(n, ys))) = em_add(em_len(xs), em_len(Cons(n, ys)))
+  by simp rw em_d068 simp refl
+lemma em_d098 : forall n m xs k. em_scale(em_app(em_rep(n, m), xs), k) = em_app(em_scale(em_rep(n, m), k), em_scale(xs, k))
+  by rw em_scale_app refl
+lemma em_d101 : forall xs n. em_w3(em_dbll(em_w6(xs, n))) = em_len(em_w6(xs, n))
+  by simp rw<- em_d047 simp refl
+lemma em_d102 : forall n m k. em_add(S(n), S(em_add(m, k))) = S(em_add(S(n), em_add(m, k)))
+  by simp rw em_add_s_r refl
+lemma em_d103 : forall xs. em_sum(em_dbll(em_app(Nil, xs))) = em_dbl(em_sum(em_app(Nil, xs)))
+  by simp rw em_sum_dbll refl
+lemma em_d104 : forall n m k. em_w5(em_add(S(n), m), k) = em_app(em_rep(S(n), k), em_rep(m, k))
+  by simp rw em_rep_add refl
+lemma em_d105 : forall xs n. em_w4(em_scale(xs, n)) = em_w3(xs)
+  by simp rw em_len_scale refl
+lemma em_d106 : forall n. em_dbl(em_add(Z, em_mul(n, Z))) = em_add(em_dbl(Z), em_dbl(em_mul(n, Z)))
+  by simp refl
+lemma em_d107 : forall xs. em_w4(xs) = em_len(xs)
+  by simp refl
+lemma em_d108 : forall xs n m. em_dbl(em_add(em_len(xs), em_mul(n, m))) = em_add(em_dbl(em_len(xs)), em_dbl(em_mul(n, m)))
+  by rw em_d017 refl
+lemma em_d109 : forall n m k. em_w5(em_add(n, m), k) = em_app(em_rep(n, k), em_rep(m, k))
+  by simp rw em_rep_add refl
+lemma em_d110 : forall n m. em_sum(em_app(Nil, em_rep(n, m))) = em_add(em_sum(Nil), em_sum(em_rep(n, m)))
+  by simp refl
+lemma em_d111 : forall xs n m. em_sum(em_scale(em_scale(em_scale(xs, n), m), Z)) = Z
+  by rw em_d031 refl
+lemma em_d112 : forall xs n. em_w3(em_scale(em_dbll(xs), n)) = em_len(em_dbll(xs))
+  by simp rw em_len_scale refl
+lemma em_d113 : forall xs n m. em_len(em_w6(xs, S(em_mul(n, m)))) = em_len(xs)
+  by simp rw em_d042 refl
+lemma em_d114 : forall xs ys. em_w0(Cons(Z, xs), ys) = em_mul(em_sum(Cons(Z, xs)), em_len(ys))
+  by simp refl
+lemma em_d116 : forall n m xs ys. em_sum(em_rep(n, em_w0(Cons(m, xs), ys))) = em_mul(n, em_w0(Cons(m, xs), ys))
+  by simp rw em_sum_rep refl
+lemma em_d117 : em_w3(em_app(Nil, Nil)) = em_add(em_len(Nil), em_len(Nil))
+  by simp refl
+lemma em_d118 : forall n m k. em_w2(n, m, k) = em_mul(em_add(n, m), k)
+  by simp refl
+lemma em_d119 : forall n xs m. em_scale(em_app(Cons(S(n), Nil), xs), m) = em_app(em_scale(Cons(S(n), Nil), m), em_scale(xs, m))
+  by simp refl
+lemma em_d120 : forall xs. em_w3(em_w7(xs)) = em_w3(xs)
+  by simp rw em_len_dbll refl
+lemma em_d121 : forall n xs. em_sum(em_w7(em_dbll(Cons(n, xs)))) = em_dbl(em_sum(em_dbll(Cons(n, xs))))
+  by simp rw em_d005 rw em_dbl_add refl
+lemma em_d122 : forall xs ys zs n. em_sum(em_w6(em_scale(xs, em_w1(ys, zs, n)), Z)) = Z
+  by simp rw em_d031 refl
+lemma em_d125 : forall xs n m. em_w5(em_add(S(em_sum(xs)), n), m) = em_app(em_rep(S(em_sum(xs)), m), em_rep(n, m))
+  by simp rw em_rep_add refl
+lemma em_d127 : forall n m xs ys. em_w0(Cons(n, Cons(m, xs)), ys) = em_mul(em_sum(Cons(n, Cons(m, xs))), em_len(ys))
+  by simp refl
+lemma em_d129 : forall xs n. em_w3(em_w6(em_dbll(xs), n)) = em_len(em_dbll(xs))
+  by simp rw em_len_scale refl
+lemma em_d131 : forall n xs ys m. em_w6(em_app(Cons(n, xs), ys), m) = em_app(em_scale(Cons(n, xs), m), em_scale(ys, m))
+  by simp rw em_scale_app refl
+lemma em_d132 : forall n m k. em_w6(em_w5(n, m), k) = em_scale(em_w5(n, m), k)
+  by simp refl
+lemma em_d133 : forall n m k. em_add(em_mul(n, m), k) = em_add(k, em_mul(n, m))
+  by rw em_add_comm refl
+lemma em_d134 : forall n m. em_app(em_w5(n, m), Nil) = em_rep(n, m)
+  by simp rw em_d084 refl
+lemma em_d135 : forall xs ys n. em_len(em_dbll(em_app(xs, em_w6(ys, n)))) = em_len(em_app(xs, em_w6(ys, n)))
+  by simp rw em_d052 refl
+lemma em_d136 : forall n xs ys m. em_w3(em_w5(n, em_w1(xs, ys, m))) = n
+  by simp rw em_len_rep refl
+lemma em_d137 : forall n m. em_w4(em_rep(n, m)) = em_w3(em_rep(n, m))
+  by simp refl
+lemma em_d138 : forall xs n m. em_len(em_scale(em_w6(xs, n), m)) = em_len(em_w6(xs, n))
+  by simp rw em_len_scale refl
+lemma em_d139 : forall xs. em_sum(em_w7(xs)) = em_dbl(em_sum(xs))
+  by simp rw em_sum_dbll refl
+lemma em_d140 : forall xs ys zs n. em_sum(em_w6(em_scale(xs, em_w1(ys, zs, S(n))), Z)) = Z
+  by simp rw em_d031 refl
+lemma em_d141 : forall xs ys zs n. em_sum(em_app(xs, em_w5(em_w0(ys, zs), n))) = em_add(em_sum(xs), em_sum(em_rep(em_w0(ys, zs), n)))
+  by simp rw em_d035 refl
+lemma em_d144 : em_sum(em_w6(Nil, Z)) = Z
+  by simp refl
+lemma em_d146 : forall n m xs k. em_w6(em_app(em_rep(n, m), xs), k) = em_app(em_scale(em_rep(n, m), k), em_scale(xs, k))
+  by simp rw em_d098 refl
+lemma em_d147 : forall n m k. em_w5(em_add(S(n), m), k) = em_app(em_w5(S(n), k), em_rep(m, k))
+  by simp rw em_rep_add refl
+lemma em_d149 : forall n. em_add(S(S(n)), Z) = S(S(n))
+  by simp rw em_d044 simp refl
+lemma em_d150 : forall xs n m. em_w3(em_w6(xs, S(em_mul(n, m)))) = em_len(xs)
+  by simp rw em_d042 refl
+lemma em_d151 : forall n m. em_w3(em_w5(n, m)) = em_len(em_w5(n, m))
+  by simp refl
+lemma em_d153 : forall n m. em_w3(em_rep(n, S(m))) = n
+  by simp rw em_len_rep refl
+lemma em_d154 : forall xs n m k. em_w3(em_scale(xs, em_w2(n, m, k))) = em_w3(xs)
+  by simp rw em_len_scale refl
+lemma em_d155 : forall n xs. em_sum(em_rep(n, em_w0(xs, Nil))) = em_mul(n, em_w0(xs, Nil))
+  by simp rw em_sum_rep refl
+lemma em_d156 : forall xs n ys. em_app(em_app(em_w6(xs, n), Nil), ys) = em_app(em_scale(xs, n), em_app(Nil, ys))
+  by simp rw em_d039 simp refl
+lemma em_d157 : forall n xs m. em_sum(em_w7(em_dbll(Cons(n, em_scale(xs, m))))) = em_dbl(em_sum(em_dbll(Cons(n, em_scale(xs, m)))))
+  by simp rw em_d005 rw em_dbl_add refl
+lemma em_d158 : forall n xs ys m. em_w6(em_app(em_rep(n, em_sum(xs)), ys), m) = em_app(em_scale(em_rep(n, em_sum(xs)), m), em_scale(ys, m))
+  by simp rw em_d098 refl
+lemma em_d159 : forall xs n. em_w3(em_w7(em_scale(xs, n))) = em_len(em_scale(xs, n))
+  by simp rw<- em_d047 simp refl
+lemma em_d160 : forall n m. em_w5(em_add(S(n), Z), m) = em_app(em_w5(S(n), m), em_rep(Z, m))
+  by simp rw em_rep_add simp refl
+lemma em_d161 : forall n xs. em_sum(em_rep(n, em_w0(Nil, xs))) = em_mul(n, em_w0(Nil, xs))
+  by simp rw em_sum_rep refl
+lemma em_d163 : forall xs n m k. em_add(em_add(em_sum(xs), em_add(n, m)), k) = em_add(em_sum(xs), em_add(em_add(n, m), k))
+  by rw em_d007 refl
+lemma em_d166 : forall n m k i. em_w3(em_scale(Cons(n, em_w5(m, k)), i)) = em_w3(Cons(n, em_w5(m, k)))
+  by simp rw em_len_scale refl
+lemma em_d167 : forall n m. em_add(S(em_sum(em_rep(n, m))), Z) = S(em_sum(em_rep(n, m)))
+  by simp rw<- em_d036 simp refl
+lemma em_d168 : forall xs ys zs. em_w0(Cons(em_w4(xs), ys), zs) = em_mul(em_sum(Cons(em_w4(xs), ys)), em_len(zs))
+  by simp refl
+lemma em_d169 : forall xs ys. em_len(em_dbll(Cons(em_w4(xs), ys))) = em_len(Cons(em_w4(xs), ys))
+  by simp rw em_len_dbll refl
+lemma em_d170 : forall n m. em_app(em_rep(S(n), m), Nil) = em_rep(S(n), m)
+  by simp rw em_d084 refl
+lemma em_d172 : forall n xs. em_w3(em_w7(Cons(n, xs))) = em_w3(Cons(n, xs))
+  by simp rw em_len_dbll refl
+lemma em_d173 : forall n. em_app(em_rep(Z, n), Nil) = em_rep(Z, n)
+  by simp refl
+lemma em_d174 : forall n xs ys m. em_scale(em_app(Cons(n, em_dbll(xs)), ys), m) = em_app(em_scale(Cons(n, em_dbll(xs)), m), em_scale(ys, m))
+  by simp rw em_scale_app refl
+lemma em_d175 : forall xs ys. em_sum(em_w7(em_app(xs, ys))) = em_dbl(em_sum(em_app(xs, ys)))
+  by simp rw em_d034 refl
+lemma em_d176 : forall xs n m k. em_w6(em_app(xs, em_rep(n, m)), k) = em_app(em_scale(xs, k), em_scale(em_rep(n, m), k))
+  by simp rw em_d011 refl
+lemma em_d178 : forall n xs ys m. em_w6(em_app(Cons(n, xs), ys), m) = em_app(em_w6(Cons(n, xs), m), em_scale(ys, m))
+  by simp rw em_scale_app refl
+lemma em_d180 : forall xs. em_add(S(em_sum(em_w7(xs))), Z) = S(em_sum(em_w7(xs)))
+  by simp rw<- em_d036 simp refl
+lemma em_d181 : forall xs ys n. em_sum(em_w6(em_scale(xs, em_w1(Nil, ys, n)), Z)) = Z
+  by simp rw em_d031 refl
+lemma em_d183 : forall xs n. em_len(em_rep(S(em_len(xs)), n)) = S(em_len(xs))
+  by simp rw em_len_rep refl
+lemma em_d184 : forall n. em_sum(em_app(Nil, em_rep(n, Z))) = em_add(em_sum(Nil), em_sum(em_rep(n, Z)))
+  by simp refl
+lemma em_d185 : forall xs n. em_w3(em_scale(xs, S(n))) = em_len(xs)
+  by simp rw em_d012 refl
+lemma em_d186 : forall n xs m. em_w6(em_app(Cons(n, Nil), xs), m) = em_app(em_scale(Cons(n, Nil), m), em_scale(xs, m))
+  by simp refl
+lemma em_d187 : forall xs n m. em_w4(em_w6(xs, S(em_mul(n, m)))) = em_len(xs)
+  by simp rw em_d042 refl
+lemma em_d188 : forall n xs ys m. em_scale(em_app(Cons(n, em_w7(xs)), ys), m) = em_app(em_scale(Cons(n, em_dbll(xs)), m), em_scale(ys, m))
+  by simp rw em_scale_app refl
+lemma em_d189 : forall xs n. em_w3(em_scale(xs, S(n))) = em_w3(xs)
+  by simp rw em_d012 refl
+lemma em_d190 : forall n m. em_w4(em_w5(n, m)) = em_len(em_w5(n, m))
+  by simp refl
+lemma em_d191 : forall xs ys n. em_w1(xs, ys, S(n)) = em_add(em_w0(xs, ys), em_dbl(S(n)))
+  by simp refl
+lemma em_d192 : forall n m. em_add(S(n), m) = em_add(m, S(n))
+  by simp rw em_add_s_r rw em_add_comm refl
+lemma em_d193 : forall xs. em_len(em_app(Nil, em_dbll(xs))) = em_add(em_len(Nil), em_len(em_dbll(xs)))
+  by simp refl
+lemma em_d195 : forall n m k i. em_w5(em_add(S(n), em_add(m, k)), i) = em_app(em_w5(S(n), i), em_rep(em_add(m, k), i))
+  by simp rw em_rep_add refl
+lemma em_d196 : forall n m. em_sum(em_w7(em_dbll(Cons(n, em_scale(Nil, m))))) = em_dbl(em_sum(em_dbll(Cons(n, em_scale(Nil, m)))))
+  by simp rw em_dbl_add simp refl
+lemma em_d197 : forall n xs ys. em_add(n, em_w0(xs, ys)) = em_add(em_w0(xs, ys), n)
+  by simp rw em_d133 refl
+lemma em_d198 : forall n m. em_w5(n, S(m)) = em_rep(n, S(m))
+  by simp refl
+lemma em_d199 : forall n. em_mul(S(S(n)), Z) = Z
+  by simp rw em_mul_z_r refl
+lemma em_d201 : forall xs ys zs n. em_sum(em_app(xs, em_rep(em_w0(ys, zs), S(n)))) = em_add(em_sum(xs), em_sum(em_rep(em_w0(ys, zs), S(n))))
+  by simp rw em_d035 refl
+lemma em_d202 : forall n m xs k. em_w6(em_app(em_rep(n, S(m)), xs), k) = em_app(em_scale(em_rep(n, S(m)), k), em_scale(xs, k))
+  by simp rw em_d098 refl
+lemma em_d203 : forall n. em_mul(S(em_mul(Z, n)), Z) = Z
+  by simp refl
+lemma em_d204 : forall n m. em_w7(em_rep(n, m)) = em_dbll(em_rep(n, m))
+  by simp refl
+lemma em_d206 : forall xs n ys. em_app(em_w6(xs, n), em_app(Nil, ys)) = em_app(em_scale(xs, n), em_app(Nil, ys))
+  by simp refl

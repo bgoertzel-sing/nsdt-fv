@@ -1,0 +1,360 @@
+def pre_add : Nat Nat -> Nat
+  pre_add(Z, m) = m
+  pre_add(S(n), m) = S(pre_add(n, m))
+def pre_app : List List -> List
+  pre_app(Nil, ys) = ys
+  pre_app(Cons(h, t), ys) = Cons(h, pre_app(t, ys))
+def pre_len : List -> Nat
+  pre_len(Nil) = Z
+  pre_len(Cons(h, t)) = S(pre_len(t))
+def pre_rev : List -> List
+  pre_rev(Nil) = Nil
+  pre_rev(Cons(h, t)) = pre_app(pre_rev(t), Cons(h, Nil))
+def pre_sum : List -> Nat
+  pre_sum(Nil) = Z
+  pre_sum(Cons(h, t)) = pre_add(h, pre_sum(t))
+def pre_rep : Nat Nat -> List
+  pre_rep(Z, x) = Nil
+  pre_rep(S(n), x) = Cons(x, pre_rep(n, x))
+def pre_incs : List -> List
+  pre_incs(Nil) = Nil
+  pre_incs(Cons(h, t)) = Cons(S(h), pre_incs(t))
+def pre_qrev : List List -> List
+  pre_qrev(Nil, acc) = acc
+  pre_qrev(Cons(h, t), acc) = pre_qrev(t, Cons(h, acc))
+def pre_w0 : List -> List
+  pre_w0(x0) = pre_incs(pre_rev(x0))
+def pre_w1 : List List -> List
+  pre_w1(x0, x1) = pre_rev(pre_app(x0, x1))
+def pre_w2 : List -> Nat
+  pre_w2(x0) = pre_sum(x0)
+def pre_w3 : List -> List
+  pre_w3(x0) = pre_w0(x0)
+def pre_w4 : Nat Nat -> Nat
+  pre_w4(x0, x1) = pre_len(pre_rep(x0, x1))
+def pre_w5 : List -> List
+  pre_w5(x0) = pre_w0(pre_rev(x0))
+def pre_w6 : List -> List
+  pre_w6(x0) = pre_w5(pre_rev(x0))
+def pre_w7 : List List -> List
+  pre_w7(x0, x1) = pre_qrev(pre_w3(x0), pre_w6(x1))
+lemma pre_add_z_r : forall n. pre_add(n, Z) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma pre_add_s_r : forall n m. pre_add(n, S(m)) = S(pre_add(n, m))
+  by induct n { simp refl } { simp rw IH refl }
+lemma pre_add_assoc : forall n m k. pre_add(pre_add(n, m), k) = pre_add(n, pre_add(m, k))
+  by induct n { simp refl } { simp rw IH refl }
+lemma pre_add_comm : forall n m. pre_add(n, m) = pre_add(m, n)
+  by induct n { simp rw pre_add_z_r refl } { simp rw IH rw pre_add_s_r refl }
+lemma pre_app_nil_r : forall xs. pre_app(xs, Nil) = xs
+  by induct xs { simp refl } { simp rw IH refl }
+lemma pre_app_assoc : forall xs ys zs. pre_app(pre_app(xs, ys), zs) = pre_app(xs, pre_app(ys, zs))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma pre_len_app : forall xs ys. pre_len(pre_app(xs, ys)) = pre_add(pre_len(xs), pre_len(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma pre_rev_app : forall xs ys. pre_rev(pre_app(xs, ys)) = pre_app(pre_rev(ys), pre_rev(xs))
+  by induct xs { simp rw pre_app_nil_r refl } { simp rw IH rw pre_app_assoc refl }
+lemma pre_rev_rev : forall xs. pre_rev(pre_rev(xs)) = xs
+  by induct xs { simp refl } { simp rw pre_rev_app simp rw IH refl }
+lemma pre_len_rev : forall xs. pre_len(pre_rev(xs)) = pre_len(xs)
+  by induct xs { simp refl } { simp rw<- IH rw pre_len_app simp rw pre_add_comm simp refl }
+lemma pre_sum_app : forall xs ys. pre_sum(pre_app(xs, ys)) = pre_add(pre_sum(xs), pre_sum(ys))
+  by induct xs { simp refl } { simp rw IH rw pre_add_assoc refl }
+lemma pre_len_incs : forall xs. pre_len(pre_incs(xs)) = pre_len(xs)
+  by induct xs { simp refl } { simp rw IH refl }
+lemma pre_incs_app : forall xs ys. pre_incs(pre_app(xs, ys)) = pre_app(pre_incs(xs), pre_incs(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma pre_qrev_app : forall xs ys. pre_qrev(xs, ys) = pre_app(pre_rev(xs), ys)
+  by induct xs { simp refl } { simp rw IH rw pre_app_assoc simp refl }
+lemma pre_len_rep : forall n m. pre_len(pre_rep(n, m)) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma pre_rev_incs : forall xs. pre_rev(pre_incs(xs)) = pre_incs(pre_rev(xs))
+  by induct xs { simp refl } { simp rw IH rw pre_incs_app simp refl }
+lemma pre_sum_rev : forall xs. pre_sum(pre_rev(xs)) = pre_sum(xs)
+  by induct xs { simp refl } { simp rw<- IH rw pre_sum_app simp rw pre_add_z_r rw pre_add_comm refl }
+lemma pre_d001 : forall n xs ys. pre_incs(pre_app(Cons(n, xs), ys)) = pre_app(pre_incs(Cons(n, xs)), pre_incs(ys))
+  by simp rw pre_incs_app refl
+lemma pre_d002 : forall xs. pre_w0(xs) = pre_incs(pre_rev(xs))
+  by simp refl
+lemma pre_d003 : forall xs. pre_len(pre_incs(pre_w3(xs))) = pre_len(pre_w3(xs))
+  by simp rw pre_len_incs refl
+lemma pre_d004 : pre_add(Z, Z) = Z
+  by simp refl
+lemma pre_d005 : forall xs n. pre_add(pre_w2(xs), S(n)) = S(pre_add(pre_w2(xs), n))
+  by simp rw pre_add_s_r refl
+lemma pre_d006 : forall n m. pre_add(S(n), m) = pre_add(m, S(n))
+  by simp rw pre_add_s_r rw pre_add_comm refl
+lemma pre_d007 : forall xs. pre_rev(pre_incs(xs)) = pre_w0(xs)
+  by simp rw pre_rev_incs refl
+lemma pre_d008 : forall xs n ys. pre_sum(pre_app(xs, Cons(n, ys))) = pre_add(pre_sum(xs), pre_sum(Cons(n, ys)))
+  by simp rw pre_sum_app simp refl
+lemma pre_d009 : forall xs ys zs. pre_incs(pre_app(pre_w1(xs, ys), zs)) = pre_app(pre_incs(pre_w1(xs, ys)), pre_incs(zs))
+  by simp rw pre_incs_app refl
+lemma pre_d010 : forall xs. pre_rev(pre_rev(pre_w0(xs))) = pre_w0(xs)
+  by simp rw pre_rev_rev refl
+lemma pre_d011 : forall xs ys. pre_w1(xs, ys) = pre_rev(pre_app(xs, ys))
+  by simp refl
+lemma pre_d012 : forall xs ys. pre_len(pre_app(xs, ys)) = pre_add(pre_len(ys), pre_len(xs))
+  by rw pre_len_app rw pre_add_comm refl
+lemma pre_d013 : forall xs. pre_sum(pre_rev(pre_rev(xs))) = pre_sum(pre_rev(xs))
+  by rw pre_sum_rev refl
+lemma pre_d015 : forall xs ys. pre_w1(xs, ys) = pre_app(pre_rev(ys), pre_rev(xs))
+  by simp rw pre_rev_app refl
+lemma pre_d016 : pre_rev(pre_rev(Nil)) = Nil
+  by simp refl
+lemma pre_d017 : forall n m k. pre_add(pre_add(n, m), k) = pre_add(pre_add(m, k), n)
+  by rw pre_add_assoc rw pre_add_comm refl
+lemma pre_d018 : forall n m xs. pre_add(pre_add(n, m), pre_len(xs)) = pre_add(n, pre_add(m, pre_len(xs)))
+  by rw pre_add_assoc refl
+lemma pre_d019 : forall xs ys. pre_w2(pre_app(xs, ys)) = pre_add(pre_sum(xs), pre_sum(ys))
+  by simp rw pre_sum_app refl
+lemma pre_d020 : forall xs. pre_len(pre_app(Nil, xs)) = pre_add(pre_len(Nil), pre_len(xs))
+  by simp refl
+lemma pre_d021 : forall xs ys. pre_len(pre_incs(pre_app(xs, ys))) = pre_len(pre_app(xs, ys))
+  by rw pre_len_incs refl
+lemma pre_d022 : forall n xs. pre_len(pre_app(Nil, Cons(n, xs))) = pre_add(pre_len(Nil), pre_len(Cons(n, xs)))
+  by simp refl
+lemma pre_d023 : forall xs. pre_app(pre_w0(xs), Nil) = pre_w0(xs)
+  by simp rw pre_app_nil_r refl
+lemma pre_d025 : forall n m xs. pre_w1(pre_rep(n, m), xs) = pre_rev(pre_app(pre_rep(n, m), xs))
+  by simp refl
+lemma pre_d026 : pre_len(pre_incs(Nil)) = pre_len(Nil)
+  by simp refl
+lemma pre_d027 : pre_sum(pre_rev(Nil)) = pre_sum(Nil)
+  by simp refl
+lemma pre_d028 : forall n m k xs. pre_add(pre_add(n, m), pre_len(Cons(k, xs))) = pre_add(n, pre_add(m, pre_len(Cons(k, xs))))
+  by simp rw pre_add_assoc refl
+lemma pre_d030 : forall n xs. pre_rev(pre_incs(Cons(n, xs))) = pre_w0(Cons(n, xs))
+  by simp rw pre_rev_incs rw pre_incs_app simp refl
+lemma pre_d031 : forall xs n. pre_add(S(pre_w2(xs)), n) = pre_add(n, S(pre_w2(xs)))
+  by simp rw<- pre_d006 simp refl
+lemma pre_d032 : forall xs. pre_w2(pre_app(Nil, xs)) = pre_add(pre_sum(Nil), pre_sum(xs))
+  by simp refl
+lemma pre_d033 : forall xs. pre_len(pre_incs(pre_rev(xs))) = pre_len(pre_rev(xs))
+  by rw pre_len_incs refl
+lemma pre_d034 : forall xs ys. pre_len(pre_app(xs, pre_incs(ys))) = pre_add(pre_len(xs), pre_len(pre_incs(ys)))
+  by rw pre_len_app refl
+lemma pre_d037 : forall xs. pre_qrev(Nil, xs) = pre_app(pre_rev(Nil), xs)
+  by simp refl
+lemma pre_d039 : forall xs. pre_w3(xs) = pre_w0(xs)
+  by simp refl
+lemma pre_d040 : forall xs ys zs. pre_len(pre_app(pre_w1(xs, ys), zs)) = pre_add(pre_len(pre_w1(xs, ys)), pre_len(zs))
+  by simp rw pre_len_app refl
+lemma pre_d041 : forall xs n ys. pre_len(pre_app(xs, Cons(n, ys))) = pre_add(pre_len(xs), pre_len(Cons(n, ys)))
+  by simp rw pre_len_app simp refl
+lemma pre_d043 : forall n m k. pre_add(pre_add(S(n), m), k) = pre_add(pre_add(m, k), S(n))
+  by simp rw<- pre_d006 simp rw pre_add_assoc refl
+lemma pre_d044 : forall xs. pre_len(pre_rev(pre_incs(xs))) = pre_len(pre_incs(xs))
+  by rw pre_len_rev refl
+lemma pre_d046 : forall n xs ys zs. pre_app(pre_app(Cons(n, xs), ys), zs) = pre_app(Cons(n, xs), pre_app(ys, zs))
+  by simp rw pre_app_assoc refl
+lemma pre_d047 : forall xs ys. pre_len(pre_app(pre_rev(xs), ys)) = pre_add(pre_len(pre_rev(xs)), pre_len(ys))
+  by rw pre_len_app refl
+lemma pre_d048 : pre_rev(pre_incs(Nil)) = pre_incs(pre_rev(Nil))
+  by simp refl
+lemma pre_d049 : forall xs ys. pre_app(pre_w0(pre_qrev(xs, ys)), Nil) = pre_w0(pre_qrev(xs, ys))
+  by simp rw pre_app_nil_r refl
+lemma pre_d050 : forall n. pre_add(n, S(Z)) = S(pre_add(n, Z))
+  by rw pre_add_s_r refl
+lemma pre_d051 : forall xs ys zs. pre_w1(xs, pre_qrev(ys, zs)) = pre_rev(pre_app(xs, pre_qrev(ys, zs)))
+  by simp refl
+lemma pre_d052 : forall xs. pre_w1(Nil, xs) = pre_rev(pre_app(Nil, xs))
+  by simp refl
+lemma pre_d053 : forall xs ys. pre_len(pre_app(Nil, Cons(pre_sum(xs), ys))) = pre_add(pre_len(Nil), pre_len(Cons(pre_sum(xs), ys)))
+  by simp refl
+lemma pre_d056 : pre_len(pre_incs(pre_w3(Nil))) = pre_len(pre_w3(Nil))
+  by simp refl
+lemma pre_d057 : pre_w2(pre_rev(Nil)) = pre_sum(Nil)
+  by simp refl
+lemma pre_d058 : forall xs ys. pre_app(pre_app(xs, ys), Nil) = pre_app(xs, ys)
+  by rw pre_app_nil_r refl
+lemma pre_d059 : forall xs n ys. pre_len(pre_app(xs, Cons(n, ys))) = pre_add(pre_len(Cons(n, ys)), pre_len(xs))
+  by simp rw pre_d012 simp refl
+lemma pre_d060 : forall n m. pre_w2(pre_app(Nil, pre_rep(n, m))) = pre_add(pre_sum(Nil), pre_sum(pre_rep(n, m)))
+  by simp refl
+lemma pre_d061 : forall xs. pre_w3(xs) = pre_incs(pre_rev(xs))
+  by simp refl
+lemma pre_d062 : forall xs ys. pre_len(pre_incs(pre_w3(pre_w1(xs, ys)))) = pre_len(pre_w3(pre_w1(xs, ys)))
+  by simp rw pre_len_incs refl
+lemma pre_d063 : forall xs n ys zs. pre_len(pre_app(pre_w1(xs, Cons(n, ys)), zs)) = pre_add(pre_len(pre_w1(xs, Cons(n, ys))), pre_len(zs))
+  by simp rw pre_d047 refl
+lemma pre_d064 : forall xs. pre_w2(xs) = pre_sum(xs)
+  by simp refl
+lemma pre_d065 : forall xs ys zs. pre_w1(pre_app(xs, ys), zs) = pre_app(pre_rev(zs), pre_rev(pre_app(xs, ys)))
+  by simp rw pre_rev_app refl
+lemma pre_d066 : forall xs ys n. pre_add(S(pre_w2(pre_app(xs, ys))), n) = pre_add(n, S(pre_w2(pre_app(xs, ys))))
+  by simp rw<- pre_d006 simp refl
+lemma pre_d067 : forall xs. pre_rev(pre_incs(xs)) = pre_w3(xs)
+  by simp rw pre_rev_incs refl
+lemma pre_d068 : forall n m. pre_sum(pre_rev(pre_rev(pre_rep(n, m)))) = pre_sum(pre_rev(pre_rep(n, m)))
+  by rw pre_d013 refl
+lemma pre_d069 : forall xs. pre_w2(pre_app(Nil, pre_incs(xs))) = pre_add(pre_sum(Nil), pre_sum(pre_incs(xs)))
+  by simp refl
+lemma pre_d072 : forall xs. pre_app(pre_w3(xs), Nil) = pre_w0(xs)
+  by simp rw pre_app_nil_r refl
+lemma pre_d074 : forall xs. pre_w3(pre_w3(xs)) = pre_w0(pre_w3(xs))
+  by simp refl
+lemma pre_d075 : forall xs. pre_incs(pre_app(xs, Nil)) = pre_app(pre_incs(xs), pre_incs(Nil))
+  by simp rw pre_incs_app simp refl
+lemma pre_d077 : forall xs. pre_w2(pre_rev(xs)) = pre_sum(xs)
+  by simp rw pre_sum_rev refl
+lemma pre_d078 : forall n m. pre_w4(n, m) = pre_len(pre_rep(n, m))
+  by simp refl
+lemma pre_d079 : forall xs. pre_w5(xs) = pre_w0(pre_rev(xs))
+  by simp refl
+lemma pre_d080 : forall xs. pre_w6(xs) = pre_w5(pre_rev(xs))
+  by simp refl
+lemma pre_d081 : forall xs ys. pre_w7(xs, ys) = pre_qrev(pre_w3(xs), pre_w6(ys))
+  by simp refl
+lemma pre_d084 : forall xs ys zs. pre_w1(pre_app(xs, ys), zs) = pre_app(pre_rev(zs), pre_w1(xs, ys))
+  by simp rw pre_rev_app refl
+lemma pre_d085 : forall xs. pre_app(pre_w0(pre_qrev(Nil, xs)), Nil) = pre_w0(pre_qrev(Nil, xs))
+  by simp rw pre_app_nil_r refl
+lemma pre_d086 : forall n xs m ys. pre_sum(pre_app(Cons(n, xs), Cons(m, ys))) = pre_add(pre_sum(Cons(n, xs)), pre_sum(Cons(m, ys)))
+  by simp rw pre_d008 simp rw pre_add_assoc refl
+lemma pre_d087 : forall n xs. pre_w3(Cons(n, xs)) = pre_w0(Cons(n, xs))
+  by simp refl
+lemma pre_d089 : forall xs n ys. pre_len(pre_incs(pre_w3(pre_w1(xs, Cons(n, ys))))) = pre_len(pre_w3(pre_w1(xs, Cons(n, ys))))
+  by simp rw pre_len_incs refl
+lemma pre_d090 : forall n m k xs. pre_add(pre_add(S(n), m), pre_len(Cons(k, xs))) = pre_add(S(n), pre_add(m, pre_len(Cons(k, xs))))
+  by simp rw pre_d017 rw pre_add_comm refl
+lemma pre_d091 : forall xs. pre_app(pre_w3(xs), Nil) = pre_w3(xs)
+  by simp rw pre_app_nil_r refl
+lemma pre_d093 : forall xs. pre_w5(xs) = pre_w3(pre_rev(xs))
+  by simp refl
+lemma pre_d094 : forall n xs. pre_len(pre_rev(Cons(n, xs))) = pre_len(Cons(n, xs))
+  by simp rw pre_d059 simp rw pre_len_rev refl
+lemma pre_d096 : forall xs ys. pre_len(pre_app(pre_rev(xs), pre_w0(ys))) = pre_add(pre_len(pre_rev(xs)), pre_len(pre_w0(ys)))
+  by simp rw pre_d047 refl
+lemma pre_d097 : forall n. pre_w4(Z, n) = pre_len(pre_rep(Z, n))
+  by simp refl
+lemma pre_d099 : forall xs ys zs. pre_app(pre_w0(pre_qrev(xs, pre_qrev(ys, zs))), Nil) = pre_w0(pre_qrev(xs, pre_qrev(ys, zs)))
+  by simp rw pre_app_nil_r refl
+lemma pre_d100 : forall xs ys. pre_app(pre_w3(pre_qrev(xs, ys)), Nil) = pre_w0(pre_qrev(xs, ys))
+  by simp rw pre_app_nil_r refl
+lemma pre_d101 : forall xs. pre_app(pre_w0(pre_w6(xs)), Nil) = pre_w0(pre_w6(xs))
+  by simp rw pre_app_nil_r refl
+lemma pre_d103 : forall xs. pre_rev(pre_incs(pre_incs(xs))) = pre_w0(pre_incs(xs))
+  by simp rw pre_rev_incs refl
+lemma pre_d104 : forall xs. pre_len(pre_rev(pre_incs(pre_incs(xs)))) = pre_len(pre_incs(pre_incs(xs)))
+  by rw pre_d044 refl
+lemma pre_d106 : forall xs ys zs. pre_sum(pre_app(pre_w7(xs, ys), zs)) = pre_add(pre_sum(pre_w7(xs, ys)), pre_sum(zs))
+  by simp rw pre_sum_app refl
+lemma pre_d107 : forall xs ys zs. pre_len(pre_app(pre_w1(xs, ys), pre_rev(zs))) = pre_add(pre_len(pre_w1(xs, ys)), pre_len(pre_rev(zs)))
+  by simp rw pre_d047 refl
+lemma pre_d108 : forall xs. pre_app(pre_w3(xs), pre_rev(pre_rev(Nil))) = pre_w0(xs)
+  by simp rw pre_app_nil_r refl
+lemma pre_d109 : forall n m xs. pre_add(pre_add(n, m), pre_len(pre_incs(xs))) = pre_add(n, pre_add(m, pre_len(pre_incs(xs))))
+  by rw pre_d018 refl
+lemma pre_d110 : forall xs ys. pre_incs(pre_app(pre_w1(xs, Nil), ys)) = pre_app(pre_incs(pre_w1(xs, Nil)), pre_incs(ys))
+  by simp rw pre_incs_app refl
+lemma pre_d113 : forall xs ys. pre_sum(pre_rev(pre_rev(pre_w7(xs, ys)))) = pre_sum(pre_rev(pre_w7(xs, ys)))
+  by simp rw pre_d013 refl
+lemma pre_d114 : pre_w3(pre_w3(Nil)) = pre_w0(pre_w3(Nil))
+  by simp refl
+lemma pre_d118 : forall n m xs. pre_add(pre_add(S(n), m), pre_len(xs)) = pre_add(S(n), pre_add(m, pre_len(xs)))
+  by simp rw pre_d018 refl
+lemma pre_d119 : forall n xs. pre_w5(Cons(n, xs)) = pre_w0(pre_rev(Cons(n, xs)))
+  by simp refl
+lemma pre_d120 : forall xs ys. pre_w3(pre_w7(xs, ys)) = pre_w0(pre_w7(xs, ys))
+  by simp refl
+lemma pre_d123 : forall xs n ys. pre_len(pre_app(xs, Cons(S(n), ys))) = pre_add(pre_len(xs), pre_len(Cons(S(n), ys)))
+  by simp rw pre_d041 simp refl
+lemma pre_d124 : forall xs n ys. pre_add(pre_add(pre_len(xs), n), pre_len(ys)) = pre_add(pre_len(xs), pre_add(n, pre_len(ys)))
+  by rw pre_d018 refl
+lemma pre_d125 : pre_w2(pre_rev(Nil)) = pre_w2(Nil)
+  by simp refl
+lemma pre_d127 : forall xs. pre_rev(pre_incs(pre_incs(xs))) = pre_w3(pre_incs(xs))
+  by simp rw pre_rev_incs refl
+lemma pre_d128 : forall n. pre_w2(pre_app(Nil, pre_rep(Z, n))) = pre_add(pre_sum(Nil), pre_sum(pre_rep(Z, n)))
+  by simp refl
+lemma pre_d129 : forall n xs. pre_app(pre_w0(pre_qrev(Nil, Cons(n, xs))), Nil) = pre_w0(pre_qrev(Nil, Cons(n, xs)))
+  by simp rw pre_app_nil_r refl
+lemma pre_d130 : forall xs ys. pre_app(pre_w0(pre_app(xs, ys)), Nil) = pre_w0(pre_app(xs, ys))
+  by simp rw pre_app_nil_r refl
+lemma pre_d131 : forall xs ys. pre_len(pre_app(pre_rev(xs), pre_incs(ys))) = pre_add(pre_len(pre_rev(xs)), pre_len(pre_incs(ys)))
+  by rw pre_d047 refl
+lemma pre_d132 : forall xs ys. pre_incs(pre_app(xs, pre_incs(ys))) = pre_app(pre_incs(xs), pre_incs(pre_incs(ys)))
+  by rw pre_incs_app refl
+lemma pre_d133 : forall n xs ys. pre_w1(Cons(n, xs), ys) = pre_rev(pre_app(Cons(n, xs), ys))
+  by simp refl
+lemma pre_d135 : forall xs. pre_w0(pre_rev(xs)) = pre_incs(pre_rev(pre_rev(xs)))
+  by simp refl
+lemma pre_d136 : forall n xs. pre_qrev(Nil, Cons(n, xs)) = pre_app(pre_rev(Nil), Cons(n, xs))
+  by simp refl
+lemma pre_d137 : forall n m. pre_len(pre_rep(S(n), m)) = S(n)
+  by simp rw pre_len_rep refl
+lemma pre_d138 : forall n xs. pre_sum(pre_rev(Cons(n, xs))) = pre_sum(Cons(n, xs))
+  by simp rw pre_d008 simp rw pre_sum_rev rw pre_add_z_r rw pre_add_comm refl
+lemma pre_d139 : forall xs. pre_rev(pre_incs(Cons(Z, xs))) = pre_w0(Cons(Z, xs))
+  by simp rw pre_rev_incs rw pre_incs_app simp refl
+lemma pre_d140 : forall xs ys zs ws. pre_app(pre_app(xs, ys), pre_w1(zs, ws)) = pre_app(xs, pre_app(ys, pre_w1(zs, ws)))
+  by simp rw pre_app_assoc refl
+lemma pre_d141 : forall n xs. pre_app(pre_w3(Cons(n, xs)), Nil) = pre_w3(Cons(n, xs))
+  by simp rw pre_incs_app simp rw pre_d058 rw pre_incs_app simp refl
+lemma pre_d145 : forall xs ys. pre_rev(pre_rev(pre_qrev(xs, ys))) = pre_qrev(xs, ys)
+  by rw pre_rev_rev refl
+lemma pre_d146 : forall n xs. pre_w2(pre_rev(Cons(n, xs))) = pre_sum(Cons(n, xs))
+  by simp rw pre_d008 simp rw pre_sum_rev rw pre_add_z_r rw pre_add_comm refl
+lemma pre_d147 : forall xs. pre_w3(pre_w7(Nil, xs)) = pre_w0(pre_w7(Nil, xs))
+  by simp refl
+lemma pre_d149 : forall xs n ys. pre_w2(pre_app(xs, Cons(n, ys))) = pre_add(pre_sum(xs), pre_sum(Cons(n, ys)))
+  by simp rw pre_d008 simp refl
+lemma pre_d150 : pre_app(pre_w0(pre_qrev(Nil, Nil)), Nil) = pre_w0(pre_qrev(Nil, Nil))
+  by simp refl
+lemma pre_d151 : forall n. pre_len(pre_rep(n, Z)) = n
+  by rw pre_len_rep refl
+lemma pre_d152 : forall n xs ys. pre_sum(pre_app(Cons(n, xs), ys)) = pre_add(pre_sum(Cons(n, xs)), pre_sum(ys))
+  by simp rw pre_sum_app rw pre_add_assoc refl
+lemma pre_d154 : forall xs ys. pre_w2(pre_rev(pre_rev(pre_w7(xs, ys)))) = pre_sum(pre_rev(pre_w7(xs, ys)))
+  by simp rw pre_d013 refl
+lemma pre_d157 : forall n xs m ys. pre_w2(pre_app(Cons(n, xs), Cons(m, ys))) = pre_add(pre_sum(Cons(n, xs)), pre_sum(Cons(m, ys)))
+  by simp rw pre_d008 simp rw pre_add_assoc refl
+lemma pre_d159 : forall xs ys zs. pre_len(pre_app(xs, Cons(S(pre_sum(ys)), zs))) = pre_add(pre_len(xs), pre_len(Cons(S(pre_sum(ys)), zs)))
+  by simp rw pre_d123 simp refl
+lemma pre_d165 : forall xs ys. pre_incs(pre_app(pre_w1(xs, ys), Nil)) = pre_app(pre_incs(pre_w1(xs, ys)), pre_incs(Nil))
+  by simp rw pre_d075 simp refl
+lemma pre_d167 : forall xs n ys zs. pre_w1(pre_app(xs, Cons(n, ys)), zs) = pre_app(pre_rev(zs), pre_rev(pre_app(xs, Cons(n, ys))))
+  by simp rw pre_rev_app refl
+lemma pre_d168 : forall n xs. pre_len(pre_incs(Cons(n, xs))) = pre_len(Cons(n, xs))
+  by simp rw pre_len_incs refl
+lemma pre_d171 : forall n m. pre_sum(pre_rev(pre_rev(pre_rep(n, S(m))))) = pre_sum(pre_rev(pre_rep(n, S(m))))
+  by rw pre_d068 refl
+lemma pre_d173 : forall xs. pre_app(pre_w3(xs), pre_rev(pre_rev(Nil))) = pre_w3(xs)
+  by simp rw pre_app_nil_r refl
+lemma pre_d174 : forall n xs ys zs. pre_app(pre_app(Cons(n, xs), pre_w0(ys)), zs) = pre_app(Cons(n, xs), pre_app(pre_w0(ys), zs))
+  by simp induct xs { simp refl } { simp rw IH refl }
+lemma pre_d175 : forall xs ys. pre_incs(pre_app(Cons(Z, xs), ys)) = pre_app(pre_incs(Cons(Z, xs)), pre_incs(ys))
+  by simp rw pre_incs_app refl
+lemma pre_d176 : forall xs n ys zs. pre_w1(pre_app(xs, Cons(n, ys)), pre_w0(zs)) = pre_app(pre_rev(pre_w0(zs)), pre_rev(pre_app(xs, Cons(n, ys))))
+  by simp rw<- pre_d167 simp refl
+lemma pre_d177 : forall xs. pre_rev(pre_incs(pre_w6(xs))) = pre_incs(pre_rev(pre_w6(xs)))
+  by simp rw pre_rev_incs refl
+lemma pre_d180 : forall xs ys zs. pre_len(pre_app(xs, Cons(S(pre_w2(ys)), zs))) = pre_add(pre_len(xs), pre_len(Cons(S(pre_sum(ys)), zs)))
+  by simp rw pre_d159 simp refl
+lemma pre_d181 : forall n m. pre_app(pre_w3(pre_rep(n, m)), pre_rev(pre_rev(Nil))) = pre_w0(pre_rep(n, m))
+  by simp rw<- pre_rev_incs rw<- pre_rev_incs induct n { simp refl } { simp rw pre_d058 refl }
+lemma pre_d182 : forall xs. pre_len(pre_w0(xs)) = pre_len(pre_rev(xs))
+  by simp rw pre_d033 refl
+lemma pre_d184 : forall n xs ys. pre_len(pre_app(pre_rev(Cons(n, xs)), pre_incs(ys))) = pre_add(pre_len(pre_rev(Cons(n, xs))), pre_len(pre_incs(ys)))
+  by simp rw pre_d034 refl
+lemma pre_d185 : forall xs. pre_len(pre_rev(pre_w5(xs))) = pre_len(pre_w5(xs))
+  by simp rw pre_d044 refl
+lemma pre_d189 : forall n xs ys. pre_len(pre_app(Cons(n, xs), ys)) = pre_add(pre_len(Cons(n, xs)), pre_len(ys))
+  by simp rw pre_len_app refl
+lemma pre_d194 : forall n m k. pre_add(pre_add(n, m), S(k)) = pre_add(pre_add(m, S(k)), n)
+  by rw pre_d017 refl
+lemma pre_d199 : forall n m xs. pre_len(pre_incs(Cons(pre_w4(n, m), xs))) = pre_len(Cons(pre_w4(n, m), xs))
+  by simp rw pre_len_incs refl
+lemma pre_d202 : forall xs. pre_app(pre_w3(pre_incs(xs)), Nil) = pre_w0(pre_incs(xs))
+  by simp rw pre_app_nil_r refl
+lemma pre_d203 : forall xs n ys m. pre_add(S(pre_w2(pre_app(xs, Cons(n, ys)))), m) = pre_add(m, S(pre_w2(pre_app(xs, Cons(n, ys)))))
+  by simp rw pre_d008 simp rw pre_d008 simp rw<- pre_d006 simp refl
+lemma pre_d205 : forall xs n. pre_len(pre_rep(S(pre_w2(xs)), n)) = S(pre_w2(xs))
+  by simp rw pre_len_rep refl
+lemma pre_d206 : forall n m. pre_add(pre_add(n, m), Z) = pre_add(pre_add(m, Z), n)
+  by rw pre_d017 refl
+lemma pre_d213 : forall xs ys. pre_len(pre_app(pre_rev(xs), pre_w0(ys))) = pre_add(pre_len(pre_rev(xs)), pre_len(pre_incs(pre_w0(ys))))
+  by simp rw pre_d131 rw<- pre_d044 rw pre_len_incs rw pre_d044 refl
+lemma pre_d216 : forall xs ys zs. pre_app(pre_app(xs, ys), pre_w1(Nil, zs)) = pre_app(xs, pre_app(ys, pre_w1(Nil, zs)))
+  by simp rw pre_app_assoc refl

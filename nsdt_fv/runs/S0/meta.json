@@ -1,0 +1,222 @@
+{
+ "code_commit": "339c58406d6e1f48a113472286033d3b6100d1bf",
+ "data_version": "e2673a78d60e6531",
+ "env": {
+  "cpu_count": 8,
+  "mem_gb": 15.5,
+  "nvidia_smi": false,
+  "platform": "Linux-7.1.1-76070101-generic-x86_64-with-glibc2.35",
+  "python": "3.10.12",
+  "pyyaml": "6.0.3"
+ },
+ "experiment": "S0",
+ "projects": [
+  {
+   "functions": 16,
+   "gen_stats": {
+    "accepted": 199,
+    "candidates": 255,
+    "duplicates": 47,
+    "false_attempted": 0,
+    "false_by_test": 0,
+    "false_proved": 0,
+    "ill_formed": 0,
+    "trivial": 35,
+    "unproved": 9
+   },
+   "lemmas": 199,
+   "name": "toy-lists",
+   "prefix": "al_",
+   "seed_failed": [],
+   "template": "lists",
+   "window1": 99,
+   "wrappers": 8
+  },
+  {
+   "functions": 17,
+   "gen_stats": {
+    "accepted": 247,
+    "candidates": 323,
+    "duplicates": 64,
+    "false_attempted": 0,
+    "false_by_test": 0,
+    "false_proved": 0,
+    "ill_formed": 0,
+    "trivial": 48,
+    "unproved": 12
+   },
+   "lemmas": 247,
+   "name": "toy-arith",
+   "prefix": "ba_",
+   "seed_failed": [],
+   "template": "arith",
+   "window1": 123,
+   "wrappers": 8
+  },
+  {
+   "functions": 18,
+   "gen_stats": {
+    "accepted": 203,
+    "candidates": 323,
+    "duplicates": 91,
+    "false_attempted": 0,
+    "false_by_test": 0,
+    "false_proved": 0,
+    "ill_formed": 0,
+    "trivial": 51,
+    "unproved": 10
+   },
+   "lemmas": 203,
+   "name": "toy-trees",
+   "prefix": "ct_",
+   "seed_failed": [
+    "sumt_mirror"
+   ],
+   "template": "trees",
+   "window1": 101,
+   "wrappers": 8
+  },
+  {
+   "functions": 19,
+   "gen_stats": {
+    "accepted": 155,
+    "candidates": 219,
+    "duplicates": 51,
+    "false_attempted": 0,
+    "false_by_test": 0,
+    "false_proved": 0,
+    "ill_formed": 0,
+    "trivial": 39,
+    "unproved": 0
+   },
+   "lemmas": 155,
+   "name": "toy-bits",
+   "prefix": "db_",
+   "seed_failed": [],
+   "template": "bits",
+   "window1": 77,
+   "wrappers": 8
+  },
+  {
+   "functions": 17,
+   "gen_stats": {
+    "accepted": 183,
+    "candidates": 225,
+    "duplicates": 42,
+    "false_attempted": 0,
+    "false_by_test": 0,
+    "false_proved": 0,
+    "ill_formed": 0,
+    "trivial": 40,
+    "unproved": 0
+   },
+   "lemmas": 183,
+   "name": "toy-mix-listarith",
+   "prefix": "em_",
+   "seed_failed": [],
+   "template": "mix_listarith",
+   "window1": 91,
+   "wrappers": 8
+  },
+  {
+   "functions": 21,
+   "gen_stats": {
+    "accepted": 215,
+    "candidates": 297,
+    "duplicates": 79,
+    "false_attempted": 0,
+    "false_by_test": 0,
+    "false_proved": 0,
+    "ill_formed": 0,
+    "trivial": 53,
+    "unproved": 3
+   },
+   "lemmas": 215,
+   "name": "toy-mix-treelist",
+   "prefix": "fm_",
+   "seed_failed": [],
+   "template": "mix_treelist",
+   "window1": 107,
+   "wrappers": 8
+  },
+  {
+   "functions": 16,
+   "gen_stats": {
+    "accepted": 160,
+    "candidates": 233,
+    "duplicates": 51,
+    "false_attempted": 0,
+    "false_by_test": 0,
+    "false_proved": 0,
+    "ill_formed": 0,
+    "trivial": 40,
+    "unproved": 7
+   },
+   "lemmas": 160,
+   "name": "toy-prelude",
+   "prefix": "pre_",
+   "seed_failed": [],
+   "template": "lists",
+   "window1": 80,
+   "wrappers": 8
+  }
+ ],
+ "seed": 0,
+ "stages": [
+  [
+   "toy-mix-listarith@w1",
+   "2025-02-25"
+  ],
+  [
+   "toy-mix-treelist@w1",
+   "2025-02-25"
+  ],
+  [
+   "toy-bits@w1",
+   "2025-03-17"
+  ],
+  [
+   "toy-arith@w1",
+   "2025-04-08"
+  ],
+  [
+   "toy-trees@w1",
+   "2025-04-22"
+  ],
+  [
+   "toy-lists@w1",
+   "2025-05-25"
+  ],
+  [
+   "toy-mix-treelist@w2",
+   "2025-08-13"
+  ],
+  [
+   "toy-mix-listarith@w2",
+   "2025-09-30"
+  ],
+  [
+   "toy-lists@w2",
+   "2025-10-31"
+  ],
+  [
+   "toy-arith@w2",
+   "2025-11-19"
+  ],
+  [
+   "toy-bits@w2",
+   "2025-11-26"
+  ],
+  [
+   "toy-trees@w2",
+   "2025-12-16"
+  ]
+ ],
+ "timing": {
+  "build_stream_s": 23.69001317024231,
+  "t1_s": 35.39048790931702,
+  "t2_s": 0.001211404800415039,
+  "t3_s": 7.345338821411133,
+  "total_s": 66.58051800727844
+ }
+}

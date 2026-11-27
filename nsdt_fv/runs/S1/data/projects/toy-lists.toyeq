@@ -1,0 +1,438 @@
+def al_add : Nat Nat -> Nat
+  al_add(Z, m) = m
+  al_add(S(n), m) = S(al_add(n, m))
+def al_app : List List -> List
+  al_app(Nil, ys) = ys
+  al_app(Cons(h, t), ys) = Cons(h, al_app(t, ys))
+def al_len : List -> Nat
+  al_len(Nil) = Z
+  al_len(Cons(h, t)) = S(al_len(t))
+def al_rev : List -> List
+  al_rev(Nil) = Nil
+  al_rev(Cons(h, t)) = al_app(al_rev(t), Cons(h, Nil))
+def al_sum : List -> Nat
+  al_sum(Nil) = Z
+  al_sum(Cons(h, t)) = al_add(h, al_sum(t))
+def al_rep : Nat Nat -> List
+  al_rep(Z, x) = Nil
+  al_rep(S(n), x) = Cons(x, al_rep(n, x))
+def al_incs : List -> List
+  al_incs(Nil) = Nil
+  al_incs(Cons(h, t)) = Cons(S(h), al_incs(t))
+def al_qrev : List List -> List
+  al_qrev(Nil, acc) = acc
+  al_qrev(Cons(h, t), acc) = al_qrev(t, Cons(h, acc))
+def al_w0 : List -> List
+  al_w0(x0) = al_incs(x0)
+def al_w1 : List -> List
+  al_w1(x0) = al_incs(al_w0(x0))
+def al_w2 : Nat Nat List -> List
+  al_w2(x0, x1, x2) = al_qrev(al_rep(x0, x1), x2)
+def al_w3 : Nat Nat List -> List
+  al_w3(x0, x1, x2) = al_rep(al_add(x0, x1), al_len(x2))
+def al_w4 : Nat Nat List -> List
+  al_w4(x0, x1, x2) = al_incs(al_w2(x0, x1, x2))
+def al_w5 : Nat Nat -> List
+  al_w5(x0, x1) = al_w1(al_rep(x0, x1))
+def al_w6 : Nat Nat List -> List
+  al_w6(x0, x1, x2) = al_rep(al_add(x0, x1), al_len(x2))
+def al_w7 : List List -> List
+  al_w7(x0, x1) = al_rep(al_sum(x0), al_sum(x1))
+lemma al_add_z_r : forall n. al_add(n, Z) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma al_add_s_r : forall n m. al_add(n, S(m)) = S(al_add(n, m))
+  by induct n { simp refl } { simp rw IH refl }
+lemma al_add_assoc : forall n m k. al_add(al_add(n, m), k) = al_add(n, al_add(m, k))
+  by induct n { simp refl } { simp rw IH refl }
+lemma al_add_comm : forall n m. al_add(n, m) = al_add(m, n)
+  by induct n { simp rw al_add_z_r refl } { simp rw IH rw al_add_s_r refl }
+lemma al_app_nil_r : forall xs. al_app(xs, Nil) = xs
+  by induct xs { simp refl } { simp rw IH refl }
+lemma al_app_assoc : forall xs ys zs. al_app(al_app(xs, ys), zs) = al_app(xs, al_app(ys, zs))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma al_len_app : forall xs ys. al_len(al_app(xs, ys)) = al_add(al_len(xs), al_len(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma al_rev_app : forall xs ys. al_rev(al_app(xs, ys)) = al_app(al_rev(ys), al_rev(xs))
+  by induct xs { simp rw al_app_nil_r refl } { simp rw IH rw al_app_assoc refl }
+lemma al_rev_rev : forall xs. al_rev(al_rev(xs)) = xs
+  by induct xs { simp refl } { simp rw al_rev_app simp rw IH refl }
+lemma al_len_rev : forall xs. al_len(al_rev(xs)) = al_len(xs)
+  by induct xs { simp refl } { simp rw<- IH rw al_len_app simp rw al_add_comm simp refl }
+lemma al_sum_app : forall xs ys. al_sum(al_app(xs, ys)) = al_add(al_sum(xs), al_sum(ys))
+  by induct xs { simp refl } { simp rw IH rw al_add_assoc refl }
+lemma al_len_incs : forall xs. al_len(al_incs(xs)) = al_len(xs)
+  by induct xs { simp refl } { simp rw IH refl }
+lemma al_incs_app : forall xs ys. al_incs(al_app(xs, ys)) = al_app(al_incs(xs), al_incs(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma al_qrev_app : forall xs ys. al_qrev(xs, ys) = al_app(al_rev(xs), ys)
+  by induct xs { simp refl } { simp rw IH rw al_app_assoc simp refl }
+lemma al_len_rep : forall n m. al_len(al_rep(n, m)) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma al_rev_incs : forall xs. al_rev(al_incs(xs)) = al_incs(al_rev(xs))
+  by induct xs { simp refl } { simp rw IH rw al_incs_app simp refl }
+lemma al_sum_rev : forall xs. al_sum(al_rev(xs)) = al_sum(xs)
+  by induct xs { simp refl } { simp rw<- IH rw al_sum_app simp rw al_add_z_r rw al_add_comm refl }
+lemma al_d001 : forall xs. al_len(al_rev(al_w0(xs))) = al_len(al_w0(xs))
+  by simp rw al_len_rev refl
+lemma al_d002 : forall xs. al_rev(al_w0(xs)) = al_incs(al_rev(xs))
+  by simp rw al_rev_incs refl
+lemma al_d003 : forall n m. al_add(al_add(n, m), Z) = al_add(n, al_add(m, Z))
+  by rw al_add_assoc refl
+lemma al_d004 : al_len(al_rev(Nil)) = al_len(Nil)
+  by simp refl
+lemma al_d005 : forall xs. al_sum(al_rev(al_w1(xs))) = al_sum(al_w1(xs))
+  by simp rw al_sum_rev refl
+lemma al_d006 : forall n. al_add(Z, n) = n
+  by simp refl
+lemma al_d007 : forall xs. al_rev(al_app(Nil, xs)) = al_app(al_rev(xs), al_rev(Nil))
+  by simp rw al_app_nil_r refl
+lemma al_d008 : forall n. al_add(Z, n) = al_add(n, Z)
+  by simp rw al_add_z_r refl
+lemma al_d009 : forall xs n ys. al_rev(al_app(xs, Cons(n, ys))) = al_app(al_rev(Cons(n, ys)), al_rev(xs))
+  by simp rw al_rev_app simp refl
+lemma al_d010 : forall xs ys. al_app(al_app(xs, Nil), ys) = al_app(xs, al_app(Nil, ys))
+  by simp rw al_app_nil_r refl
+lemma al_d012 : forall xs ys. al_sum(al_rev(al_app(xs, ys))) = al_sum(al_app(xs, ys))
+  by rw al_sum_rev refl
+lemma al_d013 : forall xs ys. al_w0(al_app(xs, ys)) = al_app(al_incs(xs), al_incs(ys))
+  by simp rw al_incs_app refl
+lemma al_d014 : forall n xs. al_app(Cons(n, xs), Nil) = Cons(n, xs)
+  by simp rw al_app_nil_r refl
+lemma al_d015 : forall xs ys. al_sum(al_app(al_w1(xs), ys)) = al_add(al_sum(al_w1(xs)), al_sum(ys))
+  by simp rw al_sum_app refl
+lemma al_d016 : forall xs ys zs. al_qrev(xs, al_app(ys, zs)) = al_app(al_rev(xs), al_app(ys, zs))
+  by rw al_qrev_app refl
+lemma al_d017 : forall xs. al_sum(al_app(xs, Nil)) = al_add(al_sum(xs), al_sum(Nil))
+  by simp rw al_sum_app simp refl
+lemma al_d018 : forall n m xs. al_qrev(al_rep(n, m), xs) = al_app(al_rev(al_rep(n, m)), xs)
+  by rw al_qrev_app refl
+lemma al_d019 : forall xs ys zs. al_len(al_app(al_qrev(xs, ys), zs)) = al_add(al_len(al_qrev(xs, ys)), al_len(zs))
+  by rw al_len_app refl
+lemma al_d020 : forall xs ys zs ws. al_app(al_app(xs, al_app(ys, zs)), ws) = al_app(xs, al_app(al_app(ys, zs), ws))
+  by rw al_app_assoc refl
+lemma al_d021 : forall xs ys n zs. al_app(al_app(xs, ys), Cons(n, zs)) = al_app(xs, al_app(ys, Cons(n, zs)))
+  by rw al_app_assoc refl
+lemma al_d023 : forall xs n. al_add(al_len(xs), S(n)) = S(al_add(al_len(xs), n))
+  by rw al_add_s_r refl
+lemma al_d024 : forall xs ys. al_app(al_app(Nil, xs), ys) = al_app(Nil, al_app(xs, ys))
+  by simp refl
+lemma al_d025 : forall n. al_len(al_rep(Z, n)) = Z
+  by simp refl
+lemma al_d026 : forall xs ys zs. al_sum(al_rev(al_app(al_qrev(xs, ys), zs))) = al_sum(al_app(al_qrev(xs, ys), zs))
+  by rw al_d012 refl
+lemma al_d027 : forall n m xs ys. al_rev(al_app(al_w2(n, m, xs), ys)) = al_app(al_rev(ys), al_rev(al_w2(n, m, xs)))
+  by simp rw al_rev_app refl
+lemma al_d028 : forall xs n ys. al_incs(al_app(xs, Cons(n, ys))) = al_app(al_incs(xs), al_incs(Cons(n, ys)))
+  by simp rw al_incs_app simp refl
+lemma al_d029 : forall xs. al_w1(xs) = al_incs(al_w0(xs))
+  by simp refl
+lemma al_d030 : forall n xs. al_len(al_rev(Cons(n, xs))) = al_len(Cons(n, xs))
+  by simp rw<- al_len_rev rw al_d009 simp rw al_rev_rev refl
+lemma al_d031 : forall n xs ys. al_sum(al_app(al_w1(Cons(n, xs)), ys)) = al_add(al_sum(al_w1(Cons(n, xs))), al_sum(ys))
+  by simp rw al_sum_app rw al_add_assoc refl
+lemma al_d032 : forall n m. al_add(al_add(Z, n), m) = al_add(Z, al_add(n, m))
+  by simp refl
+lemma al_d033 : forall n xs. al_sum(al_rev(al_w1(Cons(n, xs)))) = al_sum(al_w1(Cons(n, xs)))
+  by simp rw<- al_d012 rw al_d009 simp rw al_rev_rev refl
+lemma al_d034 : forall xs ys. al_len(al_app(xs, ys)) = al_add(al_len(xs), al_len(al_rev(ys)))
+  by rw al_len_app rw al_len_rev refl
+lemma al_d035 : forall xs ys zs. al_qrev(al_incs(xs), al_app(ys, zs)) = al_app(al_rev(al_incs(xs)), al_app(ys, zs))
+  by rw al_d016 refl
+lemma al_d036 : forall n m. al_len(al_rep(n, S(m))) = n
+  by rw al_len_rep refl
+lemma al_d037 : forall xs ys. al_rev(al_app(xs, al_rev(ys))) = al_app(al_rev(al_rev(ys)), al_rev(xs))
+  by rw al_rev_app refl
+lemma al_d038 : forall xs ys zs. al_app(al_app(xs, Nil), al_app(ys, zs)) = al_app(xs, al_app(Nil, al_app(ys, zs)))
+  by simp rw al_d010 simp refl
+lemma al_d039 : al_sum(al_rev(Nil)) = al_sum(Nil)
+  by simp refl
+lemma al_d040 : forall n. al_add(Z, S(n)) = S(al_add(Z, n))
+  by simp refl
+lemma al_d041 : forall xs ys zs. al_qrev(al_qrev(xs, ys), zs) = al_app(al_rev(al_qrev(xs, ys)), zs)
+  by rw al_qrev_app refl
+lemma al_d042 : forall n xs ys. al_app(Cons(n, al_qrev(xs, ys)), Nil) = Cons(n, al_qrev(xs, ys))
+  by simp rw al_app_nil_r refl
+lemma al_d043 : forall n xs. al_rev(al_rev(Cons(n, xs))) = Cons(n, xs)
+  by simp rw al_d009 simp rw al_rev_rev refl
+lemma al_d044 : forall n m xs. al_w2(n, m, xs) = al_qrev(al_rep(n, m), xs)
+  by simp refl
+lemma al_d046 : forall n m. al_app(al_rep(n, m), Nil) = al_rep(n, m)
+  by rw al_app_nil_r refl
+lemma al_d047 : forall xs. al_w0(xs) = al_incs(xs)
+  by simp refl
+lemma al_d048 : forall n xs. al_w0(Cons(n, xs)) = al_incs(Cons(n, xs))
+  by simp refl
+lemma al_d050 : forall n xs ys zs. al_sum(al_rev(al_app(al_qrev(Cons(n, xs), ys), zs))) = al_sum(al_app(al_qrev(Cons(n, xs), ys), zs))
+  by simp rw al_d026 refl
+lemma al_d051 : forall n m. al_add(al_add(n, S(m)), Z) = al_add(n, al_add(S(m), Z))
+  by simp rw al_d003 simp refl
+lemma al_d052 : forall n m xs. al_w3(n, m, xs) = al_rep(al_add(n, m), al_len(xs))
+  by simp refl
+lemma al_d053 : forall n. al_add(S(n), Z) = S(n)
+  by simp rw<- al_d008 simp refl
+lemma al_d054 : forall n xs. al_sum(al_rev(al_w1(Cons(n, al_incs(xs))))) = al_sum(al_w1(Cons(n, al_incs(xs))))
+  by simp rw<- al_d012 rw al_d009 simp rw al_sum_rev rw al_sum_rev refl
+lemma al_d055 : forall xs ys zs. al_app(al_app(Nil, al_qrev(xs, ys)), zs) = al_app(Nil, al_app(al_qrev(xs, ys), zs))
+  by simp refl
+lemma al_d056 : forall xs ys n m. al_len(al_app(al_qrev(xs, ys), al_rep(n, m))) = al_add(al_len(al_qrev(xs, ys)), al_len(al_rep(n, m)))
+  by rw al_d019 refl
+lemma al_d058 : forall xs n m. al_add(al_add(al_sum(xs), n), m) = al_add(al_sum(xs), al_add(n, m))
+  by rw al_add_assoc refl
+lemma al_d059 : forall xs. al_len(al_rev(Cons(Z, xs))) = al_len(Cons(Z, xs))
+  by simp rw al_d034 simp rw al_len_rev rw al_add_comm simp refl
+lemma al_d060 : forall n xs ys. al_sum(al_app(al_w1(Cons(S(n), xs)), ys)) = al_add(al_sum(al_w1(Cons(S(n), xs))), al_sum(ys))
+  by simp rw al_sum_app rw al_add_assoc refl
+lemma al_d061 : forall n xs ys. al_w2(n, al_len(xs), ys) = al_qrev(al_rep(n, al_len(xs)), ys)
+  by simp refl
+lemma al_d062 : forall n m k. al_len(al_rep(al_add(n, m), S(k))) = al_add(n, m)
+  by rw al_d036 refl
+lemma al_d063 : al_rev(al_app(Nil, Nil)) = al_app(al_rev(Nil), al_rev(Nil))
+  by simp refl
+lemma al_d064 : forall xs ys zs. al_qrev(al_w0(xs), al_app(ys, zs)) = al_app(al_rev(al_incs(xs)), al_app(ys, zs))
+  by simp rw al_d035 refl
+lemma al_d065 : al_sum(al_rev(al_w1(Nil))) = al_sum(al_w1(Nil))
+  by simp refl
+lemma al_d066 : al_add(Z, Z) = Z
+  by simp refl
+lemma al_d068 : forall n m xs. al_app(Cons(al_add(n, m), xs), Nil) = Cons(al_add(n, m), xs)
+  by simp rw al_app_nil_r refl
+lemma al_d069 : forall n xs. al_len(al_rep(n, S(al_len(xs)))) = n
+  by rw al_d036 refl
+lemma al_d071 : forall xs ys zs. al_qrev(xs, al_app(al_w0(ys), zs)) = al_app(al_rev(xs), al_app(al_w0(ys), zs))
+  by simp rw al_d016 refl
+lemma al_d072 : forall xs ys. al_sum(al_rev(al_app(xs, al_incs(ys)))) = al_sum(al_app(xs, al_incs(ys)))
+  by rw al_d012 refl
+lemma al_d073 : forall n m xs ys. al_sum(al_app(al_w1(Cons(n, Cons(m, xs))), ys)) = al_add(al_sum(al_w1(Cons(n, Cons(m, xs)))), al_sum(ys))
+  by simp rw al_sum_app rw al_add_assoc simp rw al_add_assoc refl
+lemma al_d074 : forall xs ys zs ws. al_qrev(xs, al_app(ys, al_app(zs, ws))) = al_app(al_rev(xs), al_app(ys, al_app(zs, ws)))
+  by rw al_d016 refl
+lemma al_d076 : forall xs ys. al_sum(al_app(al_w1(xs), al_incs(ys))) = al_add(al_sum(al_w1(xs)), al_sum(al_incs(ys)))
+  by simp rw al_sum_app refl
+lemma al_d077 : forall n m. al_len(al_rep(Z, al_add(n, m))) = Z
+  by simp refl
+lemma al_d078 : forall xs ys. al_sum(al_app(xs, al_w0(ys))) = al_add(al_sum(xs), al_sum(al_w0(ys)))
+  by simp rw al_sum_app refl
+lemma al_d079 : forall xs ys zs. al_qrev(xs, al_app(al_incs(ys), zs)) = al_app(al_rev(xs), al_app(al_incs(ys), zs))
+  by rw al_d016 refl
+lemma al_d081 : forall n xs. al_sum(al_app(al_w1(Cons(n, xs)), Nil)) = al_add(al_sum(al_w1(Cons(n, xs))), al_sum(Nil))
+  by simp rw al_d017 simp rw al_d003 refl
+lemma al_d082 : forall xs ys. al_sum(al_app(al_w1(al_w0(xs)), ys)) = al_add(al_sum(al_w1(al_w0(xs))), al_sum(ys))
+  by simp rw al_sum_app refl
+lemma al_d083 : forall xs n ys. al_len(al_app(xs, Cons(n, ys))) = al_add(al_len(xs), al_len(al_rev(Cons(n, ys))))
+  by simp rw al_d034 simp refl
+lemma al_d084 : forall n m xs. al_sum(al_rev(al_w1(al_w3(n, m, xs)))) = al_sum(al_w1(al_w3(n, m, xs)))
+  by simp rw al_sum_rev refl
+lemma al_d085 : forall n m. al_rev(al_w0(al_rep(n, m))) = al_incs(al_rev(al_rep(n, m)))
+  by simp rw al_rev_incs refl
+lemma al_d087 : forall n m k. al_len(al_rep(n, S(al_add(m, k)))) = n
+  by rw al_d036 refl
+lemma al_d088 : forall n xs ys. al_len(al_app(Cons(n, xs), ys)) = al_add(al_len(Cons(n, xs)), al_len(ys))
+  by simp rw al_len_app refl
+lemma al_d089 : forall xs ys. al_app(al_app(xs, Nil), al_incs(ys)) = al_app(xs, al_app(Nil, al_incs(ys)))
+  by simp rw al_d010 simp refl
+lemma al_d091 : forall xs ys zs. al_app(Cons(al_len(xs), al_qrev(ys, zs)), Nil) = Cons(al_len(xs), al_qrev(ys, zs))
+  by simp rw<- al_d042 simp refl
+lemma al_d092 : forall xs ys. al_qrev(al_qrev(xs, Nil), ys) = al_app(al_rev(al_qrev(xs, Nil)), ys)
+  by rw al_d041 refl
+lemma al_d094 : forall xs ys zs. al_len(al_app(al_qrev(xs, al_rev(ys)), zs)) = al_add(al_len(al_qrev(xs, al_rev(ys))), al_len(zs))
+  by rw al_d019 refl
+lemma al_d095 : forall n m xs. al_w4(n, m, xs) = al_incs(al_w2(n, m, xs))
+  by simp refl
+lemma al_d096 : forall n m. al_w5(n, m) = al_w1(al_rep(n, m))
+  by simp refl
+lemma al_d097 : forall n m xs. al_w6(n, m, xs) = al_rep(al_add(n, m), al_len(xs))
+  by simp refl
+lemma al_d098 : forall xs ys. al_w7(xs, ys) = al_rep(al_sum(xs), al_sum(ys))
+  by simp refl
+lemma al_d099 : forall xs n ys zs. al_qrev(al_qrev(xs, Cons(n, ys)), zs) = al_app(al_rev(al_qrev(xs, Cons(n, ys))), zs)
+  by rw al_d041 refl
+lemma al_d100 : forall n m. al_len(al_rep(Z, S(al_add(n, m)))) = Z
+  by simp refl
+lemma al_d101 : forall n m xs. al_app(Cons(al_add(n, m), xs), Nil) = Cons(al_add(m, n), xs)
+  by simp rw al_app_nil_r rw al_add_comm refl
+lemma al_d102 : forall xs. al_sum(al_rev(al_w1(al_w0(xs)))) = al_sum(al_w1(al_w0(xs)))
+  by simp rw al_sum_rev refl
+lemma al_d105 : forall xs. al_len(al_app(Nil, xs)) = al_add(al_len(Nil), al_len(al_rev(xs)))
+  by simp rw al_len_rev refl
+lemma al_d106 : forall n m k xs. al_qrev(al_rep(al_add(n, m), k), xs) = al_app(al_rev(al_rep(al_add(n, m), k)), xs)
+  by rw al_d018 refl
+lemma al_d107 : forall n m xs. al_w2(S(n), m, xs) = al_qrev(al_rep(S(n), m), xs)
+  by simp refl
+lemma al_d110 : forall n. al_len(al_rep(Z, S(n))) = Z
+  by simp refl
+lemma al_d111 : forall n xs m. al_add(al_len(Cons(n, xs)), S(m)) = S(al_add(al_len(Cons(n, xs)), m))
+  by simp rw al_d023 refl
+lemma al_d115 : forall xs n ys. al_sum(al_rev(al_w1(al_w3(al_sum(xs), n, ys)))) = al_sum(al_w1(al_w3(al_sum(xs), n, ys)))
+  by simp rw al_sum_rev refl
+lemma al_d120 : forall xs. al_rev(al_w0(al_w1(xs))) = al_incs(al_rev(al_w1(xs)))
+  by simp rw al_rev_incs refl
+lemma al_d121 : forall n m k i. al_add(al_add(al_sum(al_w5(n, m)), k), i) = al_add(al_sum(al_w5(n, m)), al_add(k, i))
+  by simp rw al_d058 refl
+lemma al_d122 : forall n m. al_add(n, S(S(m))) = S(al_add(n, S(m)))
+  by rw al_add_s_r refl
+lemma al_d123 : forall xs ys zs. al_app(al_app(al_app(xs, ys), Nil), al_incs(zs)) = al_app(al_app(xs, ys), al_app(Nil, al_incs(zs)))
+  by simp rw al_d089 simp refl
+lemma al_d124 : forall xs ys zs. al_qrev(al_w0(xs), al_app(ys, zs)) = al_app(al_rev(al_w0(xs)), al_app(ys, zs))
+  by simp rw al_d035 refl
+lemma al_d125 : forall n m xs. al_len(al_incs(al_w4(n, m, xs))) = al_len(al_w4(n, m, xs))
+  by simp rw al_len_incs refl
+lemma al_d126 : forall xs. al_qrev(al_qrev(Nil, Nil), xs) = al_app(al_rev(al_qrev(Nil, Nil)), xs)
+  by simp refl
+lemma al_d127 : forall xs ys n zs. al_qrev(al_qrev(xs, ys), Cons(n, zs)) = al_app(al_rev(al_qrev(xs, ys)), Cons(n, zs))
+  by rw al_d041 refl
+lemma al_d128 : forall xs n ys zs. al_qrev(al_incs(xs), al_app(Cons(n, ys), zs)) = al_app(al_rev(al_incs(xs)), al_app(Cons(n, ys), zs))
+  by simp rw al_qrev_app refl
+lemma al_d129 : forall n m. al_len(al_rep(Z, S(al_add(n, S(m))))) = Z
+  by simp refl
+lemma al_d131 : forall xs n m. al_len(al_rep(al_add(al_sum(xs), n), S(m))) = al_add(al_sum(xs), n)
+  by rw al_d062 refl
+lemma al_d132 : forall xs ys. al_len(al_rev(Cons(al_sum(xs), ys))) = al_len(Cons(al_sum(xs), ys))
+  by simp rw al_d083 simp induct ys { simp refl } { simp rw al_d083 simp rw IH simp rw al_d023 rw<- al_d008 simp refl }
+lemma al_d134 : forall n m. al_rev(al_incs(al_rep(n, m))) = al_incs(al_rev(al_rep(n, m)))
+  by rw<- al_d085 simp refl
+lemma al_d135 : forall xs ys. al_add(al_len(xs), S(al_len(ys))) = S(al_add(al_len(xs), al_len(ys)))
+  by rw al_d023 refl
+lemma al_d136 : forall xs ys. al_app(al_qrev(xs, ys), Nil) = al_qrev(xs, ys)
+  by rw al_app_nil_r refl
+lemma al_d137 : forall n m k xs. al_w2(al_add(n, m), k, xs) = al_app(al_rev(al_rep(al_add(n, m), k)), xs)
+  by simp rw al_d106 refl
+lemma al_d139 : forall n m xs. al_sum(al_app(al_w1(al_rep(n, m)), xs)) = al_add(al_sum(al_w1(al_rep(n, m))), al_sum(xs))
+  by simp rw al_sum_app refl
+lemma al_d141 : forall xs ys zs. al_app(al_qrev(xs, al_app(ys, zs)), Nil) = al_app(al_rev(xs), al_app(ys, zs))
+  by rw al_d136 rw al_d016 refl
+lemma al_d142 : forall n xs. al_sum(al_rev(al_w1(al_w3(Z, n, xs)))) = al_sum(al_w1(al_w3(Z, n, xs)))
+  by simp rw al_sum_rev refl
+lemma al_d143 : forall n xs ys. al_app(al_app(Cons(n, xs), Nil), ys) = al_app(Cons(n, xs), al_app(Nil, ys))
+  by simp rw al_d010 simp refl
+lemma al_d144 : forall n m xs. al_sum(al_app(al_w5(n, m), xs)) = al_add(al_sum(al_w1(al_rep(n, m))), al_sum(xs))
+  by simp rw al_sum_app refl
+lemma al_d146 : forall xs ys. al_len(al_rev(al_w0(al_w7(xs, ys)))) = al_len(al_w0(al_w7(xs, ys)))
+  by simp rw al_len_rev refl
+lemma al_d147 : forall xs n ys. al_w0(al_app(xs, Cons(n, ys))) = al_app(al_incs(xs), al_incs(Cons(n, ys)))
+  by simp rw al_d028 simp refl
+lemma al_d148 : forall xs ys zs. al_len(al_app(xs, Cons(al_sum(ys), zs))) = al_add(al_len(xs), al_len(al_rev(Cons(al_sum(ys), zs))))
+  by simp rw al_d083 simp refl
+lemma al_d149 : forall xs. al_add(al_sum(xs), Z) = al_sum(xs)
+  by rw<- al_d008 simp refl
+lemma al_d150 : forall n xs. al_rev(al_incs(Cons(n, xs))) = al_incs(al_rev(Cons(n, xs)))
+  by simp induct xs { simp refl } { simp rw al_d028 simp rw IH refl }
+lemma al_d151 : forall xs n m ys. al_qrev(al_rep(al_add(al_sum(xs), n), m), ys) = al_app(al_rev(al_rep(al_add(al_sum(xs), n), m)), ys)
+  by rw al_d106 refl
+lemma al_d152 : forall n m k. al_add(al_add(al_add(n, m), k), Z) = al_add(al_add(n, m), al_add(k, Z))
+  by rw al_d003 refl
+lemma al_d153 : forall n xs ys. al_rev(al_rev(Cons(n, al_app(xs, ys)))) = Cons(n, al_app(xs, ys))
+  by simp rw al_d009 simp induct xs { simp rw al_rev_rev refl } { simp rw<- IH rw al_d009 simp refl }
+lemma al_d155 : forall n m k. al_len(al_rep(al_add(S(n), m), S(k))) = al_add(S(n), m)
+  by simp rw al_d062 refl
+lemma al_d156 : forall n m k xs. al_sum(al_app(al_w1(al_rep(al_add(n, m), k)), xs)) = al_add(al_sum(al_w1(al_rep(al_add(n, m), k))), al_sum(xs))
+  by simp rw al_sum_app refl
+lemma al_d157 : forall n m. al_add(n, S(S(S(m)))) = S(al_add(n, S(S(m))))
+  by rw al_d122 refl
+lemma al_d159 : forall xs ys n zs. al_app(al_app(xs, ys), Cons(n, al_rev(zs))) = al_app(xs, al_app(ys, Cons(n, al_rev(zs))))
+  by rw al_d021 refl
+lemma al_d160 : forall xs ys. al_sum(al_app(al_w1(Cons(al_len(xs), ys)), Nil)) = al_add(al_sum(al_w1(Cons(al_len(xs), ys))), al_sum(Nil))
+  by simp rw al_d017 simp rw al_d149 rw<- al_d053 simp refl
+lemma al_d161 : forall xs ys zs. al_qrev(xs, al_app(al_w0(ys), zs)) = al_app(al_rev(xs), al_app(al_incs(ys), zs))
+  by simp rw al_d079 refl
+lemma al_d162 : forall xs ys. al_app(al_app(xs, Nil), al_w0(ys)) = al_app(xs, al_app(Nil, al_incs(ys)))
+  by simp rw al_d089 simp refl
+lemma al_d163 : forall n m xs. al_sum(al_rev(al_w1(al_w3(Z, n, Cons(m, xs))))) = al_sum(al_w1(al_w3(Z, n, Cons(m, xs))))
+  by simp rw al_sum_rev refl
+lemma al_d164 : forall n m xs ys. al_app(al_app(al_rep(n, m), xs), ys) = al_app(al_rep(n, m), al_app(xs, ys))
+  by rw al_app_assoc refl
+lemma al_d165 : forall xs ys zs. al_app(al_app(al_w7(xs, ys), Nil), al_incs(zs)) = al_app(al_w7(xs, ys), al_app(Nil, al_incs(zs)))
+  by simp rw al_d089 simp refl
+lemma al_d168 : forall n m. al_add(al_sum(al_w5(n, m)), Z) = al_sum(al_w5(n, m))
+  by simp rw al_d149 refl
+lemma al_d170 : forall n m. al_sum(al_rev(al_w5(n, m))) = al_sum(al_w5(n, m))
+  by simp rw al_sum_rev refl
+lemma al_d172 : forall xs ys. al_qrev(xs, al_w1(ys)) = al_app(al_rev(xs), al_w1(ys))
+  by simp rw al_qrev_app refl
+lemma al_d173 : forall n m xs. al_add(al_add(al_add(n, m), al_sum(xs)), Z) = al_add(al_add(n, m), al_add(al_sum(xs), Z))
+  by rw al_d152 refl
+lemma al_d174 : al_rev(al_rev(Nil)) = Nil
+  by simp refl
+lemma al_d175 : forall xs ys. al_sum(al_rev(al_w1(al_w3(Z, al_sum(xs), ys)))) = al_sum(al_w1(al_w3(Z, al_sum(xs), ys)))
+  by simp rw al_sum_rev refl
+lemma al_d176 : forall xs ys n. al_app(al_app(xs, ys), Cons(n, Nil)) = al_app(xs, al_app(ys, Cons(n, Nil)))
+  by rw al_d021 refl
+lemma al_d177 : forall n xs m ys. al_w2(n, al_len(xs), Cons(m, ys)) = al_qrev(al_rep(n, al_len(xs)), Cons(m, ys))
+  by simp refl
+lemma al_d178 : forall xs n. al_add(al_len(xs), S(S(n))) = S(al_add(al_len(xs), S(n)))
+  by rw al_d023 refl
+lemma al_d179 : forall xs. al_rev(al_w0(al_w1(xs))) = al_w0(al_rev(al_w1(xs)))
+  by simp rw al_rev_incs refl
+lemma al_d180 : forall n m k xs. al_sum(al_app(al_w5(al_add(n, m), k), xs)) = al_add(al_sum(al_w1(al_rep(al_add(n, m), k))), al_sum(xs))
+  by simp rw al_sum_app refl
+lemma al_d181 : forall n m k. al_add(al_add(n, m), k) = al_add(k, al_add(n, m))
+  by rw al_add_comm refl
+lemma al_d182 : forall xs. al_rev(al_incs(al_w1(xs))) = al_incs(al_rev(al_w1(xs)))
+  by simp rw al_rev_incs refl
+lemma al_d184 : forall xs n m. al_add(al_add(al_sum(xs), n), S(m)) = al_add(al_sum(xs), al_add(n, S(m)))
+  by rw al_d058 refl
+lemma al_d188 : forall n m xs. al_qrev(al_rep(n, m), al_w1(xs)) = al_app(al_rev(al_rep(n, m)), al_w1(xs))
+  by simp rw al_d018 refl
+lemma al_d189 : forall n m. al_len(al_rep(Z, S(al_add(S(n), S(m))))) = Z
+  by simp refl
+lemma al_d191 : forall n m. al_len(al_rep(n, S(S(m)))) = n
+  by rw al_d036 refl
+lemma al_d195 : forall n. al_len(al_rep(n, S(al_len(Nil)))) = n
+  by simp rw al_d036 refl
+lemma al_d197 : forall n m xs ys. al_w2(n, al_len(Cons(m, xs)), ys) = al_qrev(al_rep(n, al_len(Cons(m, xs))), ys)
+  by simp refl
+lemma al_d198 : forall n m. al_add(al_add(S(n), S(m)), Z) = al_add(S(n), al_add(S(m), Z))
+  by simp rw al_d051 simp refl
+lemma al_d199 : forall n xs. al_len(al_app(Cons(n, xs), Nil)) = al_add(al_len(Cons(n, xs)), al_len(Nil))
+  by simp rw al_len_app simp refl
+lemma al_d202 : forall n xs ys. al_sum(al_app(al_w1(Cons(n, al_qrev(xs, ys))), Nil)) = al_add(al_sum(al_w1(Cons(n, al_qrev(xs, ys)))), al_sum(Nil))
+  by simp rw al_d017 simp rw al_d149 rw<- al_d053 simp refl
+lemma al_d203 : forall xs ys. al_len(al_app(xs, Cons(al_sum(Nil), ys))) = al_add(al_len(xs), al_len(al_rev(Cons(al_sum(Nil), ys))))
+  by simp rw al_d083 simp refl
+lemma al_d204 : forall xs n ys. al_app(Cons(al_add(al_len(xs), n), ys), Nil) = Cons(al_add(al_len(xs), n), ys)
+  by simp rw<- al_d101 simp induct n { simp rw<- al_d101 simp rw al_d010 simp refl } { simp rw<- al_d068 simp rw<- al_d101 simp refl }
+lemma al_d205 : forall xs ys. al_sum(al_app(al_w1(xs), al_w0(ys))) = al_add(al_sum(al_w1(xs)), al_sum(al_incs(ys)))
+  by simp rw al_sum_app refl
+lemma al_d207 : forall n m xs. al_app(al_app(al_w5(n, m), Nil), xs) = al_app(al_w5(n, m), al_app(Nil, xs))
+  by simp rw al_d010 simp refl
+lemma al_d210 : forall n xs. al_rev(al_incs(Cons(n, al_w1(xs)))) = al_incs(al_rev(Cons(n, al_w1(xs))))
+  by simp induct xs { simp refl } { simp rw al_d028 simp rw IH refl }
+lemma al_d211 : forall xs ys n zs. al_app(al_qrev(xs, al_app(ys, Cons(n, zs))), Nil) = al_app(al_rev(xs), al_app(ys, Cons(n, zs)))
+  by rw al_d141 refl
+lemma al_d212 : forall n m. al_app(Cons(al_add(n, m), Nil), Nil) = Cons(al_add(n, m), Nil)
+  by simp refl
+lemma al_d217 : forall xs ys. al_add(al_sum(al_app(xs, ys)), Z) = al_sum(al_app(xs, ys))
+  by rw al_d149 refl
+lemma al_d218 : forall n m. al_len(al_rep(Z, S(al_add(S(n), m)))) = Z
+  by simp refl
+lemma al_d219 : forall n m k. al_len(al_rep(S(n), S(al_add(m, k)))) = S(n)
+  by simp rw al_d087 refl
+lemma al_d220 : forall xs n. al_sum(al_rev(al_w5(al_len(xs), n))) = al_sum(al_w5(al_len(xs), n))
+  by simp rw al_sum_rev refl
+lemma al_d221 : forall n m k xs. al_w3(al_add(n, m), k, xs) = al_rep(al_add(al_add(n, m), k), al_len(xs))
+  by simp refl
+lemma al_d222 : forall n m xs. al_sum(al_app(al_w5(n, m), xs)) = al_add(al_sum(al_w5(n, m)), al_sum(xs))
+  by simp rw al_sum_app refl
+lemma al_d223 : forall xs ys. al_app(al_app(al_incs(xs), Nil), al_w0(ys)) = al_app(al_incs(xs), al_app(Nil, al_incs(ys)))
+  by simp rw al_d089 simp refl
+lemma al_d224 : forall xs n. al_add(al_len(xs), S(S(S(n)))) = S(al_add(al_len(xs), S(S(n))))
+  by rw al_d178 refl
+lemma al_d225 : forall xs ys. al_sum(al_app(al_rev(xs), ys)) = al_add(al_sum(al_rev(xs)), al_sum(ys))
+  by rw al_sum_app refl
+lemma al_d228 : forall n m k xs. al_sum(al_app(al_w5(al_add(n, m), k), xs)) = al_add(al_sum(al_w5(al_add(n, m), k)), al_sum(xs))
+  by simp rw al_sum_app refl
+lemma al_d229 : forall n m. al_add(al_add(n, m), Z) = al_add(n, m)
+  by rw<- al_d008 simp refl
+lemma al_d230 : forall n m. al_len(al_rep(al_add(S(Z), n), S(m))) = al_add(S(Z), n)
+  by simp rw al_d036 refl
+lemma al_d231 : al_len(al_rep(Z, S(al_len(Nil)))) = Z
+  by simp refl
+lemma al_d232 : forall n m xs ys. al_w0(al_app(al_w4(n, m, xs), ys)) = al_app(al_incs(al_w4(n, m, xs)), al_incs(ys))
+  by simp rw al_incs_app refl
+lemma al_d234 : forall xs ys zs. al_app(al_app(xs, al_app(ys, zs)), Nil) = al_app(xs, al_app(al_app(ys, zs), Nil))
+  by rw al_d020 refl
+lemma al_d235 : forall n m. al_app(al_rep(n, S(m)), Nil) = al_rep(n, S(m))
+  by rw al_d046 refl
+lemma al_d236 : forall n m. al_rev(al_w0(al_rep(n, m))) = al_w0(al_rev(al_rep(n, m)))
+  by simp rw al_d134 refl
+lemma al_d238 : forall xs ys n m. al_qrev(al_w0(xs), al_app(ys, al_rep(n, m))) = al_app(al_rev(al_incs(xs)), al_app(ys, al_rep(n, m)))
+  by simp rw al_d035 refl
