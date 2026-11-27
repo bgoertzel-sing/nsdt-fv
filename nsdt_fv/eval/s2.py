@@ -52,6 +52,9 @@ ARMS = {
     "D2": {"filter": False, "rem": True, "neg": False},
     "D3": {"filter": True, "rem": False, "neg": True},
     "D4": {"filter": True, "rem": True, "neg": False},
+    # diagnostic, not an S2 arm and not A.4: D1 whose wake is B2c's supervised recipe (30 epochs, batch 32)
+    # instead of one epoch, to see what the sleep phases do when the cap does learn the window
+    "D1x": {"filter": True, "rem": True, "neg": True, "wake": "b2c"},
 }
 CONJ = "conj:"
 
@@ -137,7 +140,16 @@ class ArmRun:
         wobls = [self.full[e["source_ids"][0]] for e in window]
         aux = aux_examples(wobls, self.tok, self.model.cfg["max_len"], rng, self.guard) if dc.get("aux_conj", True) else []
         exs = list(window) + aux
-        st = self.core.wake(exs, seed=self.seed * 1000 + t, batch=self.cfg["cap"]["wake_batch"])
+        if self.flags.get("wake") == "b2c":
+            b2 = self.cfg["b2c"]
+            steps = epochs_to_steps(len(exs), b2["epochs"], b2["batch"])
+            st = train_steps(self.model, self.tok, self.model.cap_parameters(), exs, steps=steps, batch=b2["batch"],
+                             lr=b2["lr"], seed=self.seed * 1000 + t, guard=self.guard_fn)
+            self.core.steps += steps
+            self.core.tokens += st["train_tokens"]
+            st = {"steps": steps, "examples": len(exs), "mean_loss": st["last_loss"]}
+        else:
+            st = self.core.wake(exs, seed=self.seed * 1000 + t, batch=self.cfg["cap"]["wake_batch"])
         self.log_examples(t, "wake", window)
         self.log_examples(t, "wake_aux", aux)
         st.update(n_human=len(window), n_aux=len(aux))
@@ -509,7 +521,7 @@ def main(argv=None):
             raise SystemExit("a pilot needs --out (it must not write into the reported run directories)")
     if cfg.get("experiment") != "S2":
         raise SystemExit("config is not an S2 config")
-    if a.arm not in ARMS and a.arm != "B2c":
+    if a.arm not in ARMS and a.arm != "B2c":           # D1x is in ARMS (diagnostic)
         raise SystemExit(f"unknown arm {a.arm}")
     run_arm(cfg, a.arm, out_dir=a.out)
 

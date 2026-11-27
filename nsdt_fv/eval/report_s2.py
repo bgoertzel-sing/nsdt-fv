@@ -25,11 +25,12 @@ from .report_s1 import t4 as t4_check
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 S1_ARMS = ["B0", "B2", "B5-10", "B6"]
-S2_ARMS = ["D1", "D2", "D3", "D4", "B2c"]
+S2_ARMS = ["D1", "D2", "D3", "D4", "B2c", "D1x"]
 NAMES = {"B0": "frozen base", "B2": "sequential fine-tuning, all weights (S1)", "B5-10": "B2 + 10% replay (S1)",
          "B6": "joint retraining (S1)", "B2c": "sequential fine-tuning of the cap only (supplementary)",
          "D1": "DT-ref: wake, re-derivation and conjecture sleep, kernel filter, negatives",
-         "D2": "D1 without the kernel filter", "D3": "D1 without conjecture sleep", "D4": "D1 without the negative phase"}
+         "D2": "D1 without the kernel filter", "D3": "D1 without conjecture sleep", "D4": "D1 without the negative phase",
+         "D1x": "diagnostic, not A.4: D1 with B2c's wake (30 epochs, batch 32) instead of one epoch"}
 KEYS = ("LA", "FWD", "ACC", "F", "BWT")
 
 
@@ -51,10 +52,17 @@ def jl(path):
         return [json.loads(x) for x in f if x.strip()]
 
 
+ALLOW_INCOMPLETE = False
+
+
 def load_run(d, arm, s1=False):
     p = os.path.join(d, arm)
     if not os.path.exists(os.path.join(p, "verdicts.jsonl.gz")):
         return None
+    if not s1 and not os.path.exists(os.path.join(p, "meta.json")):     # meta.json is written when a run ends
+        if ALLOW_INCOMPLETE:
+            return None
+        raise RuntimeError(f"run {p} is incomplete (no meta.json)")
     r = {"lines": gz(os.path.join(p, "verdicts.jsonl.gz")), "train": jl(os.path.join(p, "train.jsonl")),
          "evalsets": json.load(open(os.path.join(p, "evalsets.json")))}
     if not s1:
@@ -139,7 +147,7 @@ def build(out_path):
     else:
         what = f"residual adapter blocks (LayerNorm, down to r={cc['r']}, GELU, up; up initialised to zero)"
     w(f"- Cap (A.4): {what} after base layers "
-      f"{m0['cap']['layers']} (the top third of {cfg['model']['layers']}, rounded up) and an untied output head initialised from the "
+      f"{m0['cap']['layers']} and an untied output head initialised from the "
       f"base embedding; {m0['cap']['trainable_params']:,} trainable parameters. AdamW lr {cc['lr']}, constant, one optimiser per run.")
     dc = cfg["dream"]
     w(f"- Day (stage): wake = one epoch over the window's {('human proofs plus the auxiliary statement task (three window statements -> a fourth)' if dc.get('aux_conj') else 'human proofs')}, "
@@ -179,7 +187,8 @@ def build(out_path):
     w("")
     w("| Comparison | seed | dLA | dACC | dF | dBWT |")
     w("|---|---|---|---|---|---|")
-    comps = [("D1", "B0"), ("D1", "B2"), ("D1", "B2c"), ("D1", "D2"), ("D1", "D3"), ("D1", "D4"), ("B2c", "B2")]
+    comps = [("D1", "B0"), ("D1", "B2"), ("D1", "B2c"), ("D1", "D2"), ("D1", "D3"), ("D1", "D4"), ("B2c", "B0"),
+             ("B2c", "B2"), ("D1x", "B2c"), ("D1x", "D1"), ("D1x", "B0")]
     for s in (0, 1):
         for a, b in comps:
             if (a, s) in res and (b, s) in res:
@@ -281,7 +290,7 @@ def build(out_path):
     w("a[t, j] in points: rows = model after stage t (0 = base), columns = E_j; only cells the metrics use (j <= t + 1). "
       "Last row: forgetting of E_j, max_{j<=t<T} a[t, j] - a[T, j].")
     w("")
-    for key in [x for x in s2 if x[0] != "B2c"] + [("B2", 0)]:
+    for key in s2 + [("B2", 0)]:
         A = runs[key]["A"]
         w(f"**{key[0]} seed {key[1]}**")
         w("")
@@ -336,7 +345,7 @@ def build(out_path):
                              any(stage_of[full[i]["snapshot_id"]] != e["stage"] for i in e["source_ids"]))
         coincide = sum(1 for e in dream_x if e["verdict_id"] in byid and
                        proof_by_stmt.get(byid[e["verdict_id"]]["statement"]) == byid[e["verdict_id"]]["candidate"])
-        must_acc = x[0] in ("D1", "D3", "D4")
+        must_acc = x[0] in ("D1", "D3", "D4", "D1x")
         ok = missing == 0 and guard_bad == 0 and earlier_proofs == 0 and earlier == 0 and neg_bad == 0 and (not must_acc or not_acc == 0)
         t9ok &= ok
         t9rows.append(f"{x[0]} s{x[1]}: {len(dream_x)} dream examples, {missing} without a verdict line, {not_acc} with a rejected "
@@ -410,7 +419,10 @@ def build(out_path):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(HERE, "reports", "S2.md"))
+    ap.add_argument("--allow-incomplete", action="store_true", help="draft only: skip runs still in progress")
     a = ap.parse_args(argv)
+    global ALLOW_INCOMPLETE
+    ALLOW_INCOMPLETE = a.allow_incomplete
     t = build(a.out)
     print(f"wrote {a.out} ({len(t)} bytes, sha256 {hashlib.sha256(t.encode()).hexdigest()[:16]})")
 
