@@ -97,3 +97,28 @@ Even so the cap fits its training data less well than S1's full-parameter traini
   with the one-epoch wake the cap does not learn the windows at all (D1 equals the frozen base within
   noise), so D1-D4 cannot say what the sleep phases do to a cap that is learning. D1x minus B2c isolates
   the sleep phases on top of the same supervised training. It is not A.4 and not a protocol change.
+
+## S3 choices (channels A-E on the toy; nothing in S0-S2 changed)
+
+- Placement (A.3): nsdt_fv/store/channels/{a_artifacts,b_compose,c_explore,d_repair,e_plans}.py, one class per
+  channel with id, wake_examples, nrem_targets, rem_seeds and annotate; ChannelBase applies the guard to every
+  item at emission and the per-stage cap after the channel's ranking. Each channel runs once per stage, after the
+  store has added the stage's snapshot and before wake.
+- Inputs: the snapshot's definitions and library without test lemmas (reference-prover calls run on that test-free
+  library), the window's non-test obligations (statements; proofs only for A, D, E), and the store (statement keys,
+  L2-filtered proof_uses edges). Channel wake examples carry the source ids of the window's obligations and are
+  used only in that window's wake (section 4 A).
+- Routing into D1: statements (A, B, C) are offered to conjecture sleep after the model's own conjectures, inside
+  the same 40-statement budget, in the channel's ranking (non-trivial first); priorities (D, E) add prio_weight = 4
+  (the size of A.4's fading term) to the re-derivation weight; wake examples (A, D, E) join the wake epoch.
+- Caps per stage (configs/S3.yaml): A 100 NEXTSTATE, 100 PREMISE, 60 UNFOLD, 60 statements; B 100 statements from
+  at most 400 candidates; C 100 statements; D 80 mutants, 80 repairs, 60 priorities; E 100 plans, 60 priorities.
+  Chosen once from the two-stage smoke run (sizes of the window: about 80 wake proofs), not tuned on results.
+- Checker acceptance per item kind is defined in each channel's docstring; an auxiliary wake example the checker
+  does not confirm is never emitted; B emits only statements whose machine proof backend.check_statement accepts.
+- C: signature = the snapshot's functions, Z, Nil, Leaf, variables n m xs ys t u b; 200 inputs (C.5), terms up to
+  size 7 or 4,000 terms; second independent 200-input test of every candidate.
+- E: skeletons from the window's proofs, min_count 5 (C.5); instantiation on up to 60 non-trivial store statements
+  of the project, 8 tries each.
+- Sampling seeds of every S3 arm are those of S2's D1 (common random numbers); the run label is S3/<arm>/...
+- D1 is re-run through the S3 driver with no channel; its logs must equal S2's D1 (driver equivalence check).

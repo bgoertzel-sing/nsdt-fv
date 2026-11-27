@@ -150,3 +150,46 @@ No protocol element was changed in S2. DT-ref's free parameters and the cap size
     refused. The counts are in reports/S2.md.
 32. **Seeds.** Seed 1 of a D arm uses S1's seed-1 base (as S1's replicate did), so seed-1 rows compare with
     S1's seed-1 B0 and B2; S1 has no seed-1 B6, so GC of seed-1 rows uses the seed-0 B2 and B6.
+
+## S3 (channels A-E on the toy)
+
+No protocol element (splits, metrics, thresholds, the S1 toy, the base, the S2 cap) was changed in S3. The channel
+choices are in CHANGES.md ("S3").
+
+33. **D1x vs B2c is confounded by the auxiliary statement task** (from S2's review). D1x's 30-epoch wake trains on
+    the window's proofs plus the auxiliary statement task of item 27 (three window statements -> a fourth); B2c
+    trains on the window's proofs only. D1x - B2c (F 0 vs 9.0 in reports/S2.md) therefore mixes the effect of the
+    sleep phases with the effect of the auxiliary task, which may itself regularise the cap and protect the base's
+    trivial competence. It is also a single seed. A clean contrast needs B2c with the same auxiliary examples, or
+    D1x without them; neither was run (S3 is channels only).
+34. **Arithmetic slip in S2's result summary.** The S2 DT runs with dream logs are D1-D4 and D1x at seed 0 and D1, D2
+    at seed 1: seven runs of 2,880 re-derivation candidates each, 20,160 dream candidates in all (recounted from the
+    seven dreams.jsonl.gz files), not 17,280 (six runs). The generated per-run tables of reports/S2.md are correct.
+35. **Toy readings of the channels.** C.5 fixes the operations; how their output reaches D1 is a reading of
+    Table 2 and A.3 (details in CHANGES.md): A, B and C emit statements, which feed conjecture sleep after the
+    model's own conjectures inside D1's budget of 40 statements per stage; A, D and E emit auxiliary wake
+    examples of the window they come from; D and E emit re-derivation priorities. D and E emit no new statements
+    (C.5 gives them none: D mutates proofs, E abstracts them), so "channel statements also feed conjecture sleep"
+    applies to A, B and C only. E's "dreams that instantiate a method on a new statement" is read as: an
+    instantiation accepted on a store statement makes that statement a re-derivation priority (the
+    instantiated proof is not trained on).
+36. **D's repair target is a machine proof.** C.5 defines the repair as the reference prover's; D's REPAIR wake
+    examples therefore train on machine proofs, the one exception in S3 to section 4's default that machine proofs
+    are not training targets (X5).
+37. **Annotations unused.** A.3's annotate() returns "" for every channel: annotating evaluation prompts would change
+    the S1 evaluation inputs (T4 compares obligation sets, not prompts, but the order fixes evaluation as in S1/S2).
+    Channel A's and E's prompt-annotation route (Table 2) is not measured.
+38. **Channel C evaluates with the independent ground evaluator** (backends/toyeq_oracle) rather than through
+    CheckerBackend.evaluate_term, for speed (about 10^6 function applications per stage). On Lean the A.3
+    evaluate_term interface is the route; G0's "no change to trainer or evaluator" is unaffected (channels are
+    neither). C's enumeration budget (4,000 terms per stage) stops before size 7 in some stages; the size reached
+    is in reports/S3.md.
+39. **Budget accounting.** N arms have D1's dream budget (C5): 240 re-derivation and at most 160 conjecture-sleep
+    candidates per stage. D1 itself spent only the 240 (none of its conjectures parsed, S2), so N-A, N-B and N-C
+    attempt up to 160 more candidates per stage than D1 actually did. Channel wake examples add optimizer steps
+    to the wake epoch (step and token counts in reports/S3.md, Cost). Neither is compensated.
+40. **Common random numbers.** Every S3 arm draws its sampling seeds from S2's D1 run identifier, so differences
+    between arms come from training, not from sampling noise; the paired bootstrap is over obligations only, as
+    before, and one training seed is run (item 24).
+41. **Store duplicates are arm-dependent.** The 'dup' column counts statements equal to a store statement, and the
+    store includes the arm's own dream library, so a channel's yield is measured inside its N arm, not stand-alone.

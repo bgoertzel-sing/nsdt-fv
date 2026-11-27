@@ -12,7 +12,9 @@ Arms:  D1    S2's D1 re-run through this driver with no channel (determinism and
                nrem_targets  -> store statements whose re-derivation weight gets + prio_weight (D, E)
                rem_seeds     -> statements offered to conjecture sleep after the model's own
                                 conjectures, in the channel's ranking, inside the same budget of at
-                                most rem_conjectures statements per stage (A, B, C)
+                                most rem_conjectures statements per stage (A, B, C); a statement whose
+                                prompt leaves less than conj_max_new tokens of the context is skipped
+                                ('too_long', the rule D1 applies to its own conjecture prompts)
 Everything else is S2's D1 unchanged (configs/S2.yaml values are copied into configs/S3.yaml): stream,
 base, cap, wake, sleep budgets, evaluation sets and sampling. Sampling seeds of every S3 arm are those
 of S2's D1 (seed_run = "S2/D1/tiny-<base hash>/s<seed>"), so arms differ only through what the channel
@@ -242,7 +244,9 @@ class S3Run(ArmRun):
                 self.clog.write(rec)
                 continue
             key = statement_key(st)
-            if self.guard.is_test_statement(st.show()):
+            if origin == "channel" and not fits(self.tok, st.show(), dc["conj_max_new"], max_len):
+                rec["status"] = "too_long"           # prompt must leave room for a conj_max_new-token proof (as D1's prompts)
+            elif self.guard.is_test_statement(st.show()):
                 rec["status"] = "test_statement"
                 self.guard.filter_dreams([{"statement": st.show()}])
             elif key in self._repo_keys(sid):

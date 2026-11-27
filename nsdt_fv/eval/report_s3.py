@@ -194,13 +194,14 @@ def build(out_path):
     w("")
     w("## What the learner did with the channel material")
     w("")
-    w("Conjecture sleep: channel statements offered (after the model's conjectures) and their status; the model's proof attempts "
+    w("Conjecture sleep: channel statements offered (after the model's conjectures) and their status ('too long': the prompt "
+      "would leave less than conj_max_new tokens of the context, the rule D1 applies to its own conjecture prompts); the model's proof attempts "
       "on the attempted ones; accepted candidates; accepted candidates for statements the baseline tactics do not close; "
       "statements added to the dream library (all sources). Wake: channel examples trained. Re-derivation: priority statements "
       "drawn / priority statements in the pool, summed over stages.")
     w("")
-    w("| Arm | offered | parse err | in repo | dup | L3 | over budget | attempted | attempts | acc | nt acc | library added | wake examples | prio drawn/pool |")
-    w("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    w("| Arm | offered | parse err | too long | in repo | dup | L3 | over budget | attempted | attempts | acc | nt acc | library added | wake examples | prio drawn/pool |")
+    w("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     use = {}
     for a in s3:
         r = runs[a]
@@ -218,7 +219,7 @@ def build(out_path):
         ppool = sum(tr["nrem"].get("prio_pool", 0) for tr in r["train"])
         use[a] = {"offered": len(cj), "attempted": stt["attempted"], "attempts": len(dl), "acc": len(acc), "nt": len(nta),
                   "lib": lib, "wake": wk, "prio_picked": pp}
-        w(f"| {a} | {len(cj)} | {stt['parse_error']} | {stt['in_repository']} | {stt['duplicate']} | {stt['test_statement']} | "
+        w(f"| {a} | {len(cj)} | {stt['parse_error']} | {stt['too_long']} | {stt['in_repository']} | {stt['duplicate']} | {stt['test_statement']} | "
           f"{stt['over_budget']} | {stt['attempted']} | {len(dl)} | {len(acc)} | {len(nta)} | {lib} | {wk} | {pp}/{ppool} |")
     w("")
     w("## Metric tables")

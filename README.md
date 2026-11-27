@@ -13,6 +13,12 @@ Living Verification Codebases" v0.1 (Appendices A-F are the contract for this co
   stream; LA, FWD, ACC, F, BWT, GC with bootstrap intervals; acceptance test T4. Report: `nsdt_fv/reports/S1.md`
   (generated from `nsdt_fv/runs/S1/` by `python3 -m nsdt_fv.eval.report_s1`); calibration log in `reports/CHANGES.md`.
 
+- **S2** (Stage S, CPU only): DT-ref (A.4) arms D1-D4 on the toy stream. Report: `nsdt_fv/reports/S2.md`.
+- **S3** (Stage S, CPU only): symbolic channels A-E (`nsdt_fv/store/channels/`, A.3 Channel interface) and arms
+  N-A to N-E (D1 plus one channel); per-channel yield tables, T10. Report: `nsdt_fv/reports/S3.md` (generated from
+  `nsdt_fv/runs/S3/` by `python3 -m nsdt_fv.eval.report_s3`); run with `./run_s3.sh` (needs S1's seed-0 base at
+  `nsdt_fv/runs/S3/base/base.pt`).
+
 ## Run S0 from a clean checkout
 
 ```
