@@ -1,3 +1,5 @@
-# S0 runs on CPU with the Python standard library plus these two packages (PyPI only).
+# Stage S runs on CPU (PyPI only). S0 needs pyyaml and pytest; S1 adds numpy and torch (CPU build).
 pyyaml>=6.0
 pytest>=7.0
+numpy>=1.24
+torch>=2.1

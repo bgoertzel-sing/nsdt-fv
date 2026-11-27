@@ -1,0 +1,43 @@
+# Experiment S1 (plan 8.1): baselines B0, B2, B5-10, B6 on the toy stream.
+# Calibration history (what was changed and why): reports/CHANGES.md, section "S1 calibration".
+experiment: S1
+seed: 0                  # run seed: model init, training order, adapter init (R6)
+run_dir: runs/S1
+threads: 2               # 8.1: two cores
+stream:
+  seed: 0
+  projects: 6            # C.3: six projects, two windows each -> twelve stages
+  lemmas_per_project: [150, 250]
+  test_fraction: 0.2     # 5.2 (fixed by data/stream.py)
+model:                   # decoder-only transformer from scratch, < 5M parameters (8.1)
+  d: 128
+  layers: 4
+  heads: 4
+  ff: 512
+  max_len: 192
+  dropout: 0.1
+base:                    # base pretraining on the prelude project only
+  epochs: 60
+  batch: 32
+  lr: 1.0e-3
+adapt:                   # B2, B5-10, B6 training (calibration steps 1-3 in reports/CHANGES.md)
+  mode: full             # "full": all weights of the tiny model (the order's full-parameter equivalent);
+                         # "lora": adapters on the frozen base (Table 3), underfits on 2 cores (CHANGES.md)
+  lora_r: 16             # used only in mode lora
+  lora_alpha: 32
+  epochs: 30             # per stage, B2 and B5-10
+  joint_epochs: 30       # B6: per stage, over the union of windows 1..t, from the base
+  batch: 32
+  lr: 1.0e-3
+arms: [B0, B2, B5-10, B6]
+eval:
+  k: 8                   # section 7: pass@8 without repair
+  temperature: 1.0
+  max_new: 128
+  timeout_s: 120         # R7
+gate:
+  gap_points: 20         # 8.1: B6 beats the frozen base by >= 20 points
+  forgetting_points: 10  # 8.1: B2 forgets >= 10 points
+bootstrap:
+  resamples: 10000       # section 7
+  seed: 0
