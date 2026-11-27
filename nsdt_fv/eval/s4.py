@@ -121,13 +121,38 @@ def _init_worker(stream_seed, n_projects):
 
 
 def _label(job):
+    """Run one labelling job in a thread with a 1 GiB stack: deep unary-number recursions (e.g. tri(tri(tri(n))))
+    overflow the C stack of the main thread at ToyEq's recursion limit and kill the process (observed in the first
+    S4 run; logs/aborted). A RecursionError is recorded, not raised."""
+    import threading
+    box = {}
+
+    def run():
+        try:
+            box["r"] = _label_job(job)
+        except BaseException as e:          # noqa: BLE001 - reported to the parent
+            box["e"] = e
+
+    threading.stack_size(1 << 30)
+    th = threading.Thread(target=run)
+    th.start()
+    th.join()
+    if "e" in box:
+        raise box["e"]
+    return box["r"]
+
+
+def _label_job(job):
     group, proj, text, nodes, n_cex, cex_seed = job
     s, be = _W["s"], _W["be"]
     sid = f"{proj}@w2"
     w = s.worlds[sid]
     st = w.statement(text)
     t0 = time.time()
-    cex = counterexample(w, st, n=n_cex, seed=cex_seed)
+    try:
+        cex = counterexample(w, st, n=n_cex, seed=cex_seed)
+    except RecursionError:
+        cex = {"_limit": True}
     proof, how = None, None
     for h in BASELINE_TACTICS:
         if be.check_statement(sid, "", text, h, 120).accepted:
@@ -135,7 +160,10 @@ def _label(job):
             break
     if proof is None:
         pw = _W["pw"][proj]
-        p = RefProver(pw, len(pw.lemmas), node_limit=nodes).prove(pw.statement(text))
+        try:
+            p = RefProver(pw, len(pw.lemmas), node_limit=nodes).prove(pw.statement(text))
+        except RecursionError:
+            p, how = None, "prover_recursion"
         if p is not None:
             if be.check_statement(sid, "", text, p, 120).accepted:
                 proof, how = p, "prover"
@@ -216,17 +244,25 @@ def score_frequency(vt, cands):
 
 
 def score_nn(vt, cands):
-    """Nearest neighbour by shared properties: the largest number of visible properties f shares with a function
-    that has T (0 if no function has T)."""
+    """Nearest neighbour by shared properties (1-NN vote): among the other functions where T applies, the nearest
+    neighbours of f are those sharing the largest number of visible properties with f; the score is the share of
+    them that have T visible (ties between equally near neighbours are averaged, so the score is a 1-NN estimate
+    of P(HasProperty(f, T)) in [0, 1])."""
     out = []
     for c in cands:
         f = (c["project"], c["function"])
         Sf = set(vt.rows[f])
-        best = 0
-        for g in vt.holders.get(c["shape"], ()):
-            if g != f:
-                best = max(best, len(Sf & set(vt.rows[g])))
-        out.append(float(best))
+        hold = vt.holders.get(c["shape"], set())
+        best, near = -1, []
+        for g in sorted(vt.applicable[c["shape"]]):
+            if g == f:
+                continue
+            k = len(Sf & set(vt.rows[g]))
+            if k > best:
+                best, near = k, [g]
+            elif k == best:
+                near.append(g)
+        out.append(sum(1 for g in near if g in hold) / len(near) if near else 0.0)
     return out
 
 

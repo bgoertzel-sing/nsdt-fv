@@ -19,6 +19,12 @@ Living Verification Codebases" v0.1 (Appendices A-F are the contract for this co
   `nsdt_fv/runs/S3/` by `python3 -m nsdt_fv.eval.report_s3`); run with `./run_s3.sh` (needs S1's seed-0 base at
   `nsdt_fv/runs/S3/base/base.pt`).
 
+- **S4** (Stage S, CPU only): Python reference of the Appendix E PLN fragment (`nsdt_fv/store/pln/ref.py`, test T11)
+  and the toy property tables HasProperty(f, T) built from channel C's S3 output (`nsdt_fv/store/pln/table.py`);
+  checker labels, 20% of the true pairs hidden, PLN against shape frequency, nearest neighbour and random order (AUC,
+  precision at k, calibration). Report: `nsdt_fv/reports/S4.md` (generated from `nsdt_fv/runs/S4/` by
+  `python3 -m nsdt_fv.eval.report_s4`); run with `./run_s4.sh`.
+
 ## Run S0 from a clean checkout
 
 ```

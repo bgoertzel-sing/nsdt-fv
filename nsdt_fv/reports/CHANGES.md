@@ -122,3 +122,40 @@ Even so the cap fits its training data less well than S1's full-parameter traini
   of the project, 8 tries each.
 - Sampling seeds of every S3 arm are those of S2's D1 (common random numbers); the run label is S3/<arm>/...
 - D1 is re-run through the S3 driver with no channel; its logs must equal S2's D1 (driver equivalence check).
+
+## S4 choices (PLN reference on the toy property tables; nothing in S0-S3 changed)
+
+Fixed in configs/S4.yaml and the code before any ranking result was seen; none was tuned on outcomes.
+
+- Property table (store/pln/table.py). Plan 9.2 defines HasProperty(f, T) as "the instance of shape T for function f
+  holds" with shapes = "templates with holes"; the toy has no shape list, so shapes are read off channel C's logged
+  output (S3, arm N-C): each guard-passed equation is abstracted at each of its functions (that function -> ?F;
+  template functions by template name, so a shape is shared by every project that has the same definitions, checked;
+  wrappers keep their project-specific name). Vocabulary: shapes C instantiated for >= 2 functions. Cells: every
+  type-correct instance in the project's last snapshot; cells whose instance is a test statement are dropped.
+- Labels: checker only. True = a proof found within budget (baseline tactics, then the reference prover with 2,000
+  nodes, C's prover budget in S3) that ToyEqBackend.check_statement accepts. The prover runs on the project's library
+  without the test lemmas of either window (ChannelBase.private_world keeps window-1 test lemmas at window 2; S4 is
+  stricter). Random tests (200 inputs) are logged as a descriptive column and a soundness cross-check, never a label.
+- Unit of hiding: the statement group. One equation abstracted at two of its functions gives two cells with the same
+  instance (e.g. len(rev(xs)) = len(xs) is HasProperty(rev, len(?F(xs)) = len(xs)) and HasProperty(len,
+  ?F(rev(xs)) = ?F(xs))); hiding one and showing the other would hand the hidden one's proof to the ranker. 20% of the
+  true groups are hidden, all their cells together.
+- Candidates: every cell that is not a visible true cell (hidden true cells and every cell the checker does not
+  accept). The rankers get no evidence about any candidate (no refutations, no test counts): the setting is
+  positive-unlabelled, as the plan's "hide 20% of the true pairs and rank the candidates" reads.
+- PLN (eval/s4.py PLNRanker, store/pln/ref.py): conclusions per candidate (f, T) are (a) transfer from every g with
+  HasProperty(g, T) visible, Similar(f, g) = Appendix E weighted overlap with count = |shapes of f or g|, term
+  strength of g = 1/|functions|; (b) deduction HasProperty(f, T1) (kernel fact) with Implies(T1, T), the latter by
+  direct evaluation over the visible table (share of T1-holders, f excluded, where T applies that have T; count = their
+  number). Plan 9.3 calls this "induction over the property table"; Appendix E's per-instance induction formula
+  (inversion then deduction) is implemented and tested in T11 but a revision of per-function inductions does not
+  recover the table share, so the table share is used. All conclusions are revised with the premise-overlap discount
+  in a fixed order (decreasing count); P(q true) = c s + (1 - c) sT. Abduction and the utility's budget model are not
+  used (no failing goals; the label already is "proved within budget").
+- Baselines: shape frequency = sT; nearest neighbour = share of f's nearest neighbours (most shared visible
+  properties, among functions where T applies) that have T; random = uniform scores (seed = split seed).
+- Metrics: AUC pooled with half-ties; precision at k per function (k = 5, 10, 20: the order's default, since section 9
+  and A.6 give none), expected value over random order of ties, averaged over functions with a hidden positive;
+  reliability table with ten bins, Brier score, ECE. Bootstrap: paired over functions, 10,000 resamples, seed 0.
+  Split seed 0 is primary; seeds 1 and 2 are replicate splits (point estimates).
