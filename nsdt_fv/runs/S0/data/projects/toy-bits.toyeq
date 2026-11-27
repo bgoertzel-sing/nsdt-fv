@@ -1,0 +1,359 @@
+def db_add : Nat Nat -> Nat
+  db_add(Z, m) = m
+  db_add(S(n), m) = S(db_add(n, m))
+def db_app : List List -> List
+  db_app(Nil, ys) = ys
+  db_app(Cons(h, t), ys) = Cons(h, db_app(t, ys))
+def db_len : List -> Nat
+  db_len(Nil) = Z
+  db_len(Cons(h, t)) = S(db_len(t))
+def db_dbl : Nat -> Nat
+  db_dbl(Z) = Z
+  db_dbl(S(n)) = S(S(db_dbl(n)))
+def db_flip : Nat -> Nat
+  db_flip(Z) = S(Z)
+  db_flip(S(n)) = Z
+def db_one : Nat -> Nat
+  db_one(Z) = Z
+  db_one(S(n)) = S(Z)
+def db_bnot : List -> List
+  db_bnot(Nil) = Nil
+  db_bnot(Cons(b, bs)) = Cons(db_flip(b), db_bnot(bs))
+def db_pop : List -> Nat
+  db_pop(Nil) = Z
+  db_pop(Cons(b, bs)) = db_add(db_one(b), db_pop(bs))
+def db_zeros : Nat -> List
+  db_zeros(Z) = Nil
+  db_zeros(S(n)) = Cons(Z, db_zeros(n))
+def db_norm : List -> List
+  db_norm(Nil) = Nil
+  db_norm(Cons(b, bs)) = Cons(db_one(b), db_norm(bs))
+def db_val : List -> Nat
+  db_val(Nil) = Z
+  db_val(Cons(b, bs)) = db_add(db_one(b), db_dbl(db_val(bs)))
+def db_w0 : List -> Nat
+  db_w0(x0) = db_dbl(db_len(x0))
+def db_w1 : Nat -> Nat
+  db_w1(x0) = db_one(x0)
+def db_w2 : List -> Nat
+  db_w2(x0) = db_pop(x0)
+def db_w3 : List List -> List
+  db_w3(x0, x1) = db_app(x0, x1)
+def db_w4 : List List List -> List
+  db_w4(x0, x1, x2) = db_w3(db_app(x0, x1), db_bnot(x2))
+def db_w5 : Nat -> Nat
+  db_w5(x0) = db_dbl(x0)
+def db_w6 : List List List -> Nat
+  db_w6(x0, x1, x2) = db_w0(db_w4(x0, x1, x2))
+def db_w7 : List List -> List
+  db_w7(x0, x1) = db_bnot(db_app(x0, x1))
+lemma db_add_z_r : forall n. db_add(n, Z) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma db_add_s_r : forall n m. db_add(n, S(m)) = S(db_add(n, m))
+  by induct n { simp refl } { simp rw IH refl }
+lemma db_add_assoc : forall n m k. db_add(db_add(n, m), k) = db_add(n, db_add(m, k))
+  by induct n { simp refl } { simp rw IH refl }
+lemma db_add_comm : forall n m. db_add(n, m) = db_add(m, n)
+  by induct n { simp rw db_add_z_r refl } { simp rw IH rw db_add_s_r refl }
+lemma db_app_nil_r : forall xs. db_app(xs, Nil) = xs
+  by induct xs { simp refl } { simp rw IH refl }
+lemma db_app_assoc : forall xs ys zs. db_app(db_app(xs, ys), zs) = db_app(xs, db_app(ys, zs))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma db_one_one : forall n. db_one(db_one(n)) = db_one(n)
+  by induct n { simp refl } { simp refl }
+lemma db_flip_flip : forall n. db_flip(db_flip(n)) = db_one(n)
+  by induct n { simp refl } { simp refl }
+lemma db_one_flip : forall n. db_one(db_flip(n)) = db_flip(n)
+  by induct n { simp refl } { simp refl }
+lemma db_len_bnot : forall xs. db_len(db_bnot(xs)) = db_len(xs)
+  by induct xs { simp refl } { simp rw IH refl }
+lemma db_bnot_bnot : forall xs. db_bnot(db_bnot(xs)) = db_norm(xs)
+  by induct xs { simp refl } { simp rw IH rw db_flip_flip refl }
+lemma db_pop_zeros : forall n. db_pop(db_zeros(n)) = Z
+  by induct n { simp refl } { simp rw IH refl }
+lemma db_len_zeros : forall n. db_len(db_zeros(n)) = n
+  by induct n { simp refl } { simp rw IH refl }
+lemma db_norm_norm : forall xs. db_norm(db_norm(xs)) = db_norm(xs)
+  by induct xs { simp refl } { simp rw IH rw db_one_one refl }
+lemma db_pop_norm : forall xs. db_pop(db_norm(xs)) = db_pop(xs)
+  by induct xs { simp refl } { simp rw IH rw db_one_one refl }
+lemma db_bnot_app : forall xs ys. db_bnot(db_app(xs, ys)) = db_app(db_bnot(xs), db_bnot(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma db_norm_app : forall xs ys. db_norm(db_app(xs, ys)) = db_app(db_norm(xs), db_norm(ys))
+  by induct xs { simp refl } { simp rw IH refl }
+lemma db_val_zeros : forall n. db_val(db_zeros(n)) = Z
+  by induct n { simp refl } { simp rw IH simp refl }
+lemma db_val_norm : forall xs. db_val(db_norm(xs)) = db_val(xs)
+  by induct xs { simp refl } { simp rw IH rw db_one_one refl }
+lemma db_pop_app : forall xs ys. db_pop(db_app(xs, ys)) = db_add(db_pop(xs), db_pop(ys))
+  by induct xs { simp refl } { simp rw IH rw db_add_assoc refl }
+lemma db_d001 : forall xs. db_bnot(db_app(Nil, xs)) = db_app(db_bnot(Nil), db_bnot(xs))
+  by simp refl
+lemma db_d002 : forall n m. db_add(db_add(n, m), Z) = db_add(n, db_add(m, Z))
+  by rw db_add_assoc refl
+lemma db_d003 : forall n. db_pop(db_zeros(S(n))) = Z
+  by simp rw db_pop_zeros refl
+lemma db_d004 : forall xs ys. db_w3(xs, ys) = db_app(xs, ys)
+  by simp refl
+lemma db_d005 : forall xs ys. db_val(db_norm(db_app(xs, ys))) = db_val(db_app(xs, ys))
+  by rw db_val_norm refl
+lemma db_d006 : forall n. db_w1(n) = db_one(n)
+  by simp refl
+lemma db_d007 : forall xs. db_w0(xs) = db_dbl(db_len(xs))
+  by simp refl
+lemma db_d008 : forall n xs ys. db_norm(db_app(Cons(n, xs), ys)) = db_app(db_norm(Cons(n, xs)), db_norm(ys))
+  by simp rw db_norm_app refl
+lemma db_d010 : forall xs. db_w2(xs) = db_pop(xs)
+  by simp refl
+lemma db_d011 : forall n xs. db_pop(db_app(db_zeros(n), xs)) = db_add(db_pop(db_zeros(n)), db_pop(xs))
+  by rw db_pop_app refl
+lemma db_d013 : forall xs. db_val(db_norm(db_bnot(xs))) = db_val(db_bnot(xs))
+  by rw db_val_norm refl
+lemma db_d015 : db_pop(db_norm(Nil)) = db_pop(Nil)
+  by simp refl
+lemma db_d016 : forall xs n ys. db_app(db_app(xs, db_zeros(n)), ys) = db_app(xs, db_app(db_zeros(n), ys))
+  by rw db_app_assoc refl
+lemma db_d019 : forall n xs. db_val(db_norm(Cons(n, xs))) = db_val(Cons(n, xs))
+  by simp rw db_val_norm rw db_one_one refl
+lemma db_d020 : forall n xs. db_norm(db_norm(Cons(n, xs))) = db_norm(Cons(n, xs))
+  by simp rw db_norm_norm rw db_one_one refl
+lemma db_d021 : db_norm(db_norm(Nil)) = db_norm(Nil)
+  by simp refl
+lemma db_d025 : forall n. db_flip(db_flip(n)) = db_w1(n)
+  by simp rw db_flip_flip refl
+lemma db_d026 : forall xs n. db_add(db_val(xs), S(n)) = S(db_add(db_val(xs), n))
+  by rw db_add_s_r refl
+lemma db_d031 : forall xs ys zs. db_app(db_app(xs, db_bnot(ys)), zs) = db_app(xs, db_app(db_bnot(ys), zs))
+  by rw db_app_assoc refl
+lemma db_d032 : db_one(db_flip(Z)) = db_flip(Z)
+  by simp refl
+lemma db_d033 : forall n m. db_add(S(n), S(m)) = S(db_add(S(n), m))
+  by simp rw db_add_s_r refl
+lemma db_d034 : forall n xs. db_bnot(db_app(Nil, Cons(n, xs))) = db_app(db_bnot(Nil), db_bnot(Cons(n, xs)))
+  by simp refl
+lemma db_d035 : forall xs ys. db_val(db_norm(db_w3(xs, ys))) = db_val(db_app(xs, ys))
+  by simp rw db_d005 refl
+lemma db_d036 : forall xs. db_flip(db_flip(db_val(xs))) = db_one(db_val(xs))
+  by rw db_flip_flip refl
+lemma db_d037 : forall n xs. db_pop(db_app(db_zeros(S(n)), xs)) = db_add(db_pop(db_zeros(S(n))), db_pop(xs))
+  by simp rw db_d011 refl
+lemma db_d038 : forall xs. db_add(db_val(xs), S(Z)) = S(db_add(db_val(xs), Z))
+  by rw db_d026 refl
+lemma db_d039 : forall n. db_w1(db_flip(n)) = db_flip(n)
+  by simp rw db_one_flip refl
+lemma db_d041 : db_val(db_norm(db_bnot(Nil))) = db_val(db_bnot(Nil))
+  by simp refl
+lemma db_d042 : forall xs ys n zs. db_app(db_app(xs, ys), Cons(n, zs)) = db_app(xs, db_app(ys, Cons(n, zs)))
+  by rw db_app_assoc refl
+lemma db_d043 : forall xs ys zs. db_bnot(db_app(db_app(xs, ys), zs)) = db_app(db_bnot(db_app(xs, ys)), db_bnot(zs))
+  by rw db_bnot_app refl
+lemma db_d044 : db_flip(db_flip(Z)) = db_w1(Z)
+  by simp refl
+lemma db_d045 : forall xs. db_len(db_bnot(db_bnot(xs))) = db_len(xs)
+  by rw db_len_bnot rw db_len_bnot refl
+lemma db_d048 : forall xs ys n zs. db_app(db_app(db_w3(xs, ys), db_zeros(n)), zs) = db_app(db_w3(xs, ys), db_app(db_zeros(n), zs))
+  by simp rw db_d016 refl
+lemma db_d050 : forall xs. db_val(db_norm(db_app(xs, Nil))) = db_val(db_app(xs, Nil))
+  by rw db_d005 refl
+lemma db_d051 : forall xs ys zs ws. db_app(db_app(xs, db_bnot(ys)), db_w3(zs, ws)) = db_app(xs, db_app(db_bnot(ys), db_w3(zs, ws)))
+  by simp rw db_d031 refl
+lemma db_d052 : forall n. db_one(db_flip(db_one(n))) = db_flip(db_one(n))
+  by rw db_one_flip refl
+lemma db_d053 : forall n. db_val(db_norm(db_zeros(n))) = db_val(db_zeros(n))
+  by rw db_val_norm refl
+lemma db_d054 : forall n. db_add(S(n), Z) = S(n)
+  by simp rw db_add_z_r refl
+lemma db_d056 : db_w2(Nil) = db_pop(Nil)
+  by simp refl
+lemma db_d057 : forall n xs. db_add(S(n), S(db_w0(xs))) = S(db_add(S(n), db_w0(xs)))
+  by simp rw db_add_s_r refl
+lemma db_d058 : forall xs. db_flip(db_flip(db_w2(xs))) = db_one(db_w2(xs))
+  by simp rw db_flip_flip refl
+lemma db_d059 : forall n. db_pop(db_zeros(S(S(n)))) = Z
+  by simp rw db_pop_zeros refl
+lemma db_d064 : forall xs. db_flip(db_flip(db_w2(xs))) = db_w1(db_w2(xs))
+  by simp rw db_flip_flip refl
+lemma db_d065 : db_w1(db_flip(Z)) = db_flip(Z)
+  by simp refl
+lemma db_d066 : forall xs n. db_app(db_app(xs, db_zeros(n)), Nil) = db_app(xs, db_app(db_zeros(n), Nil))
+  by rw db_d016 refl
+lemma db_d067 : forall n m. db_add(db_add(n, db_dbl(m)), Z) = db_add(n, db_add(db_dbl(m), Z))
+  by rw db_d002 refl
+lemma db_d068 : forall xs ys zs. db_w3(db_app(xs, ys), zs) = db_app(xs, db_app(ys, zs))
+  by simp rw db_app_assoc refl
+lemma db_d070 : forall n xs. db_add(S(S(n)), S(db_w0(xs))) = S(db_add(S(S(n)), db_w0(xs)))
+  by simp rw db_add_s_r refl
+lemma db_d071 : forall xs ys zs. db_app(db_app(xs, ys), Cons(Z, zs)) = db_app(xs, db_app(ys, Cons(Z, zs)))
+  by rw db_d042 refl
+lemma db_d072 : forall n. db_w1(db_flip(S(n))) = db_flip(S(n))
+  by simp refl
+lemma db_d073 : forall xs ys. db_norm(db_w3(xs, ys)) = db_app(db_norm(xs), db_norm(ys))
+  by simp rw db_norm_app refl
+lemma db_d074 : forall xs ys. db_bnot(db_bnot(db_w3(xs, ys))) = db_norm(db_w3(xs, ys))
+  by simp rw db_bnot_bnot refl
+lemma db_d075 : forall xs ys. db_w2(db_app(xs, ys)) = db_pop(db_app(xs, ys))
+  by simp refl
+lemma db_d076 : forall xs. db_bnot(db_app(xs, Nil)) = db_app(db_bnot(xs), db_bnot(Nil))
+  by simp rw db_bnot_app simp refl
+lemma db_d077 : forall xs ys n zs. db_app(db_app(db_w3(xs, ys), db_zeros(S(n))), zs) = db_app(db_w3(xs, ys), db_app(db_zeros(S(n)), zs))
+  by simp rw db_app_assoc simp refl
+lemma db_d078 : db_one(db_one(Z)) = db_one(Z)
+  by simp refl
+lemma db_d079 : forall n xs. db_app(db_app(Nil, db_zeros(n)), xs) = db_app(Nil, db_app(db_zeros(n), xs))
+  by simp refl
+lemma db_d080 : forall xs ys zs. db_w4(xs, ys, zs) = db_w3(db_app(xs, ys), db_bnot(zs))
+  by simp refl
+lemma db_d081 : forall n. db_w5(n) = db_dbl(n)
+  by simp refl
+lemma db_d082 : forall xs ys zs. db_w6(xs, ys, zs) = db_w0(db_w4(xs, ys, zs))
+  by simp refl
+lemma db_d083 : forall xs ys. db_w7(xs, ys) = db_bnot(db_app(xs, ys))
+  by simp refl
+lemma db_d084 : forall xs. db_val(db_norm(db_w3(xs, Nil))) = db_val(db_app(xs, Nil))
+  by simp rw db_d050 refl
+lemma db_d085 : forall n xs ys. db_norm(db_w3(Cons(n, xs), ys)) = db_app(db_norm(Cons(n, xs)), db_norm(ys))
+  by simp rw db_norm_app refl
+lemma db_d086 : forall n. db_w2(db_zeros(S(S(n)))) = Z
+  by simp rw db_pop_zeros refl
+lemma db_d087 : forall n. db_len(db_zeros(S(n))) = S(n)
+  by simp rw db_len_zeros refl
+lemma db_d088 : forall xs ys. db_w3(db_app(xs, Nil), ys) = db_app(xs, db_app(Nil, ys))
+  by simp rw db_app_nil_r refl
+lemma db_d089 : db_w0(Nil) = db_dbl(db_len(Nil))
+  by simp refl
+lemma db_d090 : forall xs ys zs. db_w3(db_app(xs, db_bnot(ys)), zs) = db_app(xs, db_app(db_bnot(ys), zs))
+  by simp rw db_d031 refl
+lemma db_d093 : forall n. db_flip(db_flip(db_one(n))) = db_w1(db_one(n))
+  by simp rw db_flip_flip refl
+lemma db_d094 : db_w2(db_norm(Nil)) = db_pop(Nil)
+  by simp refl
+lemma db_d098 : forall xs. db_norm(db_w3(Nil, xs)) = db_app(db_norm(Nil), db_norm(xs))
+  by simp refl
+lemma db_d099 : forall xs. db_add(S(db_w0(xs)), Z) = S(db_w0(xs))
+  by simp rw db_add_z_r refl
+lemma db_d101 : forall xs n ys. db_norm(db_w3(xs, Cons(n, ys))) = db_app(db_norm(xs), db_norm(Cons(n, ys)))
+  by simp rw db_norm_app simp refl
+lemma db_d102 : forall n m. db_add(S(n), m) = db_add(m, S(n))
+  by simp rw db_add_s_r rw db_add_comm refl
+lemma db_d103 : db_add(S(Z), Z) = S(Z)
+  by simp refl
+lemma db_d104 : forall xs ys zs. db_bnot(db_w3(db_app(xs, ys), zs)) = db_app(db_bnot(db_app(xs, ys)), db_bnot(zs))
+  by simp rw db_d043 refl
+lemma db_d105 : forall n xs. db_val(db_norm(db_app(Cons(n, xs), Nil))) = db_val(db_app(Cons(n, xs), Nil))
+  by simp rw db_d050 rw db_one_one refl
+lemma db_d106 : forall xs ys. db_w7(xs, ys) = db_bnot(db_w3(xs, ys))
+  by simp refl
+lemma db_d107 : forall xs. db_add(S(Z), S(db_w0(xs))) = S(db_add(S(Z), db_w0(xs)))
+  by simp refl
+lemma db_d109 : forall xs ys. db_pop(db_w3(xs, ys)) = db_add(db_pop(xs), db_pop(ys))
+  by simp rw db_pop_app refl
+lemma db_d110 : forall n. db_one(db_one(S(n))) = db_one(S(n))
+  by simp refl
+lemma db_d112 : forall n xs. db_pop(db_norm(Cons(n, xs))) = db_pop(Cons(n, xs))
+  by simp rw db_pop_norm rw db_one_one refl
+lemma db_d113 : forall xs ys. db_w4(Nil, xs, ys) = db_w3(db_app(Nil, xs), db_bnot(ys))
+  by simp refl
+lemma db_d116 : forall xs ys n zs. db_bnot(db_app(db_app(xs, ys), Cons(n, zs))) = db_app(db_bnot(db_app(xs, ys)), db_bnot(Cons(n, zs)))
+  by simp rw db_d043 simp refl
+lemma db_d118 : forall n. db_w1(S(n)) = db_one(S(n))
+  by simp refl
+lemma db_d119 : db_pop(db_zeros(S(Z))) = Z
+  by simp refl
+lemma db_d120 : forall xs ys. db_bnot(db_w3(xs, ys)) = db_app(db_bnot(xs), db_bnot(ys))
+  by simp rw db_bnot_app refl
+lemma db_d121 : forall n xs. db_bnot(db_app(Nil, Cons(S(n), xs))) = db_app(db_bnot(Nil), db_bnot(Cons(S(n), xs)))
+  by simp refl
+lemma db_d123 : forall xs ys. db_norm(db_norm(Cons(db_pop(xs), ys))) = db_norm(Cons(db_pop(xs), ys))
+  by simp rw db_norm_norm rw db_one_one refl
+lemma db_d124 : forall n. db_add(S(S(n)), Z) = S(S(n))
+  by simp rw db_add_z_r refl
+lemma db_d126 : forall xs n ys zs. db_w6(xs, Cons(n, ys), zs) = db_w0(db_w4(xs, Cons(n, ys), zs))
+  by simp refl
+lemma db_d128 : forall n xs. db_add(db_add(n, db_dbl(db_val(xs))), Z) = db_add(n, db_add(db_dbl(db_val(xs)), Z))
+  by rw db_d067 refl
+lemma db_d129 : db_add(Z, Z) = Z
+  by simp refl
+lemma db_d130 : db_one(db_flip(db_one(Z))) = db_flip(db_one(Z))
+  by simp refl
+lemma db_d131 : forall n m. db_add(db_add(n, db_w5(m)), Z) = db_add(n, db_add(db_dbl(m), Z))
+  by simp rw db_d067 refl
+lemma db_d132 : forall xs ys. db_w7(xs, ys) = db_app(db_bnot(xs), db_bnot(ys))
+  by simp rw db_bnot_app refl
+lemma db_d135 : forall n xs ys. db_bnot(db_app(Nil, Cons(n, db_app(xs, ys)))) = db_app(db_bnot(Nil), db_bnot(Cons(n, db_app(xs, ys))))
+  by simp refl
+lemma db_d136 : forall xs ys zs. db_w3(xs, db_w3(ys, zs)) = db_app(xs, db_w3(ys, zs))
+  by simp refl
+lemma db_d137 : forall xs. db_flip(db_flip(db_val(xs))) = db_w1(db_val(xs))
+  by simp rw db_d036 refl
+lemma db_d138 : forall n. db_add(S(db_w5(n)), Z) = S(db_w5(n))
+  by simp induct n { simp refl } { simp rw IH refl }
+lemma db_d139 : forall n m xs. db_app(db_app(db_zeros(n), db_zeros(m)), xs) = db_app(db_zeros(n), db_app(db_zeros(m), xs))
+  by rw db_d016 refl
+lemma db_d140 : forall n m. db_add(S(S(n)), m) = db_add(m, S(S(n)))
+  by simp rw<- db_d102 simp refl
+lemma db_d142 : forall n m xs. db_app(db_app(Nil, db_zeros(n)), Cons(m, xs)) = db_app(Nil, db_app(db_zeros(n), Cons(m, xs)))
+  by simp refl
+lemma db_d143 : forall n. db_flip(db_flip(S(n))) = db_one(S(n))
+  by simp refl
+lemma db_d144 : forall xs ys n zs. db_app(db_app(db_w3(xs, ys), db_zeros(S(n))), db_bnot(zs)) = db_app(db_w3(xs, ys), db_app(db_zeros(S(n)), db_bnot(zs)))
+  by simp induct xs { simp induct ys { simp refl } { simp rw IH refl } } { simp rw IH refl }
+lemma db_d146 : forall xs. db_norm(db_norm(db_norm(xs))) = db_norm(db_norm(xs))
+  by rw db_norm_norm refl
+lemma db_d148 : forall xs ys n zs. db_w3(db_app(db_w3(xs, ys), db_zeros(S(n))), zs) = db_app(db_w3(xs, ys), db_app(db_zeros(S(n)), zs))
+  by simp rw db_app_assoc simp refl
+lemma db_d150 : forall xs ys zs. db_w7(db_app(xs, ys), zs) = db_app(db_bnot(db_app(xs, ys)), db_bnot(zs))
+  by simp rw db_d043 refl
+lemma db_d151 : forall n xs. db_w2(db_app(db_zeros(n), xs)) = db_add(db_pop(db_zeros(n)), db_pop(xs))
+  by simp rw db_d011 refl
+lemma db_d152 : forall xs ys zs. db_add(S(db_w6(xs, ys, zs)), Z) = S(db_w6(xs, ys, zs))
+  by simp induct xs { simp induct ys { simp induct zs { simp refl } { simp rw IH refl } } { simp rw IH refl } } { simp rw IH refl }
+lemma db_d153 : forall xs ys zs. db_w3(db_w3(xs, db_bnot(ys)), zs) = db_app(xs, db_app(db_bnot(ys), zs))
+  by simp rw db_d031 refl
+lemma db_d157 : forall n. db_add(db_add(n, db_dbl(Z)), Z) = db_add(n, db_add(db_dbl(Z), Z))
+  by simp rw db_d002 simp refl
+lemma db_d158 : forall n m. db_add(S(S(n)), S(m)) = S(db_add(S(S(n)), m))
+  by simp rw db_add_s_r refl
+lemma db_d159 : forall xs ys. db_bnot(db_app(db_w3(xs, ys), Nil)) = db_app(db_bnot(db_w3(xs, ys)), db_bnot(Nil))
+  by simp rw db_d076 simp refl
+lemma db_d162 : forall n xs ys. db_bnot(db_w3(Cons(n, xs), ys)) = db_app(db_bnot(Cons(n, xs)), db_bnot(ys))
+  by simp rw db_bnot_app refl
+lemma db_d163 : forall n. db_w2(db_zeros(S(S(n)))) = db_add(Z, Z)
+  by simp rw db_pop_zeros refl
+lemma db_d165 : forall n xs. db_pop(db_norm(Cons(S(n), xs))) = db_pop(Cons(S(n), xs))
+  by simp rw db_pop_norm refl
+lemma db_d166 : forall n xs. db_flip(db_flip(db_w2(Cons(n, xs)))) = db_w1(db_w2(Cons(n, xs)))
+  by simp rw db_flip_flip refl
+lemma db_d168 : forall xs ys zs ws. db_app(db_app(xs, db_app(ys, zs)), ws) = db_app(xs, db_app(db_app(ys, zs), ws))
+  by rw db_app_assoc refl
+lemma db_d172 : forall n xs. db_flip(db_flip(db_w2(Cons(n, xs)))) = db_one(db_w2(Cons(n, xs)))
+  by simp rw db_flip_flip refl
+lemma db_d173 : forall xs ys zs. db_w3(db_w3(xs, ys), zs) = db_app(xs, db_app(ys, zs))
+  by simp rw db_app_assoc refl
+lemma db_d177 : forall n xs. db_w2(db_norm(Cons(n, xs))) = db_pop(Cons(n, xs))
+  by simp rw db_pop_norm rw db_one_one refl
+lemma db_d178 : forall xs n ys zs. db_w7(db_app(xs, Cons(n, ys)), zs) = db_app(db_bnot(db_app(xs, Cons(n, ys))), db_bnot(zs))
+  by simp rw db_d043 refl
+lemma db_d179 : forall xs. db_flip(db_flip(db_pop(xs))) = db_one(db_pop(xs))
+  by rw db_flip_flip refl
+lemma db_d180 : forall n xs. db_pop(db_w3(db_zeros(n), xs)) = db_add(db_pop(db_zeros(n)), db_pop(xs))
+  by simp rw db_d011 refl
+lemma db_d181 : forall n. db_w1(db_flip(db_one(n))) = db_flip(db_one(n))
+  by simp rw db_d052 refl
+lemma db_d183 : forall xs n ys zs. db_w7(db_w3(xs, Cons(n, ys)), zs) = db_app(db_bnot(db_app(xs, Cons(n, ys))), db_bnot(zs))
+  by simp rw<- db_d178 simp refl
+lemma db_d184 : forall n xs ys. db_bnot(db_w3(Cons(S(n), xs), ys)) = db_app(db_bnot(Cons(S(n), xs)), db_bnot(ys))
+  by simp rw db_bnot_app refl
+lemma db_d185 : forall n. db_pop(db_zeros(S(db_w5(n)))) = Z
+  by simp rw db_pop_zeros refl
+lemma db_d186 : forall xs ys. db_flip(db_flip(db_w2(db_app(xs, ys)))) = db_one(db_w2(db_app(xs, ys)))
+  by simp rw db_d179 refl
+lemma db_d192 : forall n m xs. db_flip(db_flip(db_w2(Cons(n, Cons(m, xs))))) = db_one(db_w2(Cons(n, Cons(m, xs))))
+  by simp rw db_flip_flip refl
+lemma db_d193 : forall n m xs. db_pop(db_app(db_zeros(S(n)), Cons(m, xs))) = db_add(db_pop(db_zeros(S(n))), db_pop(Cons(m, xs)))
+  by simp rw db_d011 simp refl
+lemma db_d196 : forall n m. db_add(db_add(S(n), m), Z) = db_add(S(n), db_add(m, Z))
+  by simp induct n { simp refl } { simp rw IH refl }
+lemma db_d198 : forall xs ys zs. db_w3(db_w3(xs, db_bnot(ys)), zs) = db_w3(xs, db_app(db_bnot(ys), zs))
+  by simp rw db_d031 refl
+lemma db_d199 : forall n m k. db_app(db_app(db_zeros(n), db_zeros(m)), db_zeros(k)) = db_app(db_zeros(n), db_app(db_zeros(m), db_zeros(k)))
+  by rw db_d139 refl
