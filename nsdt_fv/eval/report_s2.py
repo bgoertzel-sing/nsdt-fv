@@ -377,6 +377,51 @@ def build(out_path):
     canary_txt = "; ".join(f"{a} s{s}: {runs[(a, s)]['meta']['canary']['passed']}" for a, s in s2)
     w(f"- **Known-answer canary** (ground-truth proofs through the S2 evaluation path give a[t, j] = 1): {canary_txt}.")
     w("")
+    # ------------------------------------------------------------------ generated summary
+    w("## Results in brief (generated from the tables above)")
+    w("")
+
+    def nt_solved(key):
+        return sum(1 for j, ids in test_sets.items() for n, i in enumerate(ids)
+                   if not obl[i]["closed_by_baseline_tactics"] and P[key][(T, j)][n] > 0)
+
+    def sgn(lh):
+        return "excludes 0" if lh[0] > 0 or lh[1] < 0 else "includes 0"
+    n_nt = sum(1 for i in obl if not obl[i]["closed_by_baseline_tactics"])
+    for s in (0, 1):
+        if ("D1", s) not in res:
+            continue
+        parts = [f"Seed {s}: D1 LA {pct(res[('D1', s)]['LA'])}, ACC {pct(res[('D1', s)]['ACC'])}, F {pct(res[('D1', s)]['F'])}"]
+        for b in ("B0", "B2", "B2c"):
+            if (b, s) in res:
+                dl, ll = diff(("D1", s), (b, s), "LA")
+                da, la = diff(("D1", s), (b, s), "ACC")
+                df, lf = diff(("D1", s), (b, s), "F")
+                parts.append(f"against {b} (LA {pct(res[(b, s)]['LA'])}, ACC {pct(res[(b, s)]['ACC'])}, F {pct(res[(b, s)]['F'])}): "
+                             f"dLA {pct(dl)} ({sgn(ll)}), dACC {pct(da)} ({sgn(la)}), dF {pct(df)} ({sgn(lf)})")
+        w("- " + "; ".join(parts) + ".")
+    w("- Non-trivial test obligations (not closed by `refl`/`simp refl`, " + str(n_nt) + " in all) with at least one accepted "
+      "sample after the last stage: " + ", ".join(f"{a} s{s} {nt_solved((a, s))}" for (a, s) in order if (a, s) in res) + ".")
+    tot_raw = sum(yields[k].get("raw", 0) for k in yields)
+    tot_att = sum(yields[k].get("attempted", 0) for k in yields)
+    nt_dreams = sum(yields[k]["nrem_nt"] + yields[k]["rem_nt"] for k in yields)
+    acc_dreams = sum(yields[k]["nrem_acc"] + yields[k]["rem_acc"] for k in yields)
+    w(f"- Dreams over all DT runs: {acc_dreams} accepted proof candidates, of which {nt_dreams} for statements the baseline "
+      f"tactics do not close; conjecture sleep: {tot_raw} statement generations, {tot_att} of them parsed as new statements "
+      f"and attempted.")
+    for s in (0, 1):
+        if ("D1", s) in res and ("D2", s) in res:
+            da, la = diff(("D1", s), ("D2", s), "ACC")
+            y2 = yields[("D2", s)]
+            l2 = y2["nrem_learned"] + y2["rem_learned"]; r2 = y2["nrem_lrej"] + y2["rem_lrej"]
+            w(f"- Kernel filter, seed {s}: D2 trained on {l2} dreams, {r2} of them wrong proofs; D1 - D2 dACC {pct(da)} ({sgn(la)}).")
+    if ("D1x", 0) in res and ("B2c", 0) in res:
+        parts = []
+        for m in ("LA", "ACC", "F"):
+            dv, lh = diff(("D1x", 0), ("B2c", 0), m)
+            parts.append(f"d{m} {pct(dv)} ({sgn(lh)})")
+        w(f"- Diagnostic D1x (D1 with B2c's wake) against B2c, seed 0: " + ", ".join(parts) + ".")
+    w("")
     notes_path = os.path.join(HERE, "reports", "S2_notes.md")
     notes, nxt = "", ""
     if os.path.exists(notes_path):
