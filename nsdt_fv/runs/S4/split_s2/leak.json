@@ -1,0 +1,17 @@
+{
+ "candidate_hidden": 2836,
+ "candidate_positives": 2836,
+ "candidate_positives_not_hidden": 0,
+ "candidates": 9657,
+ "hidden_cells": 2836,
+ "hidden_cells_not_candidates": 0,
+ "hidden_groups_with_a_visible_cell": 0,
+ "passed": true,
+ "premise_cells_hidden": 0,
+ "premise_cells_outside_visible": 0,
+ "premise_cells_used_by_pln": 11401,
+ "rank_s": 37.6,
+ "seed": 2,
+ "table_cells_hidden": 0,
+ "visible_true_cells": 11403
+}

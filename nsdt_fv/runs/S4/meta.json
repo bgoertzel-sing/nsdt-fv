@@ -1,0 +1,153 @@
+{
+ "canary": {
+  "p_f0_Tstar": 0.334107,
+  "p_f2_Tstar": 0.229358,
+  "passed": true,
+  "prior_Tstar": 0.25,
+  "used_hidden": false
+ },
+ "config": {
+  "bootstrap": {
+   "resamples": 10000,
+   "seed": 0
+  },
+  "experiment": "S4",
+  "label": {
+   "cex_inputs": 200,
+   "cex_seed": 1,
+   "prover_nodes": 2000,
+   "workers": 2
+  },
+  "metrics": {
+   "bins": 10,
+   "ks": [
+    5,
+    10,
+    20
+   ]
+  },
+  "pln": {
+   "d": 0.9,
+   "k": 10
+  },
+  "random_baseline_seed": 0,
+  "run_dir": "runs/S4",
+  "shapes": {
+   "min_support": 2,
+   "source": "runs/S3/N-C/channels.jsonl.gz"
+  },
+  "split": {
+   "hide_fraction": 0.2,
+   "seeds": [
+    0,
+    1,
+    2
+   ]
+  },
+  "stream": {
+   "projects": 6,
+   "seed": 0
+  }
+ },
+ "label": {
+  "groups_labelled": 17296,
+  "label_core_s": 2744.5,
+  "label_wall_s": 1426.3
+ },
+ "runs": [
+  {
+   "commit": "9207192483c68057b56a8f720dd558499f989a31",
+   "cpu_affinity": [
+    0,
+    1
+   ],
+   "dirty": [],
+   "numpy": "2.2.6",
+   "platform": "Linux-7.1.1-76070101-generic-x86_64-with-glibc2.35",
+   "python": "3.10.12",
+   "pyyaml": "6.0.3",
+   "stage": "all",
+   "started": "2026-11-27T15:34:11",
+   "wall_s": 1587.9
+  },
+  {
+   "commit": "90126141c2c1af38a6018f53dfe19bbd5f7b841c",
+   "cpu_affinity": [
+    0,
+    1
+   ],
+   "dirty": [],
+   "numpy": "2.2.6",
+   "platform": "Linux-7.1.1-76070101-generic-x86_64-with-glibc2.35",
+   "python": "3.10.12",
+   "pyyaml": "6.0.3",
+   "stage": "rank",
+   "started": "2026-11-27T16:02:20",
+   "wall_s": 115.0
+  }
+ ],
+ "splits": {
+  "0": {
+   "candidate_hidden": 2860,
+   "candidate_positives": 2860,
+   "candidate_positives_not_hidden": 0,
+   "candidates": 9681,
+   "hidden_cells": 2860,
+   "hidden_cells_not_candidates": 0,
+   "hidden_groups_with_a_visible_cell": 0,
+   "passed": true,
+   "premise_cells_hidden": 0,
+   "premise_cells_outside_visible": 0,
+   "premise_cells_used_by_pln": 11377,
+   "rank_s": 36.7,
+   "seed": 0,
+   "table_cells_hidden": 0,
+   "visible_true_cells": 11379
+  },
+  "1": {
+   "candidate_hidden": 2868,
+   "candidate_positives": 2868,
+   "candidate_positives_not_hidden": 0,
+   "candidates": 9689,
+   "hidden_cells": 2868,
+   "hidden_cells_not_candidates": 0,
+   "hidden_groups_with_a_visible_cell": 0,
+   "passed": true,
+   "premise_cells_hidden": 0,
+   "premise_cells_outside_visible": 0,
+   "premise_cells_used_by_pln": 11369,
+   "rank_s": 39.2,
+   "seed": 1,
+   "table_cells_hidden": 0,
+   "visible_true_cells": 11371
+  },
+  "2": {
+   "candidate_hidden": 2836,
+   "candidate_positives": 2836,
+   "candidate_positives_not_hidden": 0,
+   "candidates": 9657,
+   "hidden_cells": 2836,
+   "hidden_cells_not_candidates": 0,
+   "hidden_groups_with_a_visible_cell": 0,
+   "passed": true,
+   "premise_cells_hidden": 0,
+   "premise_cells_outside_visible": 0,
+   "premise_cells_used_by_pln": 11401,
+   "rank_s": 37.6,
+   "seed": 2,
+   "table_cells_hidden": 0,
+   "visible_true_cells": 11403
+  }
+ },
+ "table": {
+  "cells": 21060,
+  "cells_dropped_test_statement": 13,
+  "functions": 103,
+  "functions_in_projects": 108,
+  "groups": 17296,
+  "shapes_seen": 21968,
+  "statements_read": 14840,
+  "stream_data_version": "e2673a78d60e6531",
+  "vocabulary": 3835
+ }
+}

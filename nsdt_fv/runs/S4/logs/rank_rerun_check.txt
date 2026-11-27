@@ -1,0 +1,23 @@
+S4 ranking-stage re-run (python3 -m nsdt_fv.eval.s4 --stage rank, commit 9012614) vs the full run (commit 9207192).
+Per split: sha256[:16] of decompressed scores.jsonl.gz, hidden.json, leak.json (leak.json carries the timing field rank_s).
+before:
+ddcbf33d77e27378
+88c6acfc1fe5602b
+52221303988756be
+d6cb72d3f3271fae
+329f47a34c0839f8
+c2881606fba74942
+fc968cd85bdff92c
+d9580afb353242d3
+043c544b5b245e00
+after:
+ddcbf33d77e27378
+88c6acfc1fe5602b
+11566e70e102fa92
+d6cb72d3f3271fae
+329f47a34c0839f8
+9a6eb65ad2d3aaa7
+fc968cd85bdff92c
+d9580afb353242d3
+0b173754c9469754
+scores and hidden sets identical: yes

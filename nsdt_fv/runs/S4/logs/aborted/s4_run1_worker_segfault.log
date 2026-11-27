@@ -1,0 +1,1 @@
+[S4] table {'stream_data_version': 'e2673a78d60e6531', 'statements_read': 14840, 'shapes_seen': 21968, 'vocabulary': 3835, 'cells': 21060, 'groups': 17296, 'functions': 103, 'functions_in_projects': 108, 'cells_dropped_test_statement': 13}
