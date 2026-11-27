@@ -11,7 +11,8 @@ python3 -m pytest -q
 run() { taskset -c "$1" python3 -m nsdt_fv.eval.s2 --config nsdt_fv/configs/S2.yaml --arm "$2" --seed "$3"; }
 # each run uses 2 pinned cores; runs in one line execute in parallel on disjoint core pairs
 run 0,1 D1 0 & run 2,3 D2 0 & run 4,5 D3 0 & run 6,7 D4 0 & wait
-run 0,1 D1 1 & run 2,3 D2 1 & run 4,5 B2c 0 & wait
+run 0,1 D1 1 & run 4,5 D2 1 & run 6,7 B2c 0 & wait
+run 2,3 D1x 0     # diagnostic (CHANGES.md): D1 with B2c's 30-epoch wake; not an S2 arm
 python3 -m nsdt_fv.eval.report_s2
 cp nsdt_fv/reports/S2.md /tmp/S2.first.md
 python3 -m nsdt_fv.eval.report_s2

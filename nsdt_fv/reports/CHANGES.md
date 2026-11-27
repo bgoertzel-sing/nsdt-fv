@@ -91,3 +91,9 @@ Even so the cap fits its training data less well than S1's full-parameter traini
   checked again inside the learner; any raise there aborts the run.
 - Supplementary arm B2c (Table 3; ISSUES.md item 18): S1's B2 recipe (30 epochs per stage, batch 32) on the
   same cap with the same frozen base, for a like-for-like sequential baseline. It is not one of D1-D4.
+- Diagnostic arm D1x (added after the seed-0 D1-D4 results were seen, so it is labelled as a
+  diagnostic and does not replace D1): D1 whose wake is B2c's supervised recipe (30 epochs per stage,
+  batch 32, cosine schedule) instead of A.4's single epoch; sleep phases, budgets and guard as D1. Reason:
+  with the one-epoch wake the cap does not learn the windows at all (D1 equals the frozen base within
+  noise), so D1-D4 cannot say what the sleep phases do to a cap that is learning. D1x minus B2c isolates
+  the sleep phases on top of the same supervised training. It is not A.4 and not a protocol change.
