@@ -17,6 +17,16 @@
 
 ## Anomalies and open issues
 
+- The recorded code commit of the main run ends in `+dirty`: the flag was taken when the run finished, after files were
+  edited while it ran (the `--seed` option of `eval/s1.py` and documentation; diff `git diff 493cc69 f959832`). The run
+  imported the modules of 493cc69 at start. From f959832 on the commit is recorded at start (`code_commit`) and at end.
+- Forgetting is above the target but not by a wide margin: F(B2) = 11.9 with a 95% interval whose lower end is below 10,
+  and the frozen B0, which cannot forget, shows F = 1.0 from sampling noise alone (F takes a maximum over stages).
+  The seed-1 replicate below, if present, is the check that the effect is not a single-seed accident.
+- B6 beats B0 on ACC by 28 points but on LA by only 12: re-trained from the base on the union, B6 sees the newest window
+  for 30 epochs among all earlier ones, and its accuracy on the newest window (LA) is below B5-10's. Its strength is at the
+  end of the stream (ACC, BWT = +18), which is what the ceiling is for.
+
 - Arms B2, B5-10 and B6 train all weights of the tiny model, not adapters (ISSUES.md item 18, CHANGES.md "S1 calibration").
 - The toy's "curated context" is the statement alone, so FWD here is not the section 7 FWD with snapshot context
   (ISSUES.md item 19). B0's accuracy comes almost entirely from obligations that `simp refl` closes (stratum table).

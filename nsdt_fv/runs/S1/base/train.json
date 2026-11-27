@@ -1,0 +1,20 @@
+{
+ "base_hash": "8adcff289bb9ebbb",
+ "examples_seen": 9568,
+ "excluded": [
+  {
+   "detail": "text overlaps the proof of test obligation toy-mix-treelist@4dfcd9d10cc3:fm_d278",
+   "rule": "L1",
+   "source_ids": [
+    "toy-prelude:pre_d174"
+   ]
+  }
+ ],
+ "guard_checked": 159,
+ "last_loss": 0.18902154564857482,
+ "n_examples": 159,
+ "params": 834304,
+ "steps": 299,
+ "train_tokens": 172123,
+ "wall_s": 114.74
+}

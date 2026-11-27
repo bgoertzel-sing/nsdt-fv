@@ -22,8 +22,8 @@ from . import metrics as M
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ARM_ORDER = ["B0", "B2", "B5-10", "B6"]
-NAMES = {"B0": "frozen base, statement context", "B2": "sequential LoRA", "B5-10": "LoRA + replay of 10% of history",
-         "B6": "joint retraining on all windows so far, LoRA"}
+NAMES = {"B0": "frozen base, statement context", "B2": "sequential fine-tuning", "B5-10": "sequential + replay of 10% of history",
+         "B6": "joint retraining on all windows so far"}
 
 
 def pct(x):
@@ -117,9 +117,15 @@ def build(run_dir, out_path):
       f"{cfg['model']['heads']} heads, ff={cfg['model']['ff']}; base hash `{b['hash']}`; "
       f"{b['stats']['n_examples']} prelude examples, {b['stats']['steps']} steps, final loss {b['stats']['last_loss']:.3f}).")
     ad = cfg["adapt"]
-    w(f"- Adapters (B2, B5-10, B6): LoRA r={ad['lora_r']}, alpha={ad['lora_alpha']} on every linear "
-      f"layer, base frozen; {ad['epochs']} epochs per stage (B6: {ad.get('joint_epochs', ad['epochs'])} "
-      f"epochs over the union, adapters re-initialised each stage); batch {ad['batch']}, lr {ad['lr']}.")
+    if ad.get("mode", "lora") == "full":
+        how = ("all weights trained (the full-parameter equivalent of Table 3's adapters that the S1 order allows; "
+               "ISSUES.md item 18)")
+        reset = "re-started from the base weights each stage"
+    else:
+        how = f"LoRA r={ad['lora_r']}, alpha={ad['lora_alpha']} on every linear layer, base frozen"
+        reset = "adapters re-initialised each stage"
+    w(f"- Training of B2, B5-10, B6: {how}; {ad['epochs']} epochs per stage (B6: {ad.get('joint_epochs', ad['epochs'])} "
+      f"epochs over the union of windows 1..t, {reset}); batch {ad['batch']}, AdamW lr {ad['lr']} with warm-up and cosine decay.")
     w(f"- Seeds: run seed {meta['seed']}, stream seed {cfg['stream']['seed']}; sampling seeds = sha256(run|stage|obligation|sample) (R6). "
       f"Bootstrap: {B} resamples, seed {cfg['bootstrap']['seed']}.")
     w(f"- Code commit: `{meta['code_commit']}`. Data version: `{meta['data_version']}` "
@@ -188,7 +194,7 @@ def build(run_dir, out_path):
     g = meta["guard"]
     excl = g.get("base_examples_excluded", [])
     w(f"- Hold-out guard (R4, L1-L4): {g['checked']} training examples passed `HoldoutGuard.check` in the final run "
-      f"(base and all arms; a raise aborts the run; raises during training: {g['raised'] - len(excl)}). "
+      f"(base and all arms; a raise aborts the run; raises during training: {g['raised']}). "
       f"Wake/test identifier overlap: {g['train_eval_id_overlap']}. Training examples whose statement is a test statement: "
       f"{g['train_examples_with_test_statement']}. Leak canaries (a test obligation injected as a wake example) raised: "
       f"{sum(c['raised'] for c in g['leak_canaries'])}/{len(g['leak_canaries'])} "
@@ -201,7 +207,7 @@ def build(run_dir, out_path):
     w(f"- Known-answer canary: ground-truth proofs through the same `evaluate()` and metrics path give "
       f"LA={canary['metrics']['LA']:.3f}, ACC={canary['metrics']['ACC']:.3f}, F={canary['metrics']['F']:.3f} over "
       f"{canary['cells']} cells: **{'passed' if canary['passed'] else 'FAILED'}**.")
-    allok = all(gate.values()) and len(gate) == 5
+    allok = all(gate.values()) and set(gate) == {"gap", "forgetting", "T4", "canary"}
     w("")
     w(f"**S1 condition {'met' if allok else 'not met'}** (gap: {gate.get('gap')}, forgetting: {gate.get('forgetting')}, "
       f"T4: {gate.get('T4')}, canary: {gate.get('canary')}).")
