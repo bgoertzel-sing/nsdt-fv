@@ -1,0 +1,28 @@
+# Experiment S4 (plan 8.1, 9.4 P0 on the toy): PLN reference fragment (Appendix E) on the toy property tables.
+# Fixed before the run (no tuning on outcomes): every choice below and why is in reports/CHANGES.md, section "S4".
+experiment: S4
+run_dir: runs/S4
+stream:                  # = S1-S3 (the toy is unchanged)
+  seed: 0
+  projects: 6
+shapes:
+  source: runs/S3/N-C/channels.jsonl.gz   # channel C's logged output (S3 head 12828b0)
+  min_support: 2         # a shape enters the vocabulary if C's output instantiates it for >= 2 functions
+label:                   # "true" = the checker accepts a proof found within budget
+  prover_nodes: 2000     # = channel C's prover budget in S3
+  cex_inputs: 200        # descriptive column only (never a label)
+  cex_seed: 1
+  workers: 2             # 2 cores
+split:
+  hide_fraction: 0.2     # 20% of the true statement groups hidden
+  seeds: [0, 1, 2]       # seed 0 is the primary analysis; 1, 2 are replicate splits
+metrics:
+  ks: [5, 10, 20]        # precision at k per function (section 9/A.6 give no k; the order's default)
+  bins: 10               # reliability table: predicted value in [0, 0.1), ..., [0.9, 1.0]
+bootstrap:
+  resamples: 10000
+  seed: 0                # paired over functions
+pln:                     # Appendix E constants
+  k: 10
+  d: 0.9
+random_baseline_seed: 0
