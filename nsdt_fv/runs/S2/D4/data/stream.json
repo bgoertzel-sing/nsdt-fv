@@ -1,0 +1,65 @@
+{
+ "stages": [
+  [
+   "toy-mix-listarith@w1",
+   "2025-02-25"
+  ],
+  [
+   "toy-mix-treelist@w1",
+   "2025-02-25"
+  ],
+  [
+   "toy-bits@w1",
+   "2025-03-17"
+  ],
+  [
+   "toy-arith@w1",
+   "2025-04-08"
+  ],
+  [
+   "toy-trees@w1",
+   "2025-04-22"
+  ],
+  [
+   "toy-lists@w1",
+   "2025-05-25"
+  ],
+  [
+   "toy-mix-treelist@w2",
+   "2025-08-13"
+  ],
+  [
+   "toy-mix-listarith@w2",
+   "2025-09-30"
+  ],
+  [
+   "toy-lists@w2",
+   "2025-10-31"
+  ],
+  [
+   "toy-arith@w2",
+   "2025-11-19"
+  ],
+  [
+   "toy-bits@w2",
+   "2025-11-26"
+  ],
+  [
+   "toy-trees@w2",
+   "2025-12-16"
+  ]
+ ],
+ "config": {
+  "seed": 0,
+  "sizes": [
+   199,
+   247,
+   203,
+   155,
+   183,
+   215
+  ],
+  "test_fraction": 0.2
+ },
+ "data_version": "e2673a78d60e6531"
+}

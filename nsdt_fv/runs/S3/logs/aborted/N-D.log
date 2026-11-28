@@ -1,0 +1,5 @@
+[N-D s0] stage 0: {1: 0.167} (74s)
+[N-D s0] stage 1: {1: 0.167, 2: 0.286} nrem 8/240 rem 0/0 conj 0 ch {'items': 150, 'emitted': 107, 'guard_refused': 0, 'wake': 47, 'seeds': 0, 'prio': 60, 'seconds': 0.26} (112s)
+[N-D s0] stage 2: {1: 0.167, 2: 0.286, 3: 0.333} nrem 11/240 rem 0/0 conj 0 ch {'items': 150, 'emitted': 108, 'guard_refused': 0, 'wake': 48, 'seeds': 0, 'prio': 60, 'seconds': 0.32} (142s)
+[N-D s0] stage 3: {1: 0.167, 2: 0.286, 3: 0.333, 4: 0.2} nrem 9/240 rem 0/0 conj 0 ch {'items': 141, 'emitted': 111, 'guard_refused': 0, 'wake': 51, 'seeds': 0, 'prio': 60, 'seconds': 0.16} (166s)
+[N-D s0] stage 4: {1: 0.167, 2: 0.286, 3: 0.333, 4: 0.2, 5: 0.35} nrem 6/240 rem 0/0 conj 0 ch {'items': 167, 'emitted': 120, 'guard_refused': 0, 'wake': 60, 'seeds': 0, 'prio': 60, 'seconds': 0.21} (208s)

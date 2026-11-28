@@ -245,3 +245,377 @@ class HoldoutGuard:
     @staticmethod
     def split_by_release(obligations, release_date: str):
         return list(obligations), [o for o in obligations if o["first_seen"] > release_date]
+
+
+
+# =============================================================================================== Lean
+# C1-prep: the same guard for Lean obligations. Same interface as HoldoutGuard (check, check_all,
+# filter_dreams, filter_edges, check_eval_order, split_by_release, is_test_statement); nothing above changed.
+# Without Lean there is no parser, so the toy's structural checks become text checks:
+#   held-out sets   5.4's three kinds: split 'test' (in-window), 'benchmark' and 'forward'.
+#   statements      lean_statement_key: Lean tokens, declaration keyword/name/attributes dropped, binder names
+#                   alpha-renamed in order of binding, the two sides of a single top-level '=' or '↔' in the
+#                   conclusion put in a fixed order. Not handled: binders moved between the signature and a
+#                   '∀' in the type, implicit/explicit changes, notation unfolding (needs Lean; C1).
+#   proof text      every held-out proof contributes its distinctive K-token shingles (K = shingle, default 12):
+#                   shingles that occur in no non-held-out proof and in no statement. A held-out proof shorter
+#                   than K but at least min_tokens long is one needle, if no non-held-out proof equals it.
+#                   Any example text containing one raises L1.
+#   proof states    if obligations carry 'proof_states' (the extractor's goal states, C1), their distinctive
+#                   states are needles too.
+#   annotations     an annotation for obligation X raises if it contains X's whole proof as written, including a
+#                   leading ':=' (at least 2 tokens, so ':= rfl' counts).
+import hashlib  # noqa: E402
+import re  # noqa: E402
+
+# Lean tokens: comments dropped; unicode identifiers (Γ, ρ₁, ℕ) are single tokens; a run of ASCII operator
+# characters (':=', '==>', '<=', '-∗' gives '-' '∗') is one token; every other non-space character is one token.
+_LTOK = re.compile(r"[\w.'!?]+|[:=<>~+*/\\|&^%$#-]+|\S")
+_COMMENT = re.compile(r"/-.*?-/|--[^\n]*", re.S)
+
+
+def _lean_tokens(text: str) -> list:
+    return _LTOK.findall(_COMMENT.sub(" ", text))
+
+LEAN_HELD_OUT = ("test", "benchmark", "forward")
+_BINDER_OPEN = {"(", "{", "[", "⦃", "{{"}
+_QUANT = {"∀", "∃", "∃!", "fun", "λ", "Π", "Σ", "forall", "exists"}
+_IDENT_RE = re.compile(r"^[^\W\d][\w'!?]*$")
+_KEYWORDS = {"fun", "λ", "forall", "exists", "let", "have", "show", "from", "by", "at", "with", "if", "then", "else",
+             "match", "do", "Type", "Prop", "Sort", "in", "where"}
+
+
+class _Ident:
+    @staticmethod
+    def match(t):
+        return t not in _KEYWORDS and _IDENT_RE.match(t) is not None
+
+
+_IDENT = _Ident()
+_MODS = {"private", "protected", "noncomputable", "nonrec", "unsafe", "partial", "scoped", "local"}
+
+
+def _strip_header(toks):
+    """Drop '@[...]' attributes, modifiers, 'theorem|lemma NAME' and a trailing ':=' / 'by'."""
+    i = 0
+    while i < len(toks):
+        if toks[i] == "@" and i + 1 < len(toks) and toks[i + 1] == "[":
+            depth, i = 0, i + 1
+            while i < len(toks):
+                depth += toks[i] == "["
+                depth -= toks[i] == "]"
+                i += 1
+                if depth == 0:
+                    break
+            continue
+        if toks[i] in _MODS:
+            i += 1
+            continue
+        break
+    if i < len(toks) and toks[i] in ("theorem", "lemma"):
+        i += 2
+    toks = toks[i:]
+    while toks and toks[-1] in (":=", "by", ":", "="):
+        if toks[-1] == "=" and len(toks) >= 2 and toks[-2] == ":":
+            toks = toks[:-2]
+            continue
+        if toks[-1] in (":=", "by"):
+            toks = toks[:-1]
+            continue
+        break
+    return toks
+
+
+def _join_assign(toks):
+    out = []
+    for t in toks:
+        if t == "=" and out and out[-1] == ":":
+            out[-1] = ":="
+        elif t == ">" and out and out[-1] == "=":
+            out[-1] = "=>"
+        else:
+            out.append(t)
+    return out
+
+
+def lean_statement_tokens(text: str) -> list:
+    """Lean tokens of a statement without attributes, modifiers, keyword and name."""
+    return _strip_header(_join_assign(_lean_tokens(text)))
+
+
+def lean_binder_names_statement(toks) -> list:
+    """Binder names of a statement: bracket groups and quantifiers in the signature (before the conclusion's ':'),
+    quantifiers only in the conclusion (a '(x : T)' there is a type ascription, not a binder)."""
+    head, concl = lean_conclusion_split(toks)
+    return lean_binder_names(head) + lean_binder_names(concl, brackets=False)
+
+
+def lean_binder_names(toks, brackets: bool = True) -> list:
+    """Binder names in order: the identifiers of a bracket group '(x y : T)', '{x : T}', '[inst : C]', '⦃x : T⦄'
+    (a group with any non-identifier before its ':' is not a binder group), and the identifiers after a
+    quantifier up to ',' ':' '=>' or a bracket."""
+    names = []
+    i, n = 0, len(toks)
+    while i < n:
+        t = toks[i]
+        if t in _BINDER_OPEN and brackets:
+            j = i + 1
+            cand = []
+            while j < n and toks[j] != ":" and _IDENT.match(toks[j]) and len(cand) < 12:
+                cand.append(toks[j])
+                j += 1
+            if cand and j < n and toks[j] == ":":
+                names.extend(c for c in cand if c != "_")
+        elif t in _QUANT:
+            j = i + 1
+            while j < n and _IDENT.match(toks[j]) and j - i < 12:
+                if toks[j] != "_":
+                    names.append(toks[j])
+                j += 1
+        i += 1
+    return names
+
+
+def lean_conclusion_split(toks):
+    """(head, conclusion): the conclusion is what follows the last ':' at bracket depth 0."""
+    depth, colon = 0, -1
+    for i, t in enumerate(toks):
+        if t in ("(", "{", "[", "⦃"):
+            depth += 1
+        elif t in (")", "}", "]", "⦄"):
+            depth -= 1
+        elif t == ":" and depth == 0:
+            colon = i
+    return toks[: colon + 1], toks[colon + 1:]
+
+
+def lean_top_eq(concl):
+    """Index of the single top-level '=' or '↔' of a conclusion, or None."""
+    depth, ops = 0, []
+    for i, t in enumerate(concl):
+        if t in ("(", "{", "[", "⦃"):
+            depth += 1
+        elif t in (")", "}", "]", "⦄"):
+            depth -= 1
+        elif t in ("=", "↔") and depth == 0:
+            ops.append(i)
+        elif t in ("→", "∧", "∨", ",") and depth == 0:
+            return None
+    return ops[0] if len(ops) == 1 else None
+
+
+def lean_statement_key(text: str) -> str:
+    """Hash of a statement up to binder names, whitespace, keyword/name and the orientation of a single top-level
+    '=' or '↔' in the conclusion."""
+    toks = lean_statement_tokens(text)
+    head, concl = lean_conclusion_split(toks)
+    names = lean_binder_names(head)
+    ren = {}
+    for nm in names:
+        if nm not in ren and nm not in _QUANT and nm not in _BINDER_OPEN:
+            ren[nm] = f"_v{len(ren)}"
+    # signature binders by order of binding; binders of the conclusion ('∀ x,', 'fun x =>') all become '_q', so the
+    # key does not depend on the order in which the two sides of a flipped equation bind them
+    inner = {n for n in lean_binder_names(concl, brackets=False) if n not in ren}
+    head = [ren.get(t, t) for t in head]
+    concl = [ren.get(t, "_q" if t in inner else t) for t in concl]
+    op = lean_top_eq(concl)
+    if op is not None:
+        a, b = concl[:op], concl[op + 1:]
+        concl = min(a, b) + [concl[op]] + max(a, b)
+    return hashlib.sha256("\x1f".join(head + concl).encode()).hexdigest()
+
+
+def _toks(text: str) -> list:
+    return _join_assign(_lean_tokens(text))
+
+
+def lean_proof_tokens(proof: str) -> list:
+    t = _toks(proof)
+    if t and t[0] == ":=":
+        t = t[1:]
+    return t
+
+
+class _Shingles:
+    def __init__(self, k):
+        self.k = k
+        self.tag = {}
+
+    @staticmethod
+    def _h(seq):
+        return hashlib.blake2b("\x1f".join(seq).encode(), digest_size=10).digest()
+
+    def grams(self, toks):
+        k = self.k
+        return [self._h(toks[i:i + k]) for i in range(0, max(0, len(toks) - k + 1))]
+
+    def find(self, toks):
+        for g in self.grams(toks):
+            if g in self.tag:
+                return self.tag[g]
+        return None
+
+
+class _Exact:
+    """Whole-sequence needles (proofs shorter than the shingle size, proof states), matched anywhere in the text:
+    one dictionary per needle length, so a search costs (text length) x (number of distinct needle lengths)."""
+    def __init__(self):
+        self.by_first = {}          # first token -> [(needle, tag)] (kept for callers that list the needles)
+        self.by_len = {}
+
+    def add(self, toks, tag):
+        if toks:
+            t = tuple(toks)
+            self.by_first.setdefault(t[0], []).append((t, tag))
+            self.by_len.setdefault(len(t), {}).setdefault(t, tag)
+
+    def find(self, toks):
+        n = len(toks)
+        for m, table in self.by_len.items():
+            for i in range(0, n - m + 1):
+                tag = table.get(tuple(toks[i:i + m]))
+                if tag is not None:
+                    return tag
+        return None
+
+
+class LeanHoldoutGuard:
+    """HoldoutGuard for Lean obligations (internal Appendix B field names; see schemas.to_internal_names)."""
+
+    def __init__(self, obligations, worlds=None, min_tokens: int = 8, shingle: int = 12, dev_projects=None,
+                 frozen: bool = False, held_out=LEAN_HELD_OUT):
+        self.min_tokens = min_tokens
+        self.frozen = frozen
+        self.dev_projects = set(dev_projects) if dev_projects is not None else None
+        self.by_id = {o["id"]: o for o in obligations}
+        held = [o for o in obligations if o["split"] in held_out]
+        self.test_ids = {o["id"] for o in held}
+        self.test_keys = {}
+        for o in held:
+            self.test_keys.setdefault(lean_statement_key(o["statement"]), o["id"])
+        self.test_proof = {o["id"]: lean_proof_tokens(o["proof"]) for o in held if o.get("proof")}
+        self.test_proof_full = {o["id"]: _toks(o["proof"]) for o in held if o.get("proof")}   # with ':=' if written
+        k = shingle
+        self.shingles = _Shingles(k)
+        self.exact = _Exact()
+        generic = set()
+        generic_whole = set()
+        for o in obligations:
+            if o["split"] not in held_out and o.get("proof"):
+                pt = lean_proof_tokens(o["proof"])
+                generic.update(self.shingles.grams(pt))
+                generic_whole.add(tuple(pt))
+            generic.update(self.shingles.grams(_toks(o["statement"])))
+            if o["split"] not in held_out and o.get("src_up_to_decl"):
+                # a wake obligation's file prefix is legitimate training text (held-out proofs in it are redacted
+                # by the materializer), so its shingles are not evidence of a leak
+                generic.update(self.shingles.grams(_toks(o["src_up_to_decl"])))
+        self.n_distinctive_proofs = 0
+        for o in held:
+            pt = self.test_proof.get(o["id"])
+            if not pt:
+                continue
+            added = False
+            if len(pt) >= k:
+                for g in self.shingles.grams(pt):
+                    if g not in generic:
+                        self.shingles.tag.setdefault(g, o["id"])
+                        added = True
+            elif len(pt) >= min_tokens and tuple(pt) not in generic_whole:
+                self.exact.add(pt, o["id"])
+                added = True
+            self.n_distinctive_proofs += added
+        nontest_states = set()
+        for o in obligations:
+            if o["split"] not in held_out:
+                nontest_states |= {tuple(_toks(s)) for s in o.get("proof_states", ())}
+        self.n_states = 0
+        for o in held:
+            for s in o.get("proof_states", ()):
+                st = tuple(_toks(s))
+                if len(st) >= 5 and st not in nontest_states:
+                    self.exact.add(list(st), o["id"])
+                    self.n_states += 1
+        self.dropped_dreams = 0
+
+    def is_test_statement(self, text) -> bool:
+        return lean_statement_key(text) in self.test_keys
+
+    def check(self, ex: dict) -> None:
+        kind = ex.get("kind")
+        if kind not in KINDS:
+            raise LeakError("schema", f"unknown example kind {kind!r}")
+        if ex.get("source") == "frontier":
+            raise LeakError("L7", "frontier-model output may not enter training")
+        annotated = ex.get("obligation_id") if kind == "annotation" else None
+        for i in _ids(ex):
+            if i in self.test_ids and i != annotated:
+                raise LeakError("L1", f"held-out identifier {i}")
+            if self.dev_projects is not None and not self.frozen:
+                repo = i.split("@", 1)[0]
+                if i in self.by_id and repo not in self.dev_projects:
+                    raise LeakError("L6", f"{i} is not from a development repository")
+        if (kind in PROOF_DERIVED or kind == "dream") and not ex.get("statement"):
+            raise LeakError("schema", f"a {kind} example must carry its statement")
+        if ex.get("statement"):
+            tid = self.test_keys.get(lean_statement_key(ex["statement"]))
+            if tid is not None:
+                if kind == "dream":
+                    raise LeakError("L3", f"dream equals held-out statement of {tid}")
+                if kind in PROOF_DERIVED:
+                    raise LeakError("L1", f"{kind} example about held-out statement {tid}")
+        toks = []
+        for s in _strings({k: v for k, v in ex.items() if k not in ID_FIELDS}):
+            toks.extend(_toks(s))
+            toks.append("\u241e")
+        text = " ".join(_strings({k: v for k, v in ex.items() if k not in ID_FIELDS}))
+        for i in self._ids_in_text(text):
+            if i != annotated:
+                raise LeakError("L1", f"text contains held-out identifier {i}")
+        hit = self.shingles.find(toks)
+        if hit is not None:
+            raise LeakError("L1", f"text overlaps the proof of held-out obligation {hit}")
+        hit = self.exact.find(toks)
+        if hit is not None:
+            raise LeakError("L1", f"text contains the proof or a proof state of held-out obligation {hit}")
+        if annotated in self.test_proof_full and len(self.test_proof_full[annotated]) >= 2:
+            ann = _Exact()
+            ann.add(self.test_proof_full[annotated], annotated)
+            if ann.find(toks) is not None:
+                raise LeakError("L1", f"annotation contains the proof of {annotated}")
+
+    _ID_RE = re.compile(r"[^\s\"'`,()\[\]{}]+@[0-9a-fA-F]{7,40}:[^\s\"'`,()\[\]{}]+")
+
+    def _ids_in_text(self, text):
+        if "@" not in text:
+            return []
+        out = []
+        for m in self._ID_RE.findall(text):
+            for cand in (m, m.rstrip(".;:")):
+                if cand in self.test_ids:
+                    out.append(cand)
+                    break
+        return out
+
+    def check_all(self, examples):
+        for ex in examples:
+            self.check(ex)
+            yield ex
+
+    def filter_dreams(self, dreams):
+        kept = []
+        for d in dreams:
+            if lean_statement_key(d["statement"]) in self.test_keys:
+                self.dropped_dreams += 1
+            else:
+                kept.append(d)
+        return kept
+
+    def filter_edges(self, edges):
+        test_decls = {(self.by_id[i]["snapshot_id"].split("@")[0], self.by_id[i]["decl"]) for i in self.test_ids}
+        return [e for e in edges
+                if not (e["type"] == "proof_uses" and (e["snapshot_id"].split("@")[0], e["src"]) in test_decls)]
+
+    check_eval_order = staticmethod(HoldoutGuard.check_eval_order)
+    split_by_release = staticmethod(HoldoutGuard.split_by_release)

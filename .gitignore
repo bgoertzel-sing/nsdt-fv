@@ -7,3 +7,8 @@ nsdt_fv/runs/*/data/edges.jsonl
 # S1: model weights and per-stage adapter checkpoints (hashes are logged in meta.json / train.jsonl)
 nsdt_fv/runs/*/base/*.pt
 nsdt_fv/runs/*/*/ckpt/
+# S2: per-run copies of the stream (regenerated deterministically; data version in each meta.json; the
+# project sources are committed once under runs/S1/data/projects/)
+nsdt_fv/runs/*/*/data/obligations.jsonl
+nsdt_fv/runs/*/*/data/edges.jsonl
+nsdt_fv/runs/*/*/data/projects/

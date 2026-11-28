@@ -1,8 +1,8 @@
 """Data schemas of plan Appendix B (all files JSON Lines).
 
 Benchmark field-name mapping: section 5.3 says to adopt VeriSoftBench's own field names, read from
-data/verisoftbench.jsonl. That file is read in experiment S5, not S0, so BENCHMARK_FIELD_MAP is
-empty for now and the plan's illustrative names are used. Recorded in reports/ISSUES.md.
+data/verisoftbench.jsonl. S5 read that file and filled BENCHMARK_FIELD_MAP below; the plan's
+illustrative names are still used in our records (see the comment at the map). Recorded in reports/ISSUES.md.
 """
 from __future__ import annotations
 
@@ -31,8 +31,18 @@ EDGE_FIELDS = {"snapshot_id": str, "src": str, "dst": str, "type": str}
 EDGE_TYPES = ("statement_uses", "proof_uses", "unfolds_to", "similar_to", "has_property",
               "instance_of_method", "changed_in")
 
-# benchmark name -> our name; filled in S5 once data/verisoftbench.jsonl has been read
-BENCHMARK_FIELD_MAP: dict = {}
+# benchmark name -> our name, read from VeriSoftBench's data/verisoftbench.jsonl in S5 (commit 8f5e8b36,
+# sha256 ea584250...; nsdt_fv/reports/S5.md). Only fields with the same meaning are listed; related fields
+# (local_ctx, imports, used_*/lemma lists, rel_path) are mapped in nsdt_fv/bench/vsb_inspect.APPENDIX_B.
+# Our obligation records keep the Appendix B names for now: renaming them would change the toy's data
+# files, which S5 may not do; the rename (or an adapter) is a C1 decision (ISSUES.md).
+BENCHMARK_FIELD_MAP: dict = {
+    "lean_root": "repo",
+    "thm_name": "decl",
+    "thm_stmt": "statement",
+    "transitive_dep_count": "n_deps_transitive",
+    "ground_truth_proof": "proof",
+}
 
 
 class SchemaError(ValueError):
@@ -86,3 +96,24 @@ def validate_edge(rec: dict):
     _check(rec, EDGE_FIELDS, "edge")
     if rec["type"] not in EDGE_TYPES:
         raise SchemaError(f"edge: bad type {rec['type']!r}")
+
+
+
+# C1-prep: Lean obligation records are stored with the benchmark's names (5.3) for the fields that have the
+# same meaning, and read back into the Appendix B names that the trainer, the guard and the evaluator use.
+# The toy's records are unchanged (they never pass through these two functions).
+def to_benchmark_names(rec: dict) -> dict:
+    inv = {v: k for k, v in BENCHMARK_FIELD_MAP.items()}
+    return {inv.get(k, k): v for k, v in rec.items()}
+
+
+def to_internal_names(rec: dict) -> dict:
+    return {BENCHMARK_FIELD_MAP.get(k, k): v for k, v in rec.items()}
+
+
+def validate_lean_obligation(rec: dict, test_view: bool = False):
+    """Validates a stored (benchmark-named) Lean obligation."""
+    for k in BENCHMARK_FIELD_MAP.values():
+        if k in rec:
+            raise SchemaError(f"lean obligation: stored record uses Appendix B name {k!r}; use the benchmark's")
+    validate_obligation(to_internal_names(rec), test_view=test_view)

@@ -1,0 +1,114 @@
+{
+ "map": [
+  {
+   "appendix_b": "id",
+   "benchmark": null,
+   "relation": "no source: the benchmark's `id` is an integer task index 1..500, not <repo>@<commit>:<decl>; it can be built from lean_root, the repos.json commit and thm_name"
+  },
+  {
+   "appendix_b": "repo",
+   "benchmark": "lean_root",
+   "relation": "same"
+  },
+  {
+   "appendix_b": "commit",
+   "benchmark": "repos.json repos.<lean_root>.commit",
+   "relation": "partial: per repository, not per task (one pinned commit)"
+  },
+  {
+   "appendix_b": "snapshot_id",
+   "benchmark": null,
+   "relation": "no source: windows/snapshots are ours (section 5.2)"
+  },
+  {
+   "appendix_b": "module",
+   "benchmark": "rel_path",
+   "relation": "partial: file path (e.g. ArkLib/Data/Nat/Bitwise.lean); module name = path with / -> . and no .lean"
+  },
+  {
+   "appendix_b": "decl",
+   "benchmark": "thm_name",
+   "relation": "same"
+  },
+  {
+   "appendix_b": "kind",
+   "benchmark": null,
+   "relation": "no source field; thm_stmt's keyword (theorem/lemma, after attributes) gives it"
+  },
+  {
+   "appendix_b": "statement",
+   "benchmark": "thm_stmt",
+   "relation": "same (target_theorem is thm_stmt with the trailing ':=' ; see the field notes)"
+  },
+  {
+   "appendix_b": "src_up_to_decl",
+   "benchmark": "local_ctx",
+   "relation": "partial: the file context before the declaration as the benchmark builds it (proofs may be elided), not checked to be the raw file prefix"
+  },
+  {
+   "appendix_b": "scope",
+   "benchmark": "imports",
+   "relation": "partial: imports only; namespaces and variables are inside local_ctx"
+  },
+  {
+   "appendix_b": "deps_project",
+   "benchmark": "used_repo_defs, repo_lemmas, used_local_defs, used_local_lemmas",
+   "relation": "partial: lists of {name, content}; definitions and lemmas used, from the repo and the file"
+  },
+  {
+   "appendix_b": "deps_library",
+   "benchmark": "used_lib_defs, lib_lemmas",
+   "relation": "partial: lists of {name, module}"
+  },
+  {
+   "appendix_b": "n_deps_direct",
+   "benchmark": null,
+   "relation": "no source field; len() of the six used_*/lemma lists is a proxy"
+  },
+  {
+   "appendix_b": "n_deps_transitive",
+   "benchmark": "transitive_dep_count",
+   "relation": "same"
+  },
+  {
+   "appendix_b": "proof",
+   "benchmark": "ground_truth_proof",
+   "relation": "same (text starts at ':=' on most tasks; count in the field notes)"
+  },
+  {
+   "appendix_b": "first_seen",
+   "benchmark": null,
+   "relation": "no source: needs git history (C1)"
+  },
+  {
+   "appendix_b": "window",
+   "benchmark": null,
+   "relation": "no source: ours (section 5.2)"
+  },
+  {
+   "appendix_b": "split",
+   "benchmark": null,
+   "relation": "no source: every benchmark task is split 'benchmark'"
+  },
+  {
+   "appendix_b": "closed_by_baseline_tactics",
+   "benchmark": null,
+   "relation": "no source: needs Lean (C1)"
+  }
+ ],
+ "unmapped_benchmark_fields": [
+  "category",
+  "id",
+  "nesting_depth",
+  "subset_aristotle",
+  "target_theorem"
+ ],
+ "benchmark_field_map": {
+  "lean_root": "repo",
+  "thm_name": "decl",
+  "thm_stmt": "statement",
+  "transitive_dep_count": "n_deps_transitive",
+  "ground_truth_proof": "proof"
+ },
+ "benchmark_field_map_consistent": true
+}

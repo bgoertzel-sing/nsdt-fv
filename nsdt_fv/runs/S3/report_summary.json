@@ -1,0 +1,248 @@
+{
+ "equivalence": true,
+ "guard": true,
+ "metrics": {
+  "B0": {
+   "ACC": 0.17839706589706592,
+   "BWT": 0.008677685950413223,
+   "F": 0.009696969696969697,
+   "FWD": 0.17460918710918713,
+   "LA": 0.17044252044252042
+  },
+  "B2": {
+   "ACC": 0.15335257335257335,
+   "BWT": -0.10273907910271546,
+   "F": 0.1188862652499016,
+   "FWD": 0.14934463684463684,
+   "LA": 0.24753006253006252
+  },
+  "D1 (S2)": {
+   "ACC": 0.1981192881192881,
+   "BWT": 0.004545454545454546,
+   "F": 0.0,
+   "FWD": 0.19415103415103416,
+   "LA": 0.19395262145262146
+  },
+  "D1 (S3)": {
+   "ACC": 0.1981192881192881,
+   "BWT": 0.004545454545454546,
+   "F": 0.0,
+   "FWD": 0.19415103415103416,
+   "LA": 0.19395262145262146
+  },
+  "N-A": {
+   "ACC": 0.18998436748436745,
+   "BWT": 0.0132034632034632,
+   "F": 0.008874458874458875,
+   "FWD": 0.17081770081770078,
+   "LA": 0.17788119288119286
+  },
+  "N-B": {
+   "ACC": 0.1981192881192881,
+   "BWT": 0.004545454545454546,
+   "F": 0.0,
+   "FWD": 0.19415103415103416,
+   "LA": 0.19395262145262146
+  },
+  "N-C": {
+   "ACC": 0.1981192881192881,
+   "BWT": 0.004545454545454546,
+   "F": 0.0,
+   "FWD": 0.19415103415103416,
+   "LA": 0.19395262145262146
+  },
+  "N-D": {
+   "ACC": 0.1981192881192881,
+   "BWT": 0.004545454545454546,
+   "F": 0.0,
+   "FWD": 0.19433140933140933,
+   "LA": 0.19395262145262146
+  },
+  "N-E": {
+   "ACC": 0.1981192881192881,
+   "BWT": 0.006060606060606059,
+   "F": 0.0,
+   "FWD": 0.18684944684944685,
+   "LA": 0.19256373256373258
+  }
+ },
+ "nt_solved": {
+  "B0": 0,
+  "B2": 6,
+  "D1 (S2)": 0,
+  "D1 (S3)": 0,
+  "N-A": 0,
+  "N-B": 0,
+  "N-C": 0,
+  "N-D": 0,
+  "N-E": 0
+ },
+ "t10": true,
+ "t4": {
+  "cells": 90,
+  "lines_in_declared_sets": true,
+  "logged_digest": {
+   "B0": "1a4285664e122c05",
+   "B2": "1a4285664e122c05",
+   "D1 (S2)": "1a4285664e122c05",
+   "D1 (S3)": "1a4285664e122c05",
+   "N-A": "1a4285664e122c05",
+   "N-B": "1a4285664e122c05",
+   "N-C": "1a4285664e122c05",
+   "N-D": "1a4285664e122c05",
+   "N-E": "1a4285664e122c05"
+  },
+  "logged_id_sets_equal": true,
+  "passed": true,
+  "recorded_hashes_equal": true
+ },
+ "t8": true,
+ "t9": true,
+ "use": {
+  "D1 (S3)": {
+   "acc": 0,
+   "attempted": 0,
+   "attempts": 0,
+   "lib": 0,
+   "nt": 0,
+   "offered": 0,
+   "prio_picked": 0,
+   "wake": 0
+  },
+  "N-A": {
+   "acc": 91,
+   "attempted": 480,
+   "attempts": 1920,
+   "lib": 25,
+   "nt": 0,
+   "offered": 712,
+   "prio_picked": 0,
+   "wake": 2686
+  },
+  "N-B": {
+   "acc": 0,
+   "attempted": 480,
+   "attempts": 1920,
+   "lib": 0,
+   "nt": 0,
+   "offered": 1200,
+   "prio_picked": 0,
+   "wake": 0
+  },
+  "N-C": {
+   "acc": 0,
+   "attempted": 480,
+   "attempts": 1920,
+   "lib": 0,
+   "nt": 0,
+   "offered": 1200,
+   "prio_picked": 0,
+   "wake": 0
+  },
+  "N-D": {
+   "acc": 0,
+   "attempted": 0,
+   "attempts": 0,
+   "lib": 0,
+   "nt": 0,
+   "offered": 0,
+   "prio_picked": 316,
+   "wake": 546
+  },
+  "N-E": {
+   "acc": 0,
+   "attempted": 0,
+   "attempts": 0,
+   "lib": 0,
+   "nt": 0,
+   "offered": 0,
+   "prio_picked": 66,
+   "wake": 596
+  }
+ },
+ "yields": {
+  "A": {
+   "rules": {
+    "statement L3": 16
+   },
+   "tot": {
+    "nextstate:acc": 1200,
+    "nextstate:cand": 1554,
+    "nextstate:emitted": 1200,
+    "nextstate:refused": 0,
+    "premise:acc": 779,
+    "premise:cand": 779,
+    "premise:emitted": 779,
+    "premise:refused": 0,
+    "statement:acc": 690,
+    "statement:cand": 1403,
+    "statement:dup": 239,
+    "statement:emitted": 712,
+    "statement:nt": 582,
+    "statement:refused": 16,
+    "unfold:acc": 707,
+    "unfold:cand": 1383,
+    "unfold:emitted": 707,
+    "unfold:refused": 0
+   }
+  },
+  "B": {
+   "rules": {
+    "statement L1": 9,
+    "statement L3": 53
+   },
+   "tot": {
+    "statement:acc": 1200,
+    "statement:cand": 3772,
+    "statement:dup": 291,
+    "statement:emitted": 1200,
+    "statement:nt": 1200,
+    "statement:refused": 62
+   }
+  },
+  "C": {
+   "rules": {
+    "statement L1": 7,
+    "statement L3": 23
+   },
+   "tot": {
+    "statement:acc": 869,
+    "statement:cand": 14870,
+    "statement:dup": 301,
+    "statement:emitted": 1200,
+    "statement:nt": 869,
+    "statement:refused": 30
+   }
+  },
+  "D": {
+   "rules": {},
+   "tot": {
+    "priority:acc": 0,
+    "priority:cand": 771,
+    "priority:dup": 771,
+    "priority:emitted": 701,
+    "priority:nt": 0,
+    "priority:refused": 0,
+    "repair:acc": 546,
+    "repair:cand": 878,
+    "repair:emitted": 546,
+    "repair:refused": 0
+   }
+  },
+  "E": {
+   "rules": {},
+   "tot": {
+    "plan:acc": 596,
+    "plan:cand": 596,
+    "plan:emitted": 596,
+    "plan:refused": 0,
+    "priority:acc": 83,
+    "priority:cand": 83,
+    "priority:dup": 83,
+    "priority:emitted": 83,
+    "priority:nt": 83,
+    "priority:refused": 0
+   }
+  }
+ }
+}

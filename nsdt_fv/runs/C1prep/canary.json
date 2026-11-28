@@ -1,0 +1,141 @@
+{
+ "found": 488,
+ "missing": {
+  "clean": [
+   "U32.ByteVector.bitwise_componentwise",
+   "Utils.StateTransition.acyclic_containsPath_nodup",
+   "Utils.StateTransition.acyclic_has_leaf",
+   "Utils.StateTransition.acyclic_has_leaf_aux",
+   "Utils.StateTransition.acyclic_run_has_path_from_source_to_sink",
+   "Utils.StateTransition.exists_path_from_source_to_sink",
+   "Utils.StateTransition.exists_smaller_run_with_same_netFlow",
+   "Utils.StateTransition.path_with_back_edge_creates_cycle",
+   "Utils.StateTransition.size_removeCycle_lt"
+  ],
+  "iris-lean": [
+   "Iris.DFrac.update_discard"
+  ],
+  "lean-formal-reasoning-program": [
+   "Imp.fold_constants_bexp_sound",
+   "Imp.fold_constants_com_sound"
+  ]
+ },
+ "rows": [
+  {
+   "found": 60,
+   "repo": "ArkLib",
+   "tasks": 60
+  },
+  {
+   "found": 9,
+   "repo": "CvxLean",
+   "tasks": 9
+  },
+  {
+   "found": 21,
+   "repo": "FVIntmax",
+   "tasks": 21
+  },
+  {
+   "found": 3,
+   "repo": "IntroEffects",
+   "tasks": 3
+  },
+  {
+   "found": 6,
+   "repo": "LeanExprEvaluator",
+   "tasks": 6
+  },
+  {
+   "found": 1,
+   "repo": "Lentil",
+   "tasks": 1
+  },
+  {
+   "found": 19,
+   "repo": "LeroyCompilerVerificationCourse",
+   "tasks": 19
+  },
+  {
+   "found": 22,
+   "repo": "TTBFL",
+   "tasks": 22
+  },
+  {
+   "found": 24,
+   "repo": "VCV-io",
+   "tasks": 24
+  },
+  {
+   "found": 60,
+   "repo": "capless-lean",
+   "tasks": 60
+  },
+  {
+   "found": 50,
+   "repo": "clean",
+   "tasks": 59
+  },
+  {
+   "found": 2,
+   "repo": "formal-snarks-project",
+   "tasks": 2
+  },
+  {
+   "found": 23,
+   "repo": "iris-lean",
+   "tasks": 24
+  },
+  {
+   "found": 20,
+   "repo": "juvix-lean",
+   "tasks": 20
+  },
+  {
+   "found": 18,
+   "repo": "lean-formal-reasoning-program",
+   "tasks": 20
+  },
+  {
+   "found": 4,
+   "repo": "lean-hoare",
+   "tasks": 4
+  },
+  {
+   "found": 59,
+   "repo": "lean-mlir",
+   "tasks": 59
+  },
+  {
+   "found": 24,
+   "repo": "loom",
+   "tasks": 24
+  },
+  {
+   "found": 7,
+   "repo": "pcf-lean",
+   "tasks": 7
+  },
+  {
+   "found": 24,
+   "repo": "splean",
+   "tasks": 24
+  },
+  {
+   "found": 6,
+   "repo": "veil",
+   "tasks": 6
+  },
+  {
+   "found": 6,
+   "repo": "verified-compiler",
+   "tasks": 6
+  },
+  {
+   "found": 20,
+   "repo": "wadray_verification",
+   "tasks": 20
+  }
+ ],
+ "tasks": 500
+}

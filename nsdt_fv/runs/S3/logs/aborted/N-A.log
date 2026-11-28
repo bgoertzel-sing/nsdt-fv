@@ -1,0 +1,46 @@
+[N-A s0] stage 0: {1: 0.167} (52s)
+[N-A s0] stage 1: {1: 0.167, 2: 0.238} nrem 8/240 rem 0/160 conj 40 ch {'items': 344, 'emitted': 270, 'guard_refused': 4, 'wake': 210, 'seeds': 60, 'prio': 0, 'seconds': 0.53} (103s)
+[N-A s0] stage 2: {1: 0.111, 2: 0.143, 3: 0.133} nrem 2/240 rem 0/160 conj 40 ch {'items': 407, 'emitted': 287, 'guard_refused': 3, 'wake': 227, 'seeds': 60, 'prio': 0, 'seconds': 2.42} (177s)
+[N-A s0] stage 3: {1: 0.167, 2: 0.286, 3: 0.333, 4: 0.12} nrem 3/240 rem 3/160 conj 40 ch {'items': 288, 'emitted': 247, 'guard_refused': 2, 'wake': 187, 'seeds': 60, 'prio': 0, 'seconds': 0.34} (236s)
+[N-A s0] stage 4: {1: 0.167, 2: 0.286, 3: 0.333, 4: 0.2, 5: 0.35} nrem 7/240 rem 0/160 conj 40 ch {'items': 500, 'emitted': 303, 'guard_refused': 1, 'wake': 243, 'seeds': 60, 'prio': 0, 'seconds': 1.19} (304s)
+[N-A s0] stage 5: {1: 0.167, 2: 0.238, 3: 0.2, 4: 0.12, 5: 0.25, 6: 0.05} nrem 9/240 rem 0/160 conj 40 ch {'items': 405, 'emitted': 275, 'guard_refused': 0, 'wake': 215, 'seeds': 60, 'prio': 0, 'seconds': 0.92} (399s)
+[N-A s0] stage 6: {1: 0.167, 2: 0.286, 3: 0.333, 4: 0.2, 5: 0.35, 6: 0.05, 7: 0.227} nrem 12/240 rem 0/160 conj 40 ch {'items': 408, 'emitted': 291, 'guard_refused': 1, 'wake': 231, 'seeds': 60, 'prio': 0, 'seconds': 2.25} (471s)
+[N-A s0] stage 7: {1: 0.167, 2: 0.286, 3: 0.333, 4: 0.2, 5: 0.35, 6: 0.05, 7: 0.227, 8: 0.444} nrem 10/240 rem 0/160 conj 40 ch {'items': 446, 'emitted': 294, 'guard_refused': 1, 'wake': 234, 'seeds': 60, 'prio': 0, 'seconds': 0.95} (547s)
+[N-A s0] stage 8: {1: 0.167, 2: 0.286, 3: 0.333, 4: 0.2, 5: 0.35, 6: 0.05, 7: 0.227, 8: 0.444, 9: 0.2} nrem 10/240 rem 13/160 conj 40 ch {'items': 398, 'emitted': 269, 'guard_refused': 1, 'wake': 217, 'seeds': 52, 'prio': 0, 'seconds': 1.48} (611s)
+[N-A s0] stage 9: {1: 0.167, 2: 0.238, 3: 0.2, 4: 0.2, 5: 0.2, 6: 0.05, 7: 0.227, 8: 0.444, 9: 0.2, 10: 0.12} nrem 12/240 rem 0/160 conj 40 ch {'items': 457, 'emitted': 300, 'guard_refused': 1, 'wake': 240, 'seeds': 60, 'prio': 0, 'seconds': 6.18} (686s)
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/openclaw/research-agent/projects/nsdt-fv/repos/nsdt-fv-s3/nsdt_fv/eval/s3.py", line 493, in <module>
+    main()
+  File "/home/openclaw/research-agent/projects/nsdt-fv/repos/nsdt-fv-s3/nsdt_fv/eval/s3.py", line 489, in main
+    run_arm(cfg, a.arm, out_dir=a.out)
+  File "/home/openclaw/research-agent/projects/nsdt-fv/repos/nsdt-fv-s3/nsdt_fv/eval/s3.py", line 401, in run_arm
+    st["rem"] = runner.rem(t)
+  File "/home/openclaw/research-agent/projects/nsdt-fv/repos/nsdt-fv-s3/nsdt_fv/eval/s3.py", line 267, in rem
+    res = self.attempt(t, "rem", items, dc["candidates"], dc["temperature"], check)
+  File "/home/openclaw/research-agent/projects/nsdt-fv/repos/nsdt-fv-s3/nsdt_fv/eval/s3.py", line 143, in attempt
+    cands = self.core.generate(prompts, seeds, temperature, self.cfg["dream"]["max_new"]) if prompts else []
+  File "/home/openclaw/research-agent/projects/nsdt-fv/repos/nsdt-fv-s3/nsdt_fv/dt/dt_ref.py", line 216, in generate
+    return sample(self.model, self.tok, prompts, seeds, temperature=temperature, max_new=max_new)
+  File "/home/openclaw/.local/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/openclaw/research-agent/projects/nsdt-fv/repos/nsdt-fv-s3/nsdt_fv/train/model.py", line 290, in sample
+    logits = model(ids, pos, mask.unsqueeze(1), caches)[:, -1]
+  File "/home/openclaw/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/openclaw/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/openclaw/research-agent/projects/nsdt-fv/repos/nsdt-fv-s3/nsdt_fv/dt/dt_ref.py", line 104, in forward
+    x = F.dropout(b.tok(ids) + b.pos(pos), b.p, self.training)
+  File "/home/openclaw/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/openclaw/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/openclaw/.local/lib/python3.10/site-packages/torch/nn/modules/sparse.py", line 189, in forward
+    return F.embedding(
+  File "/home/openclaw/.local/lib/python3.10/site-packages/torch/nn/functional.py", line 2567, in embedding
+    return torch.embedding(weight, input, padding_idx, scale_grad_by_freq, sparse)
+IndexError: index out of range in self

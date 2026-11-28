@@ -1,0 +1,183 @@
+{
+ "shortlist": [
+  {
+   "repo": "iris-lean",
+   "tasks": 24,
+   "category": "Framework",
+   "ge_10_tasks": "met",
+   "distinct_category": "failed",
+   "build_under_30_min": "C0/C1",
+   "ge_300_obligations": "C0/C1",
+   "large": false,
+   "license": "Apache-2.0",
+   "has_mathlib": false,
+   "lean_toolchain": "leanprover/lean4:v4.26.0",
+   "commit": "36d042d249311727eb87acbef36b9d401bf44450"
+  },
+  {
+   "repo": "loom",
+   "tasks": 24,
+   "category": "Framework",
+   "ge_10_tasks": "met",
+   "distinct_category": "failed",
+   "build_under_30_min": "C0/C1",
+   "ge_300_obligations": "C0/C1",
+   "large": false,
+   "license": "Apache-2.0",
+   "has_mathlib": true,
+   "lean_toolchain": "leanprover/lean4:v4.23.0",
+   "commit": "e0f37f6caf9baa706b4562ed0f337c2b0420b018"
+  },
+  {
+   "repo": "veil",
+   "tasks": 6,
+   "category": "Framework",
+   "ge_10_tasks": "failed",
+   "distinct_category": "failed",
+   "build_under_30_min": "C0/C1",
+   "ge_300_obligations": "C0/C1",
+   "large": false,
+   "license": "Apache-2.0",
+   "has_mathlib": true,
+   "lean_toolchain": "leanprover/lean4:v4.24.0",
+   "commit": "4a17cf16032546db6c429fa3fafefe1863d5132c"
+  },
+  {
+   "repo": "clean",
+   "tasks": 59,
+   "category": "Applied verif.",
+   "ge_10_tasks": "met",
+   "distinct_category": "met",
+   "build_under_30_min": "C0/C1",
+   "ge_300_obligations": "C0/C1",
+   "large": false,
+   "license": "MIT",
+   "has_mathlib": true,
+   "lean_toolchain": "leanprover/lean4:v4.24.0",
+   "commit": "a134f91ff48ac6d85c9c8d90c64048244cdb6bff"
+  },
+  {
+   "repo": "capless-lean",
+   "tasks": 60,
+   "category": "Type systems",
+   "ge_10_tasks": "met",
+   "distinct_category": "met",
+   "build_under_30_min": "C0/C1",
+   "ge_300_obligations": "C0/C1",
+   "large": false,
+   "license": "MIT",
+   "has_mathlib": true,
+   "lean_toolchain": "leanprover/lean4:v4.21.0",
+   "commit": "93ed9e194b57f084e3125ff64cbfdd27cbbd54ad"
+  }
+ ],
+ "categories_covered": {
+  "Framework": 3,
+  "Applied verif.": 1,
+  "Type systems": 1
+ },
+ "five_distinct_categories": false,
+ "benchmark_categories": [
+  "Applied verif.",
+  "Compiler",
+  "Framework",
+  "Semantics",
+  "Type systems"
+ ],
+ "pool_by_category": {
+  "Applied verif.": [
+   {
+    "repo": "clean",
+    "tasks": 59,
+    "license": "MIT",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.24.0"
+   },
+   {
+    "repo": "VCV-io",
+    "tasks": 24,
+    "license": "Apache-2.0",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.24.0-rc1"
+   },
+   {
+    "repo": "FVIntmax",
+    "tasks": 21,
+    "license": "Apache-2.0",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.14.0-rc2"
+   },
+   {
+    "repo": "wadray_verification",
+    "tasks": 20,
+    "license": "GPL-3.0",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.9.0-rc2"
+   }
+  ],
+  "Compiler": [
+   {
+    "repo": "LeroyCompilerVerificationCourse",
+    "tasks": 19,
+    "license": "LGPL-2.1",
+    "has_mathlib": false,
+    "lean_toolchain": "leanprover/lean4:v4.23.0-rc2"
+   }
+  ],
+  "Framework": [
+   {
+    "repo": "iris-lean",
+    "tasks": 24,
+    "license": "Apache-2.0",
+    "has_mathlib": false,
+    "lean_toolchain": "leanprover/lean4:v4.26.0"
+   },
+   {
+    "repo": "loom",
+    "tasks": 24,
+    "license": "Apache-2.0",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.23.0"
+   },
+   {
+    "repo": "splean",
+    "tasks": 24,
+    "license": "Apache-2.0",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.11.0"
+   }
+  ],
+  "Semantics": [
+   {
+    "repo": "juvix-lean",
+    "tasks": 20,
+    "license": "MIT",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.19.0-rc2"
+   },
+   {
+    "repo": "lean-formal-reasoning-program",
+    "tasks": 20,
+    "license": "MIT",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.9.0-rc2"
+   }
+  ],
+  "Type systems": [
+   {
+    "repo": "capless-lean",
+    "tasks": 60,
+    "license": "MIT",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.21.0"
+   },
+   {
+    "repo": "TTBFL",
+    "tasks": 22,
+    "license": "zlib",
+    "has_mathlib": true,
+    "lean_toolchain": "leanprover/lean4:v4.13.0"
+   }
+  ]
+ }
+}

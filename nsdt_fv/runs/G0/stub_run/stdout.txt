@@ -1,0 +1,4 @@
+B2 {'LA': 0.5, 'FWD': 0.25, 'ACC': 0.417, 'F': 0.222, 'BWT': -0.111} accepted lines 31 of 240 categories {'error': 207, 'changed_statement': 2, 'ok': 31}
+B6 {'LA': 0.417, 'FWD': 0.0, 'ACC': 0.5, 'F': 0.111, 'BWT': 0.111} accepted lines 41 of 240 categories {'error': 198, 'ok': 41, 'changed_statement': 1}
+canary {'truth': {'metrics': {'LA': 1.0, 'FWD': 1.0, 'ACC': 1.0, 'F': 0.0, 'BWT': 0.0}, 'categories': ['ok']}, 'sorry': {'metrics': {'LA': 0.0, 'FWD': 0.0, 'ACC': 0.0, 'F': 0.0, 'BWT': 0.0}, 'categories': ['sorry']}} guard canary raised True
+ToyEq-side modules loaded: none

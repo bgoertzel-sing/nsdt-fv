@@ -1,0 +1,12 @@
+[S4] table {'stream_data_version': 'e2673a78d60e6531', 'statements_read': 14840, 'shapes_seen': 21968, 'vocabulary': 3835, 'cells': 21060, 'groups': 17296, 'functions': 103, 'functions_in_projects': 108, 'cells_dropped_test_statement': 13}
+[S4] labels for toy-arith: 4406 groups, 1989 accepted, 464s
+[S4] labels for toy-bits: 2927 groups, 2121 accepted, 646s
+[S4] labels for toy-lists: 2461 groups, 1559 accepted, 886s
+[S4] labels for toy-mix-listarith: 1923 groups, 1240 accepted, 1028s
+[S4] labels for toy-mix-treelist: 3684 groups, 2796 accepted, 1281s
+[S4] labels for toy-trees: 1895 groups, 1330 accepted, 1426s
+[S4] label {'label_wall_s': 1426.3, 'groups_labelled': 17296, 'label_core_s': 2744.5}
+[S4] canary {'p_f0_Tstar': 0.334107, 'p_f2_Tstar': 0.229358, 'prior_Tstar': 0.25, 'used_hidden': False, 'passed': True}
+[S4] split 0 {'seed': 0, 'visible_true_cells': 11379, 'hidden_cells': 2860, 'candidates': 9681, 'candidate_positives': 2860, 'candidate_hidden': 2860, 'premise_cells_used_by_pln': 11377, 'premise_cells_outside_visible': 0, 'premise_cells_hidden': 0, 'table_cells_hidden': 0, 'hidden_groups_with_a_visible_cell': 0, 'hidden_cells_not_candidates': 0, 'candidate_positives_not_hidden': 0, 'rank_s': 38.9, 'passed': True}
+[S4] split 1 {'seed': 1, 'visible_true_cells': 11371, 'hidden_cells': 2868, 'candidates': 9689, 'candidate_positives': 2868, 'candidate_hidden': 2868, 'premise_cells_used_by_pln': 11369, 'premise_cells_outside_visible': 0, 'premise_cells_hidden': 0, 'table_cells_hidden': 0, 'hidden_groups_with_a_visible_cell': 0, 'hidden_cells_not_candidates': 0, 'candidate_positives_not_hidden': 0, 'rank_s': 38.1, 'passed': True}
+[S4] split 2 {'seed': 2, 'visible_true_cells': 11403, 'hidden_cells': 2836, 'candidates': 9657, 'candidate_positives': 2836, 'candidate_hidden': 2836, 'premise_cells_used_by_pln': 11401, 'premise_cells_outside_visible': 0, 'premise_cells_hidden': 0, 'table_cells_hidden': 0, 'hidden_groups_with_a_visible_cell': 0, 'hidden_cells_not_candidates': 0, 'candidate_positives_not_hidden': 0, 'rank_s': 37.8, 'passed': True}

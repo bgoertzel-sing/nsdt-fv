@@ -118,3 +118,187 @@ No protocol element was changed in S1. The calibration steps are in CHANGES.md (
     sha256(run|stage|obligation|sample), so a sample depends only on the model, the prompt and its seed,
     not on batch composition (tests/test_G0_trainer.py). Bit-identical reruns additionally need the same
     torch build and thread count (logged in meta.json).
+
+## S2 (DT-ref on the toy stream)
+
+No protocol element was changed in S2. DT-ref's free parameters and the cap size are in CHANGES.md ("S2").
+
+26. **A.4's cap underfits on the toy.** With S1's base (pretrained on 159 prelude lemmas) frozen, residual MLP
+    adapters on the top third plus a head cannot fit even the training proofs (CHANGES.md probes: 0
+    non-trivial test proofs after 30 epochs on the whole stream). The cap was sized up as the order allows;
+    see CHANGES.md for the rule and the probe that decided it. Consequence: S2 measures DT-ref with a
+    larger cap than A.4 states, and still a much weaker learner than S1's full-parameter B2. Whether this is a
+    property of A.4's design or of a base pretrained on so little is not separable here; on Colab the base is
+    a real pretrained prover, so this toy result says little about Stage C.
+27. **Conjecture sleep needs a statement-writing skill.** A.4 prompts the model with three store statements;
+    a model trained only to map statements to proofs answers with a proof. DT-ref therefore trains an
+    auxiliary wake task on the window's own statements (no proofs). The S1 model's 192-token context forces
+    the three prompt statements to be short. A human may prefer conjectures from the channels only (S3).
+28. **D2 definition.** "Without the kernel filter" is implemented as: every generated candidate (deduplicated,
+    guard-passed) is learned, and the learner never sees a verdict (no fading term, no negatives, no dream
+    library). Verdicts are still computed and logged so that the share of wrong proofs D2 trains on is
+    measured. Another reading (verdicts used for fading or the library, only the training filter removed)
+    would make D2 closer to D1.
+29. **GC reference.** GC uses S1's B2 and B6, which train all weights (item 18), while every D arm trains a
+    cap on a frozen base. The supplementary B2c (cap-only sequential fine-tuning, S1's recipe) is reported
+    alongside so that D1 can be compared with a sequential learner of the same capacity.
+30. **D3 budget.** D3 removes conjecture sleep without giving its 160 attempts to re-derivation; it has 240
+    attempts per stage against D1's 400. An NSDT-style equal-budget D3 would reallocate them.
+31. **Guard on dreams.** HoldoutGuard.check runs on every dream candidate before checking; refused candidates
+    count as failed attempts and are never learned. The L1 free-text rule has false positives on generic
+    proofs (item 22): a model-written generic proof that happens to equal a "distinctive" test proof is
+    refused. The counts are in reports/S2.md.
+32. **Seeds.** Seed 1 of a D arm uses S1's seed-1 base (as S1's replicate did), so seed-1 rows compare with
+    S1's seed-1 B0 and B2; S1 has no seed-1 B6, so GC of seed-1 rows uses the seed-0 B2 and B6.
+
+## S3 (channels A-E on the toy)
+
+No protocol element (splits, metrics, thresholds, the S1 toy, the base, the S2 cap) was changed in S3. The channel
+choices are in CHANGES.md ("S3").
+
+33. **D1x vs B2c is confounded by the auxiliary statement task** (from S2's review). D1x's 30-epoch wake trains on
+    the window's proofs plus the auxiliary statement task of item 27 (three window statements -> a fourth); B2c
+    trains on the window's proofs only. D1x - B2c (F 0 vs 9.0 in reports/S2.md) therefore mixes the effect of the
+    sleep phases with the effect of the auxiliary task, which may itself regularise the cap and protect the base's
+    trivial competence. It is also a single seed. A clean contrast needs B2c with the same auxiliary examples, or
+    D1x without them; neither was run (S3 is channels only).
+34. **Arithmetic slip in S2's result summary.** The S2 DT runs with dream logs are D1-D4 and D1x at seed 0 and D1, D2
+    at seed 1: seven runs of 2,880 re-derivation candidates each, 20,160 dream candidates in all (recounted from the
+    seven dreams.jsonl.gz files), not 17,280 (six runs). The generated per-run tables of reports/S2.md are correct.
+35. **Toy readings of the channels.** C.5 fixes the operations; how their output reaches D1 is a reading of
+    Table 2 and A.3 (details in CHANGES.md): A, B and C emit statements, which feed conjecture sleep after the
+    model's own conjectures inside D1's budget of 40 statements per stage; A, D and E emit auxiliary wake
+    examples of the window they come from; D and E emit re-derivation priorities. D and E emit no new statements
+    (C.5 gives them none: D mutates proofs, E abstracts them), so "channel statements also feed conjecture sleep"
+    applies to A, B and C only. E's "dreams that instantiate a method on a new statement" is read as: an
+    instantiation accepted on a store statement makes that statement a re-derivation priority (the
+    instantiated proof is not trained on).
+36. **D's repair target is a machine proof.** C.5 defines the repair as the reference prover's; D's REPAIR wake
+    examples therefore train on machine proofs, the one exception in S3 to section 4's default that machine proofs
+    are not training targets (X5).
+37. **Annotations unused.** A.3's annotate() returns "" for every channel: annotating evaluation prompts would change
+    the S1 evaluation inputs (T4 compares obligation sets, not prompts, but the order fixes evaluation as in S1/S2).
+    Channel A's and E's prompt-annotation route (Table 2) is not measured.
+38. **Channel C evaluates with the independent ground evaluator** (backends/toyeq_oracle) rather than through
+    CheckerBackend.evaluate_term, for speed (about 10^6 function applications per stage). On Lean the A.3
+    evaluate_term interface is the route; G0's "no change to trainer or evaluator" is unaffected (channels are
+    neither). C's enumeration budget (4,000 terms per stage) stops before size 7 in some stages; the size reached
+    is in reports/S3.md.
+39. **Budget accounting.** N arms have D1's dream budget (C5): 240 re-derivation and at most 160 conjecture-sleep
+    candidates per stage. D1 itself spent only the 240 (none of its conjectures parsed, S2), so N-A, N-B and N-C
+    attempt up to 160 more candidates per stage than D1 actually did. Channel wake examples add optimizer steps
+    to the wake epoch (step and token counts in reports/S3.md, Cost). Neither is compensated.
+40. **Common random numbers.** Every S3 arm draws its sampling seeds from S2's D1 run identifier, so differences
+    between arms come from training, not from sampling noise; the paired bootstrap is over obligations only, as
+    before, and one training seed is run (item 24).
+41. **Store duplicates are arm-dependent.** The 'dup' column counts statements equal to a store statement, and the
+    store includes the arm's own dream library, so a channel's yield is measured inside its N arm, not stand-alone.
+
+## S4 (PLN reference on the toy property tables)
+
+42. **Where the shapes come from.** The plan names HasProperty(f, T) and "lemma shapes (templates with holes)" but no
+    shape list for the toy. S4 takes them from channel C's S3 output (as S3's notes suggested), abstracted at one
+    function each. The vocabulary therefore inherits C's enumeration limits (terms up to size 6-7, 4,000 terms per
+    stage) and C's bias toward equations among small terms; a hand-written shape catalogue (involution, idempotence,
+    commutativity, homomorphism over app, length preservation, ...) would give a different, smaller table.
+43. **Template functions are shared across projects.** A shape names template functions by their template name
+    (len, app, add, ...), and functions with the same template name have the same definition in every project
+    (checked). Functions such as add appear in several projects; their rows are near-identical, which helps every
+    ranker that uses other functions' rows (PLN transfer, nearest neighbour, frequency) through near-duplicates
+    rather than analogy. The per-project table in reports/S4.md shows the overlap; a cross-project-disjoint variant
+    was not run.
+44. **"True" is "proved within budget", not "holds".** A cell is positive iff the checker accepts a proof the baseline
+    tactics or the reference prover (2,000 nodes) find; true but unproved instances count as negatives, as in the
+    plan's PLN metric. The random-test column shows how many negatives have no counterexample.
+45. **Positive-unlabelled setting.** The rankers see the visible true cells and nothing about the candidates (no
+    refutations, no test counts), so a non-visible cell is "not known true" to them; the calibration population (the
+    candidates) has fewer positives than the table as a whole, because 80% of the true cells are visible and not
+    candidates. Calibration against the checker is measured on that population, as the order asks; it is not the
+    calibration a deployed PLN would face, where refutations and test evidence are in the store.
+46. **Implies by direct evaluation.** Implies(T1, T) is the share of T1-holders that hold T in the visible table (plan
+    9.3's "induction over the property table"); Appendix E's per-instance induction (inversion then deduction) is in
+    ref.py and T11 but not used for the table (CHANGES.md, S4).
+47. **Overlap discount.** "The smaller count is discounted by the overlap of their premise sets" is read as
+    n_small * (1 - |P1 & P2| / |P_small|). Every transfer conclusion for f reads f's own row (for Similar(f, g)), so
+    transfer conclusions overlap heavily and the discount removes most of their combined weight; revision order is
+    fixed (decreasing count) because the discounted revision is not associative. T11's associativity check is on
+    independent evidence (disjoint premises), as A.5 states it "on counts".
+48. **First run aborted.** Labelling workers died with a segmentation fault (C-stack overflow in the ground evaluator
+    on deep unary recursions such as tri(tri(tri(n))) under ToyEq's recursion limit of 20,000) and the process pool
+    hung; logs in runs/S4/logs/aborted/. Labelling now runs each job in a thread with a 1 GiB stack; evaluator or
+    prover RecursionErrors are recorded (counterexample 'limit', how 'prover_recursion'), never raised.
+
+## S5 (benchmark files, G0)
+
+49. **Benchmark field names are not yet our record names.** BENCHMARK_FIELD_MAP (data/schemas.py) records the five
+    benchmark fields with the same meaning (lean_root, thm_name, thm_stmt, transitive_dep_count, ground_truth_proof).
+    Plan 5.3 says to adopt the benchmark's names. Renaming our obligation fields would change the toy's data files,
+    which S5 may not do, so the rename (or an adapter in the prompt builder) is left to C1.
+50. **The provisional shortlist fails 5.1 on the checkable criteria.** veil has 6 benchmark tasks, fewer than 10, and
+    iris-lean, loom and veil share the category Framework. "Topic category" is read as the task file's `category`
+    (5 values). A list with one repository per category needs LeroyCompilerVerificationCourse for Compiler. Suggested
+    C0 timing list: iris-lean, loom, clean, capless-lean, LeroyCompilerVerificationCourse, juvix-lean or
+    lean-formal-reasoning-program. This is an owner decision because it changes the plan's list (reports/S5_notes.md).
+51. **The hold-out guard and the stream builder are ToyEq-specific.** data/holdout.py parses ToyEq statements and
+    replays ToyEq proofs (for goal states); data/stream.py builds ToyEq projects. Neither is the trainer or the
+    evaluator, and the trainer takes the guard as a callable. The G0 stub run therefore passes a minimal
+    identifier/statement/proof-text guard (gate/g0_stub_run.StubGuard). A Lean guard (L1 needs Lean proof states and
+    premise lists; L3 needs Lean statement normalisation) and a Lean stream builder are C1 work.
+52. **The tiny model's tokenizer is ASCII-only.** train/model.Tokenizer maps characters outside printable ASCII
+    (ℕ, →, ⟨, ∀, Unicode subscripts) to <unk>, and most VeriSoftBench statements contain such characters. This does not
+    affect Stage C, whose bases bring their own tokenizers, but the Stage S model cannot be pointed at real benchmark
+    text. The G0 stub stream is ASCII Lean.
+53. **Regular/large is inferred.** Neither file marks a task as large. The split (ArkLib and lean-mlir, 119 tasks) comes
+    from the pinned commit's prompts/full_limited/ listing, which has one prompt per task of those two repositories
+    and agrees with the README. The 200k-token threshold was not checked.
+54. **target_theorem is truncated on 38 tasks** at the first `:=` inside the statement (let-bindings, named
+    arguments). The statement is taken from thm_stmt.
+
+## C1prep
+
+55. **All declaration counts are source-level estimates.** bench/vsb_history.py finds 'theorem'/'lemma' at line start
+    with a namespace/section/mutual stack; macros, Prop-valued defs, instances, 'open ... in' prefixes and generated
+    names are missed or misnamed. Canary: 488 of the 500 benchmark thm_names are found live at c* (misses: clean 9,
+    iris-lean 1, lean-formal-reasoning-program 2; runs/C1prep/canary.json). The Lean extractor decides at C1.
+56. **lean-mlir is the only Compiler repository that reaches 300 estimated obligations**, and it is one of the two
+    'large' repositories (benchmark prompts over 200k tokens), on a nightly toolchain, with 77% of its keys under
+    test-like paths (generated InstCombine/LLVM tests). If its build exceeds 30 minutes at C0, no set of five
+    categories satisfies 5.1 (LeroyCompilerVerificationCourse has an estimated 166 window obligations, 114 at c*).
+    That case needs a decision (relax the 300 threshold for one category, accept four categories, or count only
+    non-test paths of lean-mlir).
+57. **lean-formal-reasoning-program is borderline** (estimated 307 window obligations net of benchmark names, 325 at
+    c*); a Lean count a little lower would fail 5.1. Semantics has no other eligible repository.
+58. **The plan's provisional shortlist does not satisfy 5.1 on the estimates**: loom 279/252 and veil 75/57 estimated
+    obligations, veil 6 tasks, and iris-lean, loom and veil share one category. Chosen instead (rule in
+    eval/c1prep.shortlist): clean, lean-mlir, iris-lean, lean-formal-reasoning-program, capless-lean; alternates
+    VCV-io, splean (both only replace Applied verif./Framework).
+59. **Histories are first-parent and therefore coarse where projects squash or merge** (max keys entering in one commit:
+    lean-mlir 7861, FVIntmax 279 of 316 entries, verified-compiler all 27 in its first commit;
+    runs/C1prep/history_summary.json). verified-compiler's window 2 is empty.
+60. **thm_stmt carries the whole proof on 36 benchmark tasks** (term-mode proofs after the signature). The stream uses
+    data/stream.benchmark_statement, which cuts thm_stmt at the start of ground_truth_proof; any other consumer of
+    thm_stmt must do the same or the statement view leaks the proof.
+61. **Equal statement texts in different namespaces** (e.g. clean's Gadgets.*.completeness / soundness: 4 benchmark
+    tasks share one statement text) are one statement for the source-level guard key, which has no elaborated
+    constants. The stream builder resolves such collisions conservatively (data/stream.resolve_statement_collisions:
+    benchmark or first-held-out wins, wake copies dropped); counts are in the T3 summaries. At C1 the key should use
+    the elaborated type.
+62. **The same declaration can be both wake and held out** when it is deleted and re-added (by name and statement), or
+    renamed: 5.2's "absent from the previous snapshot" makes it new again. Rule chosen: the first appearance decides
+    (a re-added test declaration becomes wake; a re-added forward declaration is dropped).
+63. **Benchmark-named declarations are held out in every window**, not only in the last: their proofs at c* usually
+    already exist in window 1, so training on window 1 would train on benchmark ground truth (5.4). 'bench' column of
+    the windows table.
+64. **Forward sets are large for active repositories** (VCV-io 17873 new keys after c*, ArkLib 12597, iris-lean 5170,
+    clean 3920; capless-lean and lean-formal-reasoning-program have none): forward metrics will rest on clean,
+    iris-lean and lean-mlir among the chosen five.
+65. **Proof states are not available without Lean**, so the Lean guard's L1 check on intermediate goal states only
+    runs when obligations carry 'proof_states' (C1 extractor). Proof text is matched by 12-token shingles that occur
+    in no non-held-out proof, statement or wake file prefix; held-out proofs of 8-11 tokens are whole needles.
+66. **Residuals of the real-source T3 run** (texts from the local clones, cut by the regex scanner; counts in
+    runs/C1prep/t3_real_summary.json): 4 of 65,432 dream injections not raised (2 forward obligations whose scanned
+    statement the alpha-variant does not preserve), and 41 of 134,357 legitimate examples raised (L1: a short
+    distinctive held-out proof, or a 12-token shingle of one, occurring inside a longer wake text; conservative, the
+    example is dropped). On the placeholder texts that the tests use, all 327,290 injections raise and none of the
+    203,494 controls do. Both residuals come from source-level text; at C1 the extractor's statements, proof terms
+    and goal states replace them.

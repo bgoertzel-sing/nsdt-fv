@@ -1,0 +1,79 @@
+# Experiment S3 (plan 8.1): symbolic channels A-E on the toy, each on top of D1 (arms N-A .. N-E).
+# Everything above 'channels' is configs/S2.yaml unchanged (stream, base, cap, D1's dream budget, eval,
+# bootstrap): the order forbids changes to splits, metrics, thresholds, the S1 toy, the base and the S2 cap.
+# Choices this file fixes and why: reports/CHANGES.md, section "S3".
+experiment: S3
+seed: 0
+run_dir: runs/S3         # runs/S3/base/base.pt is a copy of S1's seed-0 base (hash checked below)
+threads: 2
+stream:
+  seed: 0
+  projects: 6
+model:
+  d: 128
+  layers: 4
+  heads: 4
+  ff: 512
+  max_len: 192
+  dropout: 0.1
+t4_reference: 1a4285664e122c05
+base_hash:
+  0: 8adcff289bb9ebbb
+  1: 73ef74288b05955d
+cap:
+  kind: block
+  layers: [0, 1, 2, 3]
+  r: 512
+  lr: 1.0e-3
+  wake_batch: 1
+dream:                   # = S2 D1; the N arms use the same budget (C5: "each at the dream budget of D1")
+  nrem_statements: 60
+  rem_conjectures: 40    # channel statements fill these slots after the model's own conjectures
+  rem_raw: 120
+  candidates: 4
+  temperature: 0.8
+  max_new: 128
+  conj_max_new: 64
+  pref_weight: 0.1
+  aux_conj: true
+eval:
+  k: 8
+  temperature: 1.0
+  max_new: 128
+  timeout_s: 120
+bootstrap:
+  resamples: 10000
+  seed: 0
+prio_weight: 4.0         # nrem_targets of D and E: + 4 on the A.4 weight (the size of the fading term)
+channels:                # per-stage volume caps (section 4 guard rails) and generator limits
+  A:
+    cap_nextstate: 100
+    cap_premise: 100
+    cap_unfold: 60
+    cap_statements: 60
+    prover_nodes: 2000
+  B:
+    max_candidates: 400  # composition / unfolding candidates considered per stage
+    k_max: 3             # k-step unfoldings of wrappers, k = 1..3
+    cap_statements: 100
+    prover_nodes: 2000
+  C:
+    inputs: 200          # C.5: evaluated on 200 random inputs
+    max_size: 7          # C.5: terms up to size 7
+    max_terms: 4000      # enumeration budget per stage (terms evaluated)
+    eval_budget: 20000   # evaluator steps per function application
+    fresh_seed: 1        # second, independent 200-input test of every candidate
+    cap_statements: 100
+    prover_nodes: 2000
+  D:
+    per_proof: 2
+    cap_mutants: 80
+    cap_repairs: 80
+    cap_priorities: 60
+    prover_nodes: 2000
+  E:
+    min_count: 5         # C.5: skeletons that occur at least five times
+    cap_plans: 100
+    max_targets: 60      # store statements tried for method instantiation per stage
+    tries: 8             # instantiations tried per statement
+    cap_priorities: 60

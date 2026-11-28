@@ -27,3 +27,154 @@ The order allows "train/lora.py or a full-parameter equivalent for the toy". Tab
 for B2, B5 and B6, so the S1 numbers are for the full-parameter equivalent; the LoRA path stays in the
 code (adapt.mode = lora) and its base-frozen check (base hash at every stage boundary) is active in that
 mode. Whether adapter arms show the same two phenomena is not tested here (ISSUES.md, S1 items).
+
+## S2 calibration and choices (DT-ref on the S1 toy)
+
+No protocol element was changed: stream, splits, evaluation sets (T4), pass@8 at temperature 1.0 without
+repair, metrics (eval/metrics.py), the S1 base weights (hash checked) and the hold-out guard are those of S1.
+What S2 had to fix is DT-ref itself (A.4 leaves sizes, rates and the conjecture mechanism open) and the size
+of the cap, which the S2 order allows to be increased if it underfits ("log in CHANGES.md").
+
+**Cap capacity probes** (runs/S2_calibration/, probe_cap.py; same protocol as S1 probe 2: one fit on all 962
+wake examples of the stream, 30 epochs, batch 32, lr 1e-3, then pass@8 on the 240 test obligations and on
+120 sampled training items; S1 seed-0 base frozen, base hash checked unchanged after every probe). Host
+clock MST, 2026-11-27; the probes ran in parallel, each on two pinned cores.
+
+| Probe | Cap | Trainable params | Final loss | Test pass@8 (trivial / non-trivial) | Training items pass@8 |
+|---|---|---|---|---|---|
+| S1 probe 1 | LoRA r=16 on every linear layer (S1) | - | 0.42 | 27.5% (38 / 28) | 33% |
+| S1 probe 2 | all weights (S1) | 834,304 | 0.22 | 42.9% (43 / 60) | 65% |
+| 1 | A.4 MLP adapters r=64 after layers 2,3 + head | 50,048 | 0.94 | 16.7% (40 / 0) | 16.7% |
+| 3 | A.4 MLP adapters r=256 after layers 2,3 + head | 148,736 | 0.81 | 16.7% (40 / 0) | 18.3% |
+| 2 | MLP adapters r=256 after all 4 layers + head | 281,088 | 0.56 | 22.1% (40 / 13) | 25.0% |
+| 4 | attention-block adapters (ff 512) after layers 2,3 + head | 412,928 | 0.54 | 18.3% (42 / 2) | 25.8% |
+| 5 | attention-block adapters (ff 512) after all 4 layers + head | 809,472 | 0.38 | 31.3% (41 / 34) | 44.2% |
+
+Observation: with A.4's cap as first sized (probe 1), the capped model learns no non-trivial proof even
+after 30 epochs on the whole stream; a frozen base pretrained on 159 prelude lemmas is a weak substrate.
+Decision rule, fixed before probe 4 and 5 results were read and before any D-arm run with a sized-up cap:
+take the cap with the highest training-item pass@8 (a capacity measure, not a DT outcome); between caps
+within 5 points, prefer A.4's placement (top third), then the smaller cap. Decision: probe 5 (44.2% against 25.8% for the best top-third cap, probe 4; outside the
+5-point margin). The S2 cap is therefore an attention-block adapter (a full transformer block, feed-forward
+width 512, output projections initialised to zero) after each of the four base layers, plus an untied
+output head initialised from the base embedding: 809,472 trainable parameters on the frozen 834,304-parameter
+base. It departs from A.4 in placement (all layers, not the top third) and in adapter form (attention plus
+feed-forward, not a feed-forward bottleneck); the base stays frozen and all learning is in the cap (T8).
+Even so the cap fits its training data less well than S1's full-parameter training (44% against 65%).
+
+**DT-ref choices** (configs/S2.yaml):
+
+- Wake: one epoch over the window (A.4), one optimizer step per example (batch 1), the same unit as a
+  sleep step ("one cross-entropy step per accepted proof"); AdamW lr 1e-3, constant, one optimizer per run
+  (its moment estimates are cap state, not stored examples).
+- Conjecture sleep needs a model that writes statements. The base never learned that, so the wake pass
+  also trains an auxiliary task built from the window's own (non-test) statements only: prompt "conj:" +
+  three window statements, target a fourth (no proof text). REM prompts use three store statements of one
+  module (A.4). The 192-token context of the S1 model forces the three prompt statements to be short
+  (rejection sampling for triples that fit); this biases conjectures toward short statements.
+- Dream budget per stage: 400 proof attempts, 60/40 as in section 3.2: 60 store statements x 4 candidates
+  (re-derivation) and at most 40 new statements x 4 candidates (conjecture), from 120 statement generations.
+  Temperature 0.8, four candidates (A.4). D3 drops conjecture sleep without reallocating its attempts.
+- Re-derivation weights 1 + 4 fading + centrality + 2 near_change: fading from the store's verdict history of
+  sleep attempts; centrality = in-degree in the proof_uses graph (after L2 filtering), scaled by the pool
+  maximum; near_change = 1 for the current window, 0.5 for the project's earlier window, else 0. The pool
+  is the repository's non-test statements of all windows so far plus the dream library.
+- Negative phase: for every learned accepted dream whose statement also has a rejected candidate in the
+  same sleep, the step adds 0.1 * softplus(-(log p(accepted) - log p(rejected))) (summed token
+  log-probabilities). Rejected candidates without an accepted sibling are not used (A.4 defines only the
+  preference form).
+- D2 (no kernel filter): every distinct guard-passing candidate is learned; checker verdicts are logged
+  for measurement only and never reach the learner (no fading term, no negatives, no dream library).
+  Statement parsing (needed for the guard's L3 check) is still required of conjectures.
+- Guard: every dream candidate passes HoldoutGuard.check before it is checked or learned; a refused
+  candidate is a failed attempt and is never learned (counts in reports/S2.md). Every training example is
+  checked again inside the learner; any raise there aborts the run.
+- Supplementary arm B2c (Table 3; ISSUES.md item 18): S1's B2 recipe (30 epochs per stage, batch 32) on the
+  same cap with the same frozen base, for a like-for-like sequential baseline. It is not one of D1-D4.
+- Diagnostic arm D1x (added after the seed-0 D1-D4 results were seen, so it is labelled as a
+  diagnostic and does not replace D1): D1 whose wake is B2c's supervised recipe (30 epochs per stage,
+  batch 32, cosine schedule) instead of A.4's single epoch; sleep phases, budgets and guard as D1. Reason:
+  with the one-epoch wake the cap does not learn the windows at all (D1 equals the frozen base within
+  noise), so D1-D4 cannot say what the sleep phases do to a cap that is learning. D1x minus B2c isolates
+  the sleep phases on top of the same supervised training. It is not A.4 and not a protocol change.
+
+## S3 choices (channels A-E on the toy; nothing in S0-S2 changed)
+
+- Placement (A.3): nsdt_fv/store/channels/{a_artifacts,b_compose,c_explore,d_repair,e_plans}.py, one class per
+  channel with id, wake_examples, nrem_targets, rem_seeds and annotate; ChannelBase applies the guard to every
+  item at emission and the per-stage cap after the channel's ranking. Each channel runs once per stage, after the
+  store has added the stage's snapshot and before wake.
+- Inputs: the snapshot's definitions and library without test lemmas (reference-prover calls run on that test-free
+  library), the window's non-test obligations (statements; proofs only for A, D, E), and the store (statement keys,
+  L2-filtered proof_uses edges). Channel wake examples carry the source ids of the window's obligations and are
+  used only in that window's wake (section 4 A).
+- Routing into D1: statements (A, B, C) are offered to conjecture sleep after the model's own conjectures, inside
+  the same 40-statement budget, in the channel's ranking (non-trivial first); priorities (D, E) add prio_weight = 4
+  (the size of A.4's fading term) to the re-derivation weight; wake examples (A, D, E) join the wake epoch.
+- Caps per stage (configs/S3.yaml): A 100 NEXTSTATE, 100 PREMISE, 60 UNFOLD, 60 statements; B 100 statements from
+  at most 400 candidates; C 100 statements; D 80 mutants, 80 repairs, 60 priorities; E 100 plans, 60 priorities.
+  Chosen once from the two-stage smoke run (sizes of the window: about 80 wake proofs), not tuned on results.
+- Checker acceptance per item kind is defined in each channel's docstring; an auxiliary wake example the checker
+  does not confirm is never emitted; B emits only statements whose machine proof backend.check_statement accepts.
+- C: signature = the snapshot's functions, Z, Nil, Leaf, variables n m xs ys t u b; 200 inputs (C.5), terms up to
+  size 7 or 4,000 terms; second independent 200-input test of every candidate.
+- E: skeletons from the window's proofs, min_count 5 (C.5); instantiation on up to 60 non-trivial store statements
+  of the project, 8 tries each.
+- Sampling seeds of every S3 arm are those of S2's D1 (common random numbers); the run label is S3/<arm>/...
+- D1 is re-run through the S3 driver with no channel; its logs must equal S2's D1 (driver equivalence check).
+
+## S4 choices (PLN reference on the toy property tables; nothing in S0-S3 changed)
+
+Fixed in configs/S4.yaml and the code before any ranking result was seen; none was tuned on outcomes.
+
+- Property table (store/pln/table.py). Plan 9.2 defines HasProperty(f, T) as "the instance of shape T for function f
+  holds" with shapes = "templates with holes"; the toy has no shape list, so shapes are read off channel C's logged
+  output (S3, arm N-C): each guard-passed equation is abstracted at each of its functions (that function -> ?F;
+  template functions by template name, so a shape is shared by every project that has the same definitions, checked;
+  wrappers keep their project-specific name). Vocabulary: shapes C instantiated for >= 2 functions. Cells: every
+  type-correct instance in the project's last snapshot; cells whose instance is a test statement are dropped.
+- Labels: checker only. True = a proof found within budget (baseline tactics, then the reference prover with 2,000
+  nodes, C's prover budget in S3) that ToyEqBackend.check_statement accepts. The prover runs on the project's library
+  without the test lemmas of either window (ChannelBase.private_world keeps window-1 test lemmas at window 2; S4 is
+  stricter). Random tests (200 inputs) are logged as a descriptive column and a soundness cross-check, never a label.
+- Unit of hiding: the statement group. One equation abstracted at two of its functions gives two cells with the same
+  instance (e.g. len(rev(xs)) = len(xs) is HasProperty(rev, len(?F(xs)) = len(xs)) and HasProperty(len,
+  ?F(rev(xs)) = ?F(xs))); hiding one and showing the other would hand the hidden one's proof to the ranker. 20% of the
+  true groups are hidden, all their cells together.
+- Candidates: every cell that is not a visible true cell (hidden true cells and every cell the checker does not
+  accept). The rankers get no evidence about any candidate (no refutations, no test counts): the setting is
+  positive-unlabelled, as the plan's "hide 20% of the true pairs and rank the candidates" reads.
+- PLN (eval/s4.py PLNRanker, store/pln/ref.py): conclusions per candidate (f, T) are (a) transfer from every g with
+  HasProperty(g, T) visible, Similar(f, g) = Appendix E weighted overlap with count = |shapes of f or g|, term
+  strength of g = 1/|functions|; (b) deduction HasProperty(f, T1) (kernel fact) with Implies(T1, T), the latter by
+  direct evaluation over the visible table (share of T1-holders, f excluded, where T applies that have T; count = their
+  number). Plan 9.3 calls this "induction over the property table"; Appendix E's per-instance induction formula
+  (inversion then deduction) is implemented and tested in T11 but a revision of per-function inductions does not
+  recover the table share, so the table share is used. All conclusions are revised with the premise-overlap discount
+  in a fixed order (decreasing count); P(q true) = c s + (1 - c) sT. Abduction and the utility's budget model are not
+  used (no failing goals; the label already is "proved within budget").
+- Baselines: shape frequency = sT; nearest neighbour = share of f's nearest neighbours (most shared visible
+  properties, among functions where T applies) that have T; random = uniform scores (seed = split seed).
+- Metrics: AUC pooled with half-ties; precision at k per function (k = 5, 10, 20: the order's default, since section 9
+  and A.6 give none), expected value over random order of ties, averaged over functions with a hidden positive;
+  reliability table with ten bins, Brier score, ECE. Bootstrap: paired over functions, 10,000 resamples, seed 0.
+  Split seed 0 is primary; seeds 1 and 2 are replicate splits (point estimates).
+
+## S5
+
+- New: nsdt_fv/bench/ (VeriSoftBench files pinned at 8f5e8b36 with sha256, fetch script, analysis); reports/S5.md
+  (generated), S5_notes.md; backends/lean_stub.py; gate/ (G0 stub run and evidence script); tests/test_G0_stub_lean.py;
+  reports/G0.md.
+- data/schemas.py: BENCHMARK_FIELD_MAP filled (a constant; no validator changed).
+- No change to the toy, the splits, the metrics, the trainer (train/) or the evaluator (eval/): runs/G0/diff_trainer_evaluator.txt.
+
+## C1prep
+
+- New: bench/vsb_history.py (source-level history scan), eval/c1prep.py (windows, stream, shortlist, T3 on Lean
+  obligations, report), backends/lean_vsb.py and backends/lean_repl.py (typed skeletons, NotImplementedError until
+  Lean), tests/test_C1prep.py, runs/C1prep/ (clone script, per-repository history metadata as hashes and counts,
+  tables, T3 logs), reports/C1prep.md (generated) and C1prep_notes.md.
+- data/stream.py, data/holdout.py, data/schemas.py: Lean sections appended after the toy code; the toy code above them
+  is byte-identical to 791589b (runs/C1prep/toy_unchanged.txt). schemas: to_benchmark_names / to_internal_names /
+  validate_lean_obligation (stored Lean records use the benchmark's names for the five same-meaning fields, 5.3).
+- No change to the toy, the S results, the trainer (train/) or the evaluator (eval/ files other than the new c1prep.py).
