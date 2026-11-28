@@ -1,0 +1,145 @@
+{
+ "commit": "8f5e8b36ab5fbdec6fd8d8f4ee0580d29647097a",
+ "sha256": {
+  "verisoftbench.jsonl": "ea584250021fbfaddc060834be2e05b9b2fae4f720c770a9932c71d039a50961",
+  "repos.json": "c9cc7cb9650c482d81ee78d7f704c61d0d6073418064d11c55674938f35760de",
+  "LICENSE": "6da003bc0be8fa873e3295e38f9e32aee274c921589bb55941879bb38fab5f07",
+  "tree.txt": "8c00edd7a9abf2cc44c18e1e90471e383408118b2e8ff4193e7aab854d75a290"
+ },
+ "fields": [
+  {
+   "field": "id",
+   "type": "int",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "1"
+  },
+  {
+   "field": "thm_name",
+   "type": "str",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "\"Binius.BinaryBasefold.fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius\""
+  },
+  {
+   "field": "thm_stmt",
+   "type": "str",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "\"theorem fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius (i : Fin ℓ) (steps : ℕ)\\n    [NeZero steps] (h_i..."
+  },
+  {
+   "field": "lean_root",
+   "type": "str",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "\"ArkLib\""
+  },
+  {
+   "field": "rel_path",
+   "type": "str",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "\"ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean\""
+  },
+  {
+   "field": "imports",
+   "type": "list[str]",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "[\"import ArkLib.Data.MvPolynomial.Multilinear\", ...] (9 items)"
+  },
+  {
+   "field": "used_lib_defs",
+   "type": "list[{module: str, name: str}]",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "[{\"name\": \"Fin\", \"module\": \"Init.Prelude\"}, ...] (67 items)"
+  },
+  {
+   "field": "used_repo_defs",
+   "type": "list[{content: str, name: str}]",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "[{\"name\": \"hammingDist\", \"content\": \"notation \\\"Δ₀(\\\" u \\\", \\\" v \\\")\\\" => hammingDist u v\"}, ...] (34 items)"
+  },
+  {
+   "field": "lib_lemmas",
+   "type": "list[{module: str, name: str}]",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "[{\"name\": \"Fin.is_le\", \"module\": \"Init.Data.Fin.Lemmas\"}, ...] (93 items)"
+  },
+  {
+   "field": "repo_lemmas",
+   "type": "list[{content: str, name: str}]",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "[{\"name\": \"Xⱼ_zero_eq_one\", \"content\": \"lemma Xⱼ_zero_eq_one (ℓ : ℕ) (h_ℓ : ℓ ≤ r) :\\n  Xⱼ 𝔽q β ℓ h_ℓ...\"}, ...] (33 items)"
+  },
+  {
+   "field": "used_local_defs",
+   "type": "list[{content: str, name: str}]",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "[{\"name\": \"Binius.BinaryBasefold.OracleFunction\", \"content\": \"abbrev OracleFunction (i : Fin (ℓ + 1)) : Type _ ..., ...] (10 items)"
+  },
+  {
+   "field": "used_local_lemmas",
+   "type": "list[{content: str, name: str}]",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "[{\"name\": \"Binius.BinaryBasefold.fin_ℓ_steps_lt_ℓ_add_R\", \"content\": \"omit [NeZero ℓ] in\\nlemma fin_ℓ_steps_lt_..., ...] (6 items)"
+  },
+  {
+   "field": "local_ctx",
+   "type": "str",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "\"import ArkLib.Data.CodingTheory.BerlekampWelch.BerlekampWelch\\n\\nimport ArkLib.Data.CodingTheory.ReedSolomon\\..."
+  },
+  {
+   "field": "target_theorem",
+   "type": "str",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "\"theorem fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius (i : Fin ℓ) (steps : ℕ)\\n    [NeZero steps] (h_i..."
+  },
+  {
+   "field": "ground_truth_proof",
+   "type": "str",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "\":= by\\n  unfold fiberwiseClose at h_fw_dist_lt\\n  unfold hammingClose\\n  -- 2 * Δ₀(f, ↑(BBF_Code 𝔽q β ⟨↑i, ⋯⟩..."
+  },
+  {
+   "field": "nesting_depth",
+   "type": "int",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "7"
+  },
+  {
+   "field": "transitive_dep_count",
+   "type": "int",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "232"
+  },
+  {
+   "field": "subset_aristotle",
+   "type": "bool",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "false"
+  },
+  {
+   "field": "category",
+   "type": "str",
+   "present_in": 500,
+   "example_task_id": 1,
+   "example": "\"Applied verif.\""
+  }
+ ],
+ "extra": []
+}

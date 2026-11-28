@@ -1,0 +1,692 @@
+[
+ {
+  "repo": "ArkLib",
+  "tasks": 60,
+  "large": true,
+  "large_prompt_files": 60,
+  "category": [
+   "Applied verif."
+  ],
+  "subset_aristotle": 5,
+  "nesting_depth": {
+   "n": 60,
+   "min": 1,
+   "median": 5.0,
+   "max": 16,
+   "mean": 6.4
+  },
+  "transitive_dep_count": {
+   "n": 60,
+   "min": 6,
+   "median": 94.5,
+   "max": 324,
+   "mean": 117.32
+  },
+  "commit": "779e3ec12d728796469cf638806fafe547dd7001",
+  "commit_date": "2026-01-23T16:03:09Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.22.0",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "capless-lean",
+  "tasks": 60,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Type systems"
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 60,
+   "min": 3,
+   "median": 5.0,
+   "max": 8,
+   "mean": 4.83
+  },
+  "transitive_dep_count": {
+   "n": 60,
+   "min": 15,
+   "median": 104.0,
+   "max": 334,
+   "mean": 94.7
+  },
+  "commit": "93ed9e194b57f084e3125ff64cbfdd27cbbd54ad",
+  "commit_date": "2025-06-27T13:40:16Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.21.0",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "clean",
+  "tasks": 59,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Applied verif."
+  ],
+  "subset_aristotle": 47,
+  "nesting_depth": {
+   "n": 59,
+   "min": 2,
+   "median": 7,
+   "max": 24,
+   "mean": 7.0
+  },
+  "transitive_dep_count": {
+   "n": 59,
+   "min": 16,
+   "median": 71,
+   "max": 288,
+   "mean": 81.78
+  },
+  "commit": "a134f91ff48ac6d85c9c8d90c64048244cdb6bff",
+  "commit_date": "2025-11-17T09:27:56Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.24.0",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "lean-mlir",
+  "tasks": 59,
+  "large": true,
+  "large_prompt_files": 59,
+  "category": [
+   "Compiler"
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 59,
+   "min": 1,
+   "median": 5,
+   "max": 13,
+   "mean": 5.66
+  },
+  "transitive_dep_count": {
+   "n": 59,
+   "min": 2,
+   "median": 69,
+   "max": 480,
+   "mean": 84.92
+  },
+  "commit": "72aca6a6692278844744025459ac3eaec2ebd81b",
+  "commit_date": "2025-12-01T11:12:51Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:nightly-2025-11-30",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "VCV-io",
+  "tasks": 24,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Applied verif."
+  ],
+  "subset_aristotle": 17,
+  "nesting_depth": {
+   "n": 24,
+   "min": 1,
+   "median": 4.5,
+   "max": 8,
+   "mean": 4.17
+  },
+  "transitive_dep_count": {
+   "n": 24,
+   "min": 4,
+   "median": 32.5,
+   "max": 96,
+   "mean": 35.88
+  },
+  "commit": "409d778d6a2b90a70335c360af8b336f6e9becc5",
+  "commit_date": "2025-09-23T15:41:44Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.24.0-rc1",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "iris-lean",
+  "tasks": 24,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Framework"
+  ],
+  "subset_aristotle": 1,
+  "nesting_depth": {
+   "n": 24,
+   "min": 3,
+   "median": 6.0,
+   "max": 8,
+   "mean": 5.58
+  },
+  "transitive_dep_count": {
+   "n": 24,
+   "min": 4,
+   "median": 54.0,
+   "max": 91,
+   "mean": 54.08
+  },
+  "commit": "36d042d249311727eb87acbef36b9d401bf44450",
+  "commit_date": "2025-10-15T10:50:26Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.26.0",
+  "has_mathlib": false,
+  "in_repos_json": true
+ },
+ {
+  "repo": "loom",
+  "tasks": 24,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Framework"
+  ],
+  "subset_aristotle": 5,
+  "nesting_depth": {
+   "n": 24,
+   "min": 2,
+   "median": 4.0,
+   "max": 17,
+   "mean": 4.54
+  },
+  "transitive_dep_count": {
+   "n": 24,
+   "min": 15,
+   "median": 37.0,
+   "max": 292,
+   "mean": 50.25
+  },
+  "commit": "e0f37f6caf9baa706b4562ed0f337c2b0420b018",
+  "commit_date": "2025-11-17T18:25:20Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.23.0",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "splean",
+  "tasks": 24,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Framework"
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 24,
+   "min": 3,
+   "median": 6.0,
+   "max": 11,
+   "mean": 6.33
+  },
+  "transitive_dep_count": {
+   "n": 24,
+   "min": 20,
+   "median": 49.0,
+   "max": 228,
+   "mean": 59.21
+  },
+  "commit": "c5530d40affb45272e1d8b411cc1a4120c2c4d84",
+  "commit_date": "2024-12-12T08:38:49Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.11.0",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "TTBFL",
+  "tasks": 22,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Type systems"
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 22,
+   "min": 3,
+   "median": 8.0,
+   "max": 13,
+   "mean": 7.82
+  },
+  "transitive_dep_count": {
+   "n": 22,
+   "min": 16,
+   "median": 41.5,
+   "max": 88,
+   "mean": 45.45
+  },
+  "commit": "4196a4d3a5efac67a79c33cf81266042b1371989",
+  "commit_date": "2025-04-28T13:28:53Z",
+  "license": "zlib",
+  "lean_toolchain": "leanprover/lean4:v4.13.0",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "FVIntmax",
+  "tasks": 21,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Applied verif."
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 21,
+   "min": 2,
+   "median": 6,
+   "max": 14,
+   "mean": 6.43
+  },
+  "transitive_dep_count": {
+   "n": 21,
+   "min": 3,
+   "median": 48,
+   "max": 290,
+   "mean": 64.05
+  },
+  "commit": "d7c4cbc5ec449471952ac5468f3b55bf61f5868e",
+  "commit_date": "2025-05-30T12:19:50Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.14.0-rc2",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "juvix-lean",
+  "tasks": 20,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Semantics"
+  ],
+  "subset_aristotle": 5,
+  "nesting_depth": {
+   "n": 20,
+   "min": 3,
+   "median": 4.0,
+   "max": 9,
+   "mean": 4.2
+  },
+  "transitive_dep_count": {
+   "n": 20,
+   "min": 12,
+   "median": 36.5,
+   "max": 84,
+   "mean": 42.85
+  },
+  "commit": "f202e04219a84ce8f56b2c3fffa3409237c5daea",
+  "commit_date": "2025-07-22T10:52:17Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.19.0-rc2",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "lean-formal-reasoning-program",
+  "tasks": 20,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Semantics"
+  ],
+  "subset_aristotle": 7,
+  "nesting_depth": {
+   "n": 20,
+   "min": 1,
+   "median": 2.5,
+   "max": 6,
+   "mean": 3.0
+  },
+  "transitive_dep_count": {
+   "n": 20,
+   "min": 3,
+   "median": 13.0,
+   "max": 40,
+   "mean": 15.7
+  },
+  "commit": "d00c7ea879e51ee664b75d062404bcc901b6936e",
+  "commit_date": "2025-07-25T06:30:13Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.9.0-rc2",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "wadray_verification",
+  "tasks": 20,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Applied verif."
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 20,
+   "min": 2,
+   "median": 2.0,
+   "max": 3,
+   "mean": 2.35
+  },
+  "transitive_dep_count": {
+   "n": 20,
+   "min": 11,
+   "median": 34.0,
+   "max": 104,
+   "mean": 36.2
+  },
+  "commit": "2e0d2e5d2397fd3cdfd1ff289674e915d5ed5905",
+  "commit_date": "2024-06-21T16:01:46Z",
+  "license": "GPL-3.0",
+  "lean_toolchain": "leanprover/lean4:v4.9.0-rc2",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "LeroyCompilerVerificationCourse",
+  "tasks": 19,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Compiler"
+  ],
+  "subset_aristotle": 4,
+  "nesting_depth": {
+   "n": 19,
+   "min": 3,
+   "median": 5,
+   "max": 5,
+   "mean": 4.53
+  },
+  "transitive_dep_count": {
+   "n": 19,
+   "min": 6,
+   "median": 34,
+   "max": 72,
+   "mean": 39.89
+  },
+  "commit": "a2730e7f9228b9d7ecf4510f1f8652f2cae7ba01",
+  "commit_date": "2025-09-22T19:37:17Z",
+  "license": "LGPL-2.1",
+  "lean_toolchain": "leanprover/lean4:v4.23.0-rc2",
+  "has_mathlib": false,
+  "in_repos_json": true
+ },
+ {
+  "repo": "CvxLean",
+  "tasks": 9,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Applied verif."
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 9,
+   "min": 1,
+   "median": 3,
+   "max": 6,
+   "mean": 3.44
+  },
+  "transitive_dep_count": {
+   "n": 9,
+   "min": 1,
+   "median": 29,
+   "max": 105,
+   "mean": 41.67
+  },
+  "commit": "c62c2f292c6420f31a12e738ebebdfed50f6f840",
+  "commit_date": "2024-05-20T15:01:43Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.8.0-rc1",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "pcf-lean",
+  "tasks": 7,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Semantics"
+  ],
+  "subset_aristotle": 1,
+  "nesting_depth": {
+   "n": 7,
+   "min": 1,
+   "median": 3,
+   "max": 12,
+   "mean": 5.14
+  },
+  "transitive_dep_count": {
+   "n": 7,
+   "min": 2,
+   "median": 14,
+   "max": 91,
+   "mean": 33.0
+  },
+  "commit": "3d133f2f5c96bba2df9cb7f70a5270ad3318aaf5",
+  "commit_date": "2024-06-14T20:13:22Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.8.0",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "LeanExprEvaluator",
+  "tasks": 6,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Semantics"
+  ],
+  "subset_aristotle": 3,
+  "nesting_depth": {
+   "n": 6,
+   "min": 3,
+   "median": 4.0,
+   "max": 4,
+   "mean": 3.67
+  },
+  "transitive_dep_count": {
+   "n": 6,
+   "min": 33,
+   "median": 35.0,
+   "max": 60,
+   "mean": 42.67
+  },
+  "commit": "0aff7447dfb98c318b3f9f8fba4c427d2fa3920c",
+  "commit_date": "2025-10-25T18:01:29Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.24.0",
+  "has_mathlib": false,
+  "in_repos_json": true
+ },
+ {
+  "repo": "veil",
+  "tasks": 6,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Framework"
+  ],
+  "subset_aristotle": 5,
+  "nesting_depth": {
+   "n": 6,
+   "min": 3,
+   "median": 3.5,
+   "max": 5,
+   "mean": 3.67
+  },
+  "transitive_dep_count": {
+   "n": 6,
+   "min": 11,
+   "median": 18.0,
+   "max": 35,
+   "mean": 20.0
+  },
+  "commit": "4a17cf16032546db6c429fa3fafefe1863d5132c",
+  "commit_date": "2025-10-22T10:21:37Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.24.0",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "verified-compiler",
+  "tasks": 6,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Compiler"
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 6,
+   "min": 3,
+   "median": 3.5,
+   "max": 5,
+   "mean": 3.67
+  },
+  "transitive_dep_count": {
+   "n": 6,
+   "min": 12,
+   "median": 21.0,
+   "max": 44,
+   "mean": 25.0
+  },
+  "commit": "4c79694f5b96c6789b307e2911088af6b19540ac",
+  "commit_date": "2025-04-23T16:41:00Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.18.0",
+  "has_mathlib": false,
+  "in_repos_json": true
+ },
+ {
+  "repo": "lean-hoare",
+  "tasks": 4,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Semantics"
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 4,
+   "min": 2,
+   "median": 2.5,
+   "max": 4,
+   "mean": 2.75
+  },
+  "transitive_dep_count": {
+   "n": 4,
+   "min": 6,
+   "median": 9.5,
+   "max": 13,
+   "mean": 9.5
+  },
+  "commit": "46f12825c69f397488f198e4dffe4cd9b7820794",
+  "commit_date": "2025-07-23T09:46:40Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.22.0-rc2",
+  "has_mathlib": false,
+  "in_repos_json": true
+ },
+ {
+  "repo": "IntroEffects",
+  "tasks": 3,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Semantics"
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 3,
+   "min": 8,
+   "median": 8,
+   "max": 8,
+   "mean": 8.0
+  },
+  "transitive_dep_count": {
+   "n": 3,
+   "min": 34,
+   "median": 34,
+   "max": 34,
+   "mean": 34.0
+  },
+  "commit": "62aea95b3908214926bdc7d456bec3e39c18ad57",
+  "commit_date": "2025-07-31T16:46:37Z",
+  "license": "Written-Consent",
+  "lean_toolchain": "leanprover/lean4:v4.26.0",
+  "has_mathlib": false,
+  "in_repos_json": true
+ },
+ {
+  "repo": "formal-snarks-project",
+  "tasks": 2,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Applied verif."
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 2,
+   "min": 5,
+   "median": 5.5,
+   "max": 6,
+   "mean": 5.5
+  },
+  "transitive_dep_count": {
+   "n": 2,
+   "min": 124,
+   "median": 126.5,
+   "max": 129,
+   "mean": 126.5
+  },
+  "commit": "dcfc78d456882087d4e592e090e8d6d6df83e560",
+  "commit_date": "2024-07-14T09:59:57Z",
+  "license": "MIT",
+  "lean_toolchain": "leanprover/lean4:v4.10.0-rc2",
+  "has_mathlib": true,
+  "in_repos_json": true
+ },
+ {
+  "repo": "Lentil",
+  "tasks": 1,
+  "large": false,
+  "large_prompt_files": 0,
+  "category": [
+   "Framework"
+  ],
+  "subset_aristotle": 0,
+  "nesting_depth": {
+   "n": 1,
+   "min": 27,
+   "median": 27,
+   "max": 27,
+   "mean": 27.0
+  },
+  "transitive_dep_count": {
+   "n": 1,
+   "min": 17,
+   "median": 17,
+   "max": 17,
+   "mean": 17.0
+  },
+  "commit": "dbdd02c5f976079a88d9df79f3a8543be7965456",
+  "commit_date": "2025-07-03T12:28:05Z",
+  "license": "Apache-2.0",
+  "lean_toolchain": "leanprover/lean4:v4.20.0",
+  "has_mathlib": false,
+  "in_repos_json": true
+ }
+]
