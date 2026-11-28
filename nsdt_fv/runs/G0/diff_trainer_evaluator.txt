@@ -1,0 +1,5 @@
+base e876afe02472b0c9f8b3f40cd64e4f9bd1481af5  head 771956a79d7323dee27812112eabc2a19f183de0
+--- git diff --stat e876afe HEAD -- nsdt_fv/train nsdt_fv/eval
+--- git status --porcelain -- nsdt_fv/train nsdt_fv/eval (uncommitted)
+--- bytes of diff + status: 0
+TRAINER_EVALUATOR_DIFF_EMPTY=yes

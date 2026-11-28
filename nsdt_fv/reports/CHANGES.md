@@ -159,3 +159,11 @@ Fixed in configs/S4.yaml and the code before any ranking result was seen; none w
   and A.6 give none), expected value over random order of ties, averaged over functions with a hidden positive;
   reliability table with ten bins, Brier score, ECE. Bootstrap: paired over functions, 10,000 resamples, seed 0.
   Split seed 0 is primary; seeds 1 and 2 are replicate splits (point estimates).
+
+## S5
+
+- New: nsdt_fv/bench/ (VeriSoftBench files pinned at 8f5e8b36 with sha256, fetch script, analysis); reports/S5.md
+  (generated), S5_notes.md; backends/lean_stub.py; gate/ (G0 stub run and evidence script); tests/test_G0_stub_lean.py;
+  reports/G0.md.
+- data/schemas.py: BENCHMARK_FIELD_MAP filled (a constant; no validator changed).
+- No change to the toy, the splits, the metrics, the trainer (train/) or the evaluator (eval/): runs/G0/diff_trainer_evaluator.txt.

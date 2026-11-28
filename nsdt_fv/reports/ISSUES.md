@@ -227,3 +227,29 @@ choices are in CHANGES.md ("S3").
     on deep unary recursions such as tri(tri(tri(n))) under ToyEq's recursion limit of 20,000) and the process pool
     hung; logs in runs/S4/logs/aborted/. Labelling now runs each job in a thread with a 1 GiB stack; evaluator or
     prover RecursionErrors are recorded (counterexample 'limit', how 'prover_recursion'), never raised.
+
+## S5 (benchmark files, G0)
+
+49. **Benchmark field names are not yet our record names.** BENCHMARK_FIELD_MAP (data/schemas.py) records the five
+    benchmark fields with the same meaning (lean_root, thm_name, thm_stmt, transitive_dep_count, ground_truth_proof).
+    Plan 5.3 says to adopt the benchmark's names. Renaming our obligation fields would change the toy's data files,
+    which S5 may not do, so the rename (or an adapter in the prompt builder) is left to C1.
+50. **The provisional shortlist fails 5.1 on the checkable criteria.** veil has 6 benchmark tasks, fewer than 10, and
+    iris-lean, loom and veil share the category Framework. "Topic category" is read as the task file's `category`
+    (5 values). A list with one repository per category needs LeroyCompilerVerificationCourse for Compiler. Suggested
+    C0 timing list: iris-lean, loom, clean, capless-lean, LeroyCompilerVerificationCourse, juvix-lean or
+    lean-formal-reasoning-program. This is an owner decision because it changes the plan's list (reports/S5_notes.md).
+51. **The hold-out guard and the stream builder are ToyEq-specific.** data/holdout.py parses ToyEq statements and
+    replays ToyEq proofs (for goal states); data/stream.py builds ToyEq projects. Neither is the trainer or the
+    evaluator, and the trainer takes the guard as a callable. The G0 stub run therefore passes a minimal
+    identifier/statement/proof-text guard (gate/g0_stub_run.StubGuard). A Lean guard (L1 needs Lean proof states and
+    premise lists; L3 needs Lean statement normalisation) and a Lean stream builder are C1 work.
+52. **The tiny model's tokenizer is ASCII-only.** train/model.Tokenizer maps characters outside printable ASCII
+    (ℕ, →, ⟨, ∀, Unicode subscripts) to <unk>, and most VeriSoftBench statements contain such characters. This does not
+    affect Stage C, whose bases bring their own tokenizers, but the Stage S model cannot be pointed at real benchmark
+    text. The G0 stub stream is ASCII Lean.
+53. **Regular/large is inferred.** Neither file marks a task as large. The split (ArkLib and lean-mlir, 119 tasks) comes
+    from the pinned commit's prompts/full_limited/ listing, which has one prompt per task of those two repositories
+    and agrees with the README. The 200k-token threshold was not checked.
+54. **target_theorem is truncated on 38 tasks** at the first `:=` inside the statement (let-bindings, named
+    arguments). The statement is taken from thm_stmt.

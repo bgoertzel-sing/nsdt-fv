@@ -1,0 +1,283 @@
+{
+ "T": 4,
+ "arms": [
+  {
+   "A": {
+    "0,1": 0.0,
+    "0,2": 0.0,
+    "0,3": 0.0,
+    "0,4": 0.0,
+    "1,1": 1.0,
+    "1,2": 0.6666666666666666,
+    "1,3": 0.0,
+    "1,4": 0.3333333333333333,
+    "2,1": 0.0,
+    "2,2": 0.3333333333333333,
+    "2,3": 0.3333333333333333,
+    "2,4": 0.0,
+    "3,1": 0.3333333333333333,
+    "3,2": 0.6666666666666666,
+    "3,3": 0.6666666666666666,
+    "3,4": 0.0,
+    "4,1": 1.0,
+    "4,2": 0.3333333333333333,
+    "4,3": 0.3333333333333333,
+    "4,4": 0.0
+   },
+   "accepted_lines": 31,
+   "arm": "B2",
+   "backend_calls": {
+    "changed_statement": 2,
+    "error": 176,
+    "ok": 8
+   },
+   "base_hash_before_training": "4a54ef091c8a8587",
+   "cache_hits": 54,
+   "cache_misses": 186,
+   "categories": {
+    "changed_statement": 2,
+    "error": 207,
+    "ok": 31
+   },
+   "guard_checked": 36,
+   "metrics": {
+    "ACC": 0.41666666666666663,
+    "BWT": -0.1111111111111111,
+    "F": 0.2222222222222222,
+    "FWD": 0.25,
+    "LA": 0.5
+   },
+   "run": "G0/B2/stub-lean/seed0",
+   "train": [
+    {
+     "examples_seen": 360,
+     "guard_checked": 9,
+     "history_bytes_cum": 0,
+     "last_loss": 0.5138692557811737,
+     "n_examples": 9,
+     "n_replay": 0,
+     "n_window": 9,
+     "stage": 1,
+     "steps": 45,
+     "train_tokens": 1440,
+     "wall_s": 0.28
+    },
+    {
+     "examples_seen": 360,
+     "guard_checked": 9,
+     "history_bytes_cum": 0,
+     "last_loss": 0.9177664816379547,
+     "n_examples": 9,
+     "n_replay": 0,
+     "n_window": 9,
+     "stage": 2,
+     "steps": 45,
+     "train_tokens": 4640,
+     "wall_s": 0.33
+    },
+    {
+     "examples_seen": 360,
+     "guard_checked": 9,
+     "history_bytes_cum": 0,
+     "last_loss": 0.4836018830537796,
+     "n_examples": 9,
+     "n_replay": 0,
+     "n_window": 9,
+     "stage": 3,
+     "steps": 45,
+     "train_tokens": 3840,
+     "wall_s": 0.39
+    },
+    {
+     "examples_seen": 360,
+     "guard_checked": 9,
+     "history_bytes_cum": 0,
+     "last_loss": 0.15394781529903412,
+     "n_examples": 9,
+     "n_replay": 0,
+     "n_window": 9,
+     "stage": 4,
+     "steps": 45,
+     "train_tokens": 4000,
+     "wall_s": 0.33
+    }
+   ],
+   "verdict_lines": 240
+  },
+  {
+   "A": {
+    "0,1": 0.0,
+    "0,2": 0.0,
+    "0,3": 0.0,
+    "0,4": 0.0,
+    "1,1": 0.3333333333333333,
+    "1,2": 0.0,
+    "1,3": 0.0,
+    "1,4": 0.0,
+    "2,1": 1.0,
+    "2,2": 0.6666666666666666,
+    "2,3": 0.0,
+    "2,4": 0.3333333333333333,
+    "3,1": 0.6666666666666666,
+    "3,2": 0.6666666666666666,
+    "3,3": 0.3333333333333333,
+    "3,4": 0.0,
+    "4,1": 0.6666666666666666,
+    "4,2": 0.6666666666666666,
+    "4,3": 0.3333333333333333,
+    "4,4": 0.3333333333333333
+   },
+   "accepted_lines": 41,
+   "arm": "B6",
+   "backend_calls": {
+    "changed_statement": 1,
+    "error": 163,
+    "ok": 7
+   },
+   "base_hash_before_training": "4a54ef091c8a8587",
+   "cache_hits": 69,
+   "cache_misses": 171,
+   "categories": {
+    "changed_statement": 1,
+    "error": 198,
+    "ok": 41
+   },
+   "guard_checked": 90,
+   "metrics": {
+    "ACC": 0.5,
+    "BWT": 0.1111111111111111,
+    "F": 0.11111111111111112,
+    "FWD": 0.0,
+    "LA": 0.41666666666666663
+   },
+   "run": "G0/B6/stub-lean/seed0",
+   "train": [
+    {
+     "examples_seen": 360,
+     "guard_checked": 9,
+     "history_bytes_cum": 0,
+     "last_loss": 0.5138692557811737,
+     "n_examples": 9,
+     "n_replay": 0,
+     "n_window": 9,
+     "stage": 1,
+     "steps": 45,
+     "train_tokens": 1440,
+     "wall_s": 0.27
+    },
+    {
+     "examples_seen": 720,
+     "guard_checked": 18,
+     "history_bytes_cum": 68,
+     "last_loss": 0.07497174541155498,
+     "n_examples": 18,
+     "n_replay": 9,
+     "n_window": 9,
+     "stage": 2,
+     "steps": 90,
+     "train_tokens": 6080,
+     "wall_s": 0.58
+    },
+    {
+     "examples_seen": 1080,
+     "guard_checked": 27,
+     "history_bytes_cum": 288,
+     "last_loss": 0.038236251566559076,
+     "n_examples": 27,
+     "n_replay": 18,
+     "n_window": 9,
+     "stage": 3,
+     "steps": 135,
+     "train_tokens": 9920,
+     "wall_s": 1.02
+    },
+    {
+     "examples_seen": 1440,
+     "guard_checked": 36,
+     "history_bytes_cum": 660,
+     "last_loss": 0.012424171809107066,
+     "n_examples": 36,
+     "n_replay": 27,
+     "n_window": 9,
+     "stage": 4,
+     "steps": 180,
+     "train_tokens": 13920,
+     "wall_s": 1.3
+    }
+   ],
+   "verdict_lines": 240
+  }
+ ],
+ "canary": {
+  "sorry": {
+   "categories": [
+    "sorry"
+   ],
+   "metrics": {
+    "ACC": 0.0,
+    "BWT": 0.0,
+    "F": 0.0,
+    "FWD": 0.0,
+    "LA": 0.0
+   }
+  },
+  "truth": {
+   "categories": [
+    "ok"
+   ],
+   "metrics": {
+    "ACC": 1.0,
+    "BWT": 0.0,
+    "F": 0.0,
+    "FWD": 1.0,
+    "LA": 1.0
+   }
+  }
+ },
+ "guard_canary_raised": true,
+ "k": 4,
+ "model_cfg": {
+  "d": 64,
+  "drop": 0.0,
+  "ff": 128,
+  "heads": 4,
+  "layers": 2,
+  "max_len": 160
+ },
+ "nsdt_modules_loaded": [
+  "nsdt_fv",
+  "nsdt_fv.backends",
+  "nsdt_fv.backends.base",
+  "nsdt_fv.backends.lean_stub",
+  "nsdt_fv.data",
+  "nsdt_fv.data.schemas",
+  "nsdt_fv.eval",
+  "nsdt_fv.eval.metrics",
+  "nsdt_fv.eval.runner",
+  "nsdt_fv.gate",
+  "nsdt_fv.train",
+  "nsdt_fv.train.common",
+  "nsdt_fv.train.joint",
+  "nsdt_fv.train.lora",
+  "nsdt_fv.train.model"
+ ],
+ "obligations": 48,
+ "seed": 0,
+ "snapshots": [
+  "stub-alpha@w1",
+  "stub-alpha@w2",
+  "stub-beta@w1",
+  "stub-beta@w2"
+ ],
+ "test": 12,
+ "toy_modules_after": [],
+ "toy_modules_before": [],
+ "trainer_cfg": {
+  "batch": 8,
+  "epochs": 40,
+  "joint_epochs": 40,
+  "lr": 0.003,
+  "mode": "full"
+ },
+ "wake": 36
+}

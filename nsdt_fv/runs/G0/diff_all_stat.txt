@@ -1,0 +1,20 @@
+ nsdt_fv/backends/lean_stub.py         | 116 ++++++
+ nsdt_fv/bench/__init__.py             |   1 +
+ nsdt_fv/bench/vsb/LICENSE             |  21 ++
+ nsdt_fv/bench/vsb/repos.json          | 249 ++++++++++++
+ nsdt_fv/bench/vsb/tree.txt            | 251 ++++++++++++
+ nsdt_fv/bench/vsb/verisoftbench.jsonl | 500 ++++++++++++++++++++++++
+ nsdt_fv/bench/vsb_fetch.sh            |  22 ++
+ nsdt_fv/bench/vsb_inspect.py          | 396 +++++++++++++++++++
+ nsdt_fv/data/schemas.py               |  18 +-
+ nsdt_fv/gate/__init__.py              |   1 +
+ nsdt_fv/gate/g0_check.sh              |  27 ++
+ nsdt_fv/gate/g0_stub_run.py           | 228 +++++++++++
+ nsdt_fv/reports/S5.md                 | 141 +++++++
+ nsdt_fv/runs/S5/appendix_b_map.json   | 114 ++++++
+ nsdt_fv/runs/S5/fields.json           | 145 +++++++
+ nsdt_fv/runs/S5/per_repo.json         | 692 ++++++++++++++++++++++++++++++++++
+ nsdt_fv/runs/S5/shortlist.json        | 183 +++++++++
+ nsdt_fv/runs/S5/totals.json           | 153 ++++++++
+ nsdt_fv/tests/test_G0_stub_lean.py    | 111 ++++++
+ 19 files changed, 3365 insertions(+), 4 deletions(-)
