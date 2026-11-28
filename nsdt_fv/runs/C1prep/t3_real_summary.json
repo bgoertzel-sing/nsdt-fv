@@ -1,0 +1,316 @@
+{
+ "control_raises": [
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "repair",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "repair",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  },
+  {
+   "leak": "wake",
+   "rule": "L1"
+  }
+ ],
+ "data_version": "63ebe4fe9bacfc9e",
+ "distinctive": 20828,
+ "held_by_split": {
+  "benchmark": 270,
+  "forward": 26802,
+  "test": 5644,
+  "wake": 22975
+ },
+ "missed_leaks": [
+  {
+   "leak": "dream_equals_test",
+   "split": "forward",
+   "variant": "stealth"
+  },
+  {
+   "leak": "dream_equals_test",
+   "split": "forward",
+   "variant": "stealth"
+  },
+  {
+   "leak": "dream_equals_test",
+   "split": "forward",
+   "variant": "stealth"
+  },
+  {
+   "leak": "dream_equals_test",
+   "split": "forward",
+   "variant": "stealth"
+  }
+ ],
+ "obligations": 55691,
+ "repos": [
+  "clean",
+  "lean-mlir",
+  "iris-lean",
+  "lean-formal-reasoning-program",
+  "capless-lean",
+  "VCV-io",
+  "splean"
+ ],
+ "seconds": 120.3,
+ "summary": {
+  "L2": {
+   "edges_in": 0,
+   "edges_removed": 0,
+   "removed_exactly_held_out": true
+  },
+  "controls": {
+   "n": 134357,
+   "raised": 41
+  },
+  "decoys": {
+   "n": 20469,
+   "raised": 20469
+  },
+  "leaks": {
+   "annotation_with_proof": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53604,
+      "raised": 53604
+     },
+     "test": {
+      "n": 11288,
+      "raised": 11288
+     }
+    },
+    "n": 65432,
+    "raised": 65432
+   },
+   "dream_equals_test": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53604,
+      "raised": 53600
+     },
+     "test": {
+      "n": 11288,
+      "raised": 11288
+     }
+    },
+    "n": 65432,
+    "raised": 65428
+   },
+   "premise_list": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53604,
+      "raised": 53604
+     },
+     "test": {
+      "n": 11288,
+      "raised": 11288
+     }
+    },
+    "n": 65432,
+    "raised": 65432
+   },
+   "proof_text": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53604,
+      "raised": 53604
+     },
+     "test": {
+      "n": 11288,
+      "raised": 11288
+     }
+    },
+    "n": 65432,
+    "raised": 65432
+   },
+   "repair_pair": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53604,
+      "raised": 53604
+     },
+     "test": {
+      "n": 11288,
+      "raised": 11288
+     }
+    },
+    "n": 65432,
+    "raised": 65432
+   }
+  }
+ }
+}

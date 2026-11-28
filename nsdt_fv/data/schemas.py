@@ -96,3 +96,24 @@ def validate_edge(rec: dict):
     _check(rec, EDGE_FIELDS, "edge")
     if rec["type"] not in EDGE_TYPES:
         raise SchemaError(f"edge: bad type {rec['type']!r}")
+
+
+
+# C1-prep: Lean obligation records are stored with the benchmark's names (5.3) for the fields that have the
+# same meaning, and read back into the Appendix B names that the trainer, the guard and the evaluator use.
+# The toy's records are unchanged (they never pass through these two functions).
+def to_benchmark_names(rec: dict) -> dict:
+    inv = {v: k for k, v in BENCHMARK_FIELD_MAP.items()}
+    return {inv.get(k, k): v for k, v in rec.items()}
+
+
+def to_internal_names(rec: dict) -> dict:
+    return {BENCHMARK_FIELD_MAP.get(k, k): v for k, v in rec.items()}
+
+
+def validate_lean_obligation(rec: dict, test_view: bool = False):
+    """Validates a stored (benchmark-named) Lean obligation."""
+    for k in BENCHMARK_FIELD_MAP.values():
+        if k in rec:
+            raise SchemaError(f"lean obligation: stored record uses Appendix B name {k!r}; use the benchmark's")
+    validate_obligation(to_internal_names(rec), test_view=test_view)

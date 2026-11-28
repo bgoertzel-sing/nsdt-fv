@@ -1,0 +1,31 @@
+{
+ "history": {
+  "ArkLib.json.gz": "315bbc511d1ea39da142e15ecb11afd18e792cf3712f60d21235dce0df075679",
+  "CvxLean.json.gz": "7d8d7e01e2f8af7bd8ab80eec7faf60078cc74b410727c728aa7a5fee7b082e4",
+  "FVIntmax.json.gz": "a36014e5fbd6a19bd7c0ea1328951081a2c52556f7f54306de5a34a2f3a235d6",
+  "IntroEffects.json.gz": "5dfca7f6a192e73200ec9145e6ee64e8fe49e19adf3b6b08d4b6790cab0de12f",
+  "LeanExprEvaluator.json.gz": "2b77ef7bfc6e819fe88052d16443fca247c9d1f242e94d4f15014b7cad5084c7",
+  "Lentil.json.gz": "5d70de10c3478244262ea8c6bd4e0142e94b56bd6b09c88542dbd6c8733d8aa1",
+  "LeroyCompilerVerificationCourse.json.gz": "0a7b697679268b00c2dbb1463acfe49db634957dd35e68d3dd5feee4f8616f27",
+  "TTBFL.json.gz": "497b84dbe628336e88bcf6092267000ecc0ee802ce69728dd66fe88edc5a5121",
+  "VCV-io.json.gz": "a7ebb113b1358650d4df48cd6ca1b1954578e404017e27b0b3edea9a3bace3d7",
+  "capless-lean.json.gz": "22a613fdeea0a5c63985b92ff644d73d13461504d5cd74cae37268a17f3d144d",
+  "clean.json.gz": "b1bcad783664805aff05c21865b6e28e055294841388299b6e08be1aa231124c",
+  "formal-snarks-project.json.gz": "17f1ea05862adc3448e7a3182f72ce265d1275d12b0b7704bded88a1f6a97957",
+  "iris-lean.json.gz": "40c79d696264686ce3875ec1a624456726e6a23496d2b3983e8a19148754b8e6",
+  "juvix-lean.json.gz": "177b760bcfb7362397ec164863f33d05dacc4cbd734b1c4e96be50eb1e14c874",
+  "lean-formal-reasoning-program.json.gz": "8192ec913dca0574f954b64f97b94b90781f710d58e62d7d7cb9d11d09b44ad6",
+  "lean-hoare.json.gz": "746011f08eab411af24f7119e4059f93718311373d379a8d09cd0b71cfedb4d6",
+  "lean-mlir.json.gz": "4a10684880f9c353dbe0e2b7ccdfa18a8b51f547fea3e84ab41aab1bc76c53c3",
+  "loom.json.gz": "1c1c841143a62360fa675b72a128897e16d3f193f032bca00d7f0ba81161a6e8",
+  "pcf-lean.json.gz": "032c8c3bd89c97ab35f9e9b7c5f4db468b28bb62acc7de1c07cf4cc6b6f97108",
+  "splean.json.gz": "42a8fb2d60ca6bee6310f6671ae7252962043bbfe0f266d4f69da9f71fb42330",
+  "veil.json.gz": "681c25e2febb0655ddbf0e358ebfab7829109526895a38d5f91264fb671c558f",
+  "verified-compiler.json.gz": "945fc50e498de49e744072e7a97b28e4d632bac0e40c07296248641ffb21c03b",
+  "wadray_verification.json.gz": "01cca1addf41a4d17d1c37e8fcd6699ab740f1f3bb0dbb7538c9ac4dfc75d651"
+ },
+ "not_windowable": [],
+ "repos.json": "c9cc7cb9650c482d81ee78d7f704c61d0d6073418064d11c55674938f35760de",
+ "s5_per_repo.json": "57d771cbd45b38c1b56bb72a35dfbb124940a541bfa0accbecb3e1be2050972e",
+ "verisoftbench.jsonl": "ea584250021fbfaddc060834be2e05b9b2fae4f720c770a9932c71d039a50961"
+}

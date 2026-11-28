@@ -167,3 +167,14 @@ Fixed in configs/S4.yaml and the code before any ranking result was seen; none w
   reports/G0.md.
 - data/schemas.py: BENCHMARK_FIELD_MAP filled (a constant; no validator changed).
 - No change to the toy, the splits, the metrics, the trainer (train/) or the evaluator (eval/): runs/G0/diff_trainer_evaluator.txt.
+
+## C1prep
+
+- New: bench/vsb_history.py (source-level history scan), eval/c1prep.py (windows, stream, shortlist, T3 on Lean
+  obligations, report), backends/lean_vsb.py and backends/lean_repl.py (typed skeletons, NotImplementedError until
+  Lean), tests/test_C1prep.py, runs/C1prep/ (clone script, per-repository history metadata as hashes and counts,
+  tables, T3 logs), reports/C1prep.md (generated) and C1prep_notes.md.
+- data/stream.py, data/holdout.py, data/schemas.py: Lean sections appended after the toy code; the toy code above them
+  is byte-identical to 791589b (runs/C1prep/toy_unchanged.txt). schemas: to_benchmark_names / to_internal_names /
+  validate_lean_obligation (stored Lean records use the benchmark's names for the five same-meaning fields, 5.3).
+- No change to the toy, the S results, the trainer (train/) or the evaluator (eval/ files other than the new c1prep.py).

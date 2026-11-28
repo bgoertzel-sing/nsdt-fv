@@ -1,0 +1,922 @@
+[
+ {
+  "W": 2,
+  "forward": {
+   "head": "0044e036f15fc38295709be43f501d07143fc63d",
+   "head_date": "2026-11-26T21:12:15Z",
+   "n_commits": 943,
+   "n_new": 12603
+  },
+  "repo": "ArkLib",
+  "windows": [
+   {
+    "end_commit": "4c9abef5c4d1af22ab2a86eb58fbee47093f0017",
+    "end_date": "2025-08-12T00:11:34Z",
+    "end_index": 335,
+    "first_commit": "847ed0d552f78a19e6fd2f871b3bdca23c182759",
+    "n_benchmark": 35,
+    "n_commits": 336,
+    "n_new": 1306,
+    "n_new_testlike_path": 0,
+    "n_test": 254,
+    "n_wake": 1017,
+    "start_date": "2024-05-31T20:31:08Z",
+    "window": 1
+   },
+   {
+    "end_commit": "779e3ec12d728796469cf638806fafe547dd7001",
+    "end_date": "2026-01-23T16:03:09Z",
+    "end_index": 425,
+    "first_commit": "7614ddd50006cf168e08d07dfad178985f2bbb5e",
+    "n_benchmark": 44,
+    "n_commits": 90,
+    "n_new": 1540,
+    "n_new_testlike_path": 0,
+    "n_test": 299,
+    "n_wake": 1197,
+    "start_date": "2025-08-13T03:14:25Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": null,
+   "head_date": null,
+   "n_commits": 0,
+   "n_new": 0
+  },
+  "repo": "CvxLean",
+  "windows": [
+   {
+    "end_commit": "138f294b7154337fe1a9372dba8d31f36355fa33",
+    "end_date": "2023-11-22T19:51:00Z",
+    "end_index": 3,
+    "first_commit": "fc2996519f0fca96f5ab48a5a1479c6a8024f733",
+    "n_benchmark": 7,
+    "n_commits": 4,
+    "n_new": 109,
+    "n_new_testlike_path": 6,
+    "n_test": 20,
+    "n_wake": 82,
+    "start_date": "2022-10-14T12:12:22Z",
+    "window": 1
+   },
+   {
+    "end_commit": "c62c2f292c6420f31a12e738ebebdfed50f6f840",
+    "end_date": "2024-05-20T15:01:43Z",
+    "end_index": 31,
+    "first_commit": "e9593f666ad8cc8e4173a7b4e4ff91d9a855e740",
+    "n_benchmark": 4,
+    "n_commits": 28,
+    "n_new": 82,
+    "n_new_testlike_path": 26,
+    "n_test": 16,
+    "n_wake": 62,
+    "start_date": "2023-12-15T21:41:58Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": null,
+   "head_date": null,
+   "n_commits": 0,
+   "n_new": 0
+  },
+  "repo": "FVIntmax",
+  "windows": [
+   {
+    "end_commit": "d6124698dce967e3dc13a3c90a03eb22c31dba03",
+    "end_date": "2024-12-23T08:54:20Z",
+    "end_index": 5,
+    "first_commit": "9391f96c2db590d2a753a01e2ec2b38a652f0bd6",
+    "n_benchmark": 18,
+    "n_commits": 6,
+    "n_new": 279,
+    "n_new_testlike_path": 0,
+    "n_test": 52,
+    "n_wake": 209,
+    "start_date": "2024-08-26T11:23:34Z",
+    "window": 1
+   },
+   {
+    "end_commit": "d7c4cbc5ec449471952ac5468f3b55bf61f5868e",
+    "end_date": "2025-05-30T12:19:50Z",
+    "end_index": 26,
+    "first_commit": "98a8da3703d385ed47d3e06f0a82f42110debaf4",
+    "n_benchmark": 4,
+    "n_commits": 21,
+    "n_new": 32,
+    "n_new_testlike_path": 0,
+    "n_test": 6,
+    "n_wake": 22,
+    "start_date": "2024-12-23T08:55:00Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": null,
+   "head_date": null,
+   "n_commits": 0,
+   "n_new": 0
+  },
+  "repo": "IntroEffects",
+  "windows": [
+   {
+    "end_commit": "f0a636bcf3640aba15e86f72f289fe543c70141a",
+    "end_date": "2025-07-24T20:42:18Z",
+    "end_index": 2,
+    "first_commit": "9677c30cf04b767a79f51df3fb039a7ab6506abe",
+    "n_benchmark": 1,
+    "n_commits": 3,
+    "n_new": 15,
+    "n_new_testlike_path": 0,
+    "n_test": 3,
+    "n_wake": 11,
+    "start_date": "2025-07-21T19:01:28Z",
+    "window": 1
+   },
+   {
+    "end_commit": "62aea95b3908214926bdc7d456bec3e39c18ad57",
+    "end_date": "2025-07-31T16:46:37Z",
+    "end_index": 15,
+    "first_commit": "b3015621b6161e9a381035d9d6a639a759c73773",
+    "n_benchmark": 3,
+    "n_commits": 13,
+    "n_new": 10,
+    "n_new_testlike_path": 0,
+    "n_test": 1,
+    "n_wake": 6,
+    "start_date": "2025-07-25T03:08:21Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "4beb77e17d2721051ac3ab1e0e3f3dd52aa35b83",
+   "head_date": "2026-09-16T18:00:52Z",
+   "n_commits": 2,
+   "n_new": 0
+  },
+  "repo": "LeanExprEvaluator",
+  "windows": [
+   {
+    "end_commit": "098fa4c5de6ea9473c13227355466629a935fb7e",
+    "end_date": "2025-10-23T19:26:13Z",
+    "end_index": 16,
+    "first_commit": "2da522219f4dc33c18ae3efb26d33cdac3d83622",
+    "n_benchmark": 6,
+    "n_commits": 17,
+    "n_new": 15,
+    "n_new_testlike_path": 0,
+    "n_test": 2,
+    "n_wake": 7,
+    "start_date": "2025-10-22T10:38:27Z",
+    "window": 1
+   },
+   {
+    "end_commit": "0aff7447dfb98c318b3f9f8fba4c427d2fa3920c",
+    "end_date": "2025-10-25T18:01:29Z",
+    "end_index": 27,
+    "first_commit": "5325ffdb63daca00742f0f653c7cc8f897f4abdc",
+    "n_benchmark": 3,
+    "n_commits": 11,
+    "n_new": 14,
+    "n_new_testlike_path": 0,
+    "n_test": 2,
+    "n_wake": 9,
+    "start_date": "2025-10-23T20:06:46Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "8626b0e698f278710d6fdccb42282284381a78d9",
+   "head_date": "2026-11-27T08:15:02Z",
+   "n_commits": 126,
+   "n_new": 358
+  },
+  "repo": "Lentil",
+  "windows": [
+   {
+    "end_commit": "75d9f6df781af505c05f8b96429c43fc8e15edec",
+    "end_date": "2025-02-14T12:15:38Z",
+    "end_index": 15,
+    "first_commit": "947b253edea898f549756a06f706b843b8ecc4b9",
+    "n_benchmark": 1,
+    "n_commits": 16,
+    "n_new": 54,
+    "n_new_testlike_path": 0,
+    "n_test": 11,
+    "n_wake": 42,
+    "start_date": "2024-05-06T09:32:38Z",
+    "window": 1
+   },
+   {
+    "end_commit": "dbdd02c5f976079a88d9df79f3a8543be7965456",
+    "end_date": "2025-07-03T12:28:05Z",
+    "end_index": 39,
+    "first_commit": "7628fff653abe98dd589aa34329a5fbcda7aab43",
+    "n_benchmark": 1,
+    "n_commits": 24,
+    "n_new": 53,
+    "n_new_testlike_path": 0,
+    "n_test": 10,
+    "n_wake": 42,
+    "start_date": "2025-02-17T11:06:01Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": null,
+   "head_date": null,
+   "n_commits": 0,
+   "n_new": 0
+  },
+  "repo": "LeroyCompilerVerificationCourse",
+  "windows": [
+   {
+    "end_commit": "4012b2714dcdd9c3a35fd5faf4ed0849f10b9d0e",
+    "end_date": "2025-06-04T18:30:16Z",
+    "end_index": 42,
+    "first_commit": "679070a0e561bf9cd4ce905a2052a61d940521ed",
+    "n_benchmark": 14,
+    "n_commits": 43,
+    "n_new": 96,
+    "n_new_testlike_path": 0,
+    "n_test": 16,
+    "n_wake": 66,
+    "start_date": "2025-03-25T11:30:45Z",
+    "window": 1
+   },
+   {
+    "end_commit": "a2730e7f9228b9d7ecf4510f1f8652f2cae7ba01",
+    "end_date": "2025-09-22T19:37:17Z",
+    "end_index": 75,
+    "first_commit": "dce084f55ce733d20cf01896ad89dfe0cf69681c",
+    "n_benchmark": 14,
+    "n_commits": 33,
+    "n_new": 98,
+    "n_new_testlike_path": 0,
+    "n_test": 17,
+    "n_wake": 67,
+    "start_date": "2025-06-05T19:39:44Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "0cbffb2c048c8eda529315bd2da6185489d439ae",
+   "head_date": "2026-10-02T18:04:46Z",
+   "n_commits": 9,
+   "n_new": 6
+  },
+  "repo": "TTBFL",
+  "windows": [
+   {
+    "end_commit": "f6f6dd082585b6cc4eaa44856227a8c82c98de62",
+    "end_date": "2024-09-27T02:16:48Z",
+    "end_index": 28,
+    "first_commit": "c0b47f14f439301a4f1a557f9252d628e2976af5",
+    "n_benchmark": 10,
+    "n_commits": 29,
+    "n_new": 122,
+    "n_new_testlike_path": 0,
+    "n_test": 22,
+    "n_wake": 90,
+    "start_date": "2024-03-15T14:39:57Z",
+    "window": 1
+   },
+   {
+    "end_commit": "4196a4d3a5efac67a79c33cf81266042b1371989",
+    "end_date": "2025-04-28T13:28:53Z",
+    "end_index": 143,
+    "first_commit": "d4e244c729ee4cd7c0f869997dbbc68eee0ca9ba",
+    "n_benchmark": 12,
+    "n_commits": 115,
+    "n_new": 118,
+    "n_new_testlike_path": 0,
+    "n_test": 21,
+    "n_wake": 85,
+    "start_date": "2024-09-30T19:05:47Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "779c38122cf85b638983eb1c5b6770a5d42c512a",
+   "head_date": "2026-11-28T00:25:37Z",
+   "n_commits": 790,
+   "n_new": 17873
+  },
+  "repo": "VCV-io",
+  "windows": [
+   {
+    "end_commit": "4cc87ab1579dfde6c49278c27e3847d196178e78",
+    "end_date": "2025-01-28T13:23:40Z",
+    "end_index": 58,
+    "first_commit": "32274a57acf3b30001ef1d8deb6f48f65b2f6a1b",
+    "n_benchmark": 15,
+    "n_commits": 59,
+    "n_new": 513,
+    "n_new_testlike_path": 1,
+    "n_test": 100,
+    "n_wake": 398,
+    "start_date": "2024-03-11T06:09:48Z",
+    "window": 1
+   },
+   {
+    "end_commit": "409d778d6a2b90a70335c360af8b336f6e9becc5",
+    "end_date": "2025-09-23T15:41:44Z",
+    "end_index": 99,
+    "first_commit": "b0cac9258c07adf536588c8b5bf59a7d8258541b",
+    "n_benchmark": 9,
+    "n_commits": 41,
+    "n_new": 512,
+    "n_new_testlike_path": 30,
+    "n_test": 101,
+    "n_wake": 402,
+    "start_date": "2025-01-30T21:46:23Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "9beeba12d520c447791349f079256254fc413f1b",
+   "head_date": "2026-01-29T13:09:18Z",
+   "n_commits": 1,
+   "n_new": 0
+  },
+  "repo": "capless-lean",
+  "windows": [
+   {
+    "end_commit": "39bdc2bce1a07c94648fd42f79c011ad6b03c9a1",
+    "end_date": "2024-07-19T14:48:48Z",
+    "end_index": 39,
+    "first_commit": "9fb83ae64be698f673107e86bf84f4fc547ae2d5",
+    "n_benchmark": 36,
+    "n_commits": 40,
+    "n_new": 265,
+    "n_new_testlike_path": 0,
+    "n_test": 46,
+    "n_wake": 183,
+    "start_date": "2024-05-26T12:57:50Z",
+    "window": 1
+   },
+   {
+    "end_commit": "93ed9e194b57f084e3125ff64cbfdd27cbbd54ad",
+    "end_date": "2025-06-27T13:40:16Z",
+    "end_index": 98,
+    "first_commit": "cb98f2006f9216846f6c5b3be163d18ed955b41f",
+    "n_benchmark": 41,
+    "n_commits": 59,
+    "n_new": 266,
+    "n_new_testlike_path": 0,
+    "n_test": 45,
+    "n_wake": 180,
+    "start_date": "2024-07-22T21:59:51Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "e777f353f16e705b441b12f4c0c1442292f8945e",
+   "head_date": "2026-11-27T17:03:22Z",
+   "n_commits": 113,
+   "n_new": 3922
+  },
+  "repo": "clean",
+  "windows": [
+   {
+    "end_commit": "0bc7ed779a4d51e73eef07017f4a5b6cf385fe2f",
+    "end_date": "2025-06-25T13:55:15Z",
+    "end_index": 99,
+    "first_commit": "b80128e5ea6f22eb91f9c53bd98e820264a22e68",
+    "n_benchmark": 31,
+    "n_commits": 100,
+    "n_new": 428,
+    "n_new_testlike_path": 0,
+    "n_test": 79,
+    "n_wake": 318,
+    "start_date": "2024-07-30T13:36:01Z",
+    "window": 1
+   },
+   {
+    "end_commit": "a134f91ff48ac6d85c9c8d90c64048244cdb6bff",
+    "end_date": "2025-11-17T09:27:56Z",
+    "end_index": 214,
+    "first_commit": "528ee4514d76e56cec8ab995fbae657db10d8f21",
+    "n_benchmark": 37,
+    "n_commits": 115,
+    "n_new": 430,
+    "n_new_testlike_path": 32,
+    "n_test": 79,
+    "n_wake": 314,
+    "start_date": "2025-06-25T14:05:23Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "4661ae3bc28443eceb5929cc91f7afa587e2c2d4",
+   "head_date": "2026-08-15T21:34:35Z",
+   "n_commits": 35,
+   "n_new": 90
+  },
+  "repo": "formal-snarks-project",
+  "windows": [
+   {
+    "end_commit": "5fac1a14f18ea45ce13482af7ffd7a384afc7547",
+    "end_date": "2021-02-09T04:09:28Z",
+    "end_index": 55,
+    "first_commit": "8a91770a759ef4dfa9728f7802b906584ff01e46",
+    "n_benchmark": 0,
+    "n_commits": 56,
+    "n_new": 46,
+    "n_new_testlike_path": 0,
+    "n_test": 9,
+    "n_wake": 37,
+    "start_date": "2020-11-19T20:39:10Z",
+    "window": 1
+   },
+   {
+    "end_commit": "dcfc78d456882087d4e592e090e8d6d6df83e560",
+    "end_date": "2024-07-14T09:59:57Z",
+    "end_index": 228,
+    "first_commit": "facc1f0bd8f667db8940112f2696400597c2aaac",
+    "n_benchmark": 2,
+    "n_commits": 173,
+    "n_new": 50,
+    "n_new_testlike_path": 0,
+    "n_test": 10,
+    "n_wake": 38,
+    "start_date": "2021-02-09T04:19:32Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "abed948c1bfec5781c22a65b4a0274117463d228",
+   "head_date": "2026-11-26T12:40:38Z",
+   "n_commits": 386,
+   "n_new": 5170
+  },
+  "repo": "iris-lean",
+  "windows": [
+   {
+    "end_commit": "b5ceb62e73f0d2dc55b6361556143eb048a86ef4",
+    "end_date": "2025-01-22T20:33:51Z",
+    "end_index": 128,
+    "first_commit": "4e6121e7165937b2a320b62b66a55cdc647b0936",
+    "n_benchmark": 4,
+    "n_commits": 129,
+    "n_new": 538,
+    "n_new_testlike_path": 107,
+    "n_test": 107,
+    "n_wake": 427,
+    "start_date": "2022-03-12T12:55:00Z",
+    "window": 1
+   },
+   {
+    "end_commit": "36d042d249311727eb87acbef36b9d401bf44450",
+    "end_date": "2025-10-15T10:50:26Z",
+    "end_index": 169,
+    "first_commit": "20799cf35446f55f1c2d16ef27c3c6308b204b1b",
+    "n_benchmark": 19,
+    "n_commits": 41,
+    "n_new": 523,
+    "n_new_testlike_path": 3,
+    "n_test": 101,
+    "n_wake": 403,
+    "start_date": "2025-01-22T20:52:21Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": null,
+   "head_date": null,
+   "n_commits": 0,
+   "n_new": 0
+  },
+  "repo": "juvix-lean",
+  "windows": [
+   {
+    "end_commit": "c146c982dde9d78e6217bf9d257a739fa83ae76f",
+    "end_date": "2025-02-21T15:11:03Z",
+    "end_index": 5,
+    "first_commit": "7f0ea7f5705fa7179e12ad2da587fae1ca22773b",
+    "n_benchmark": 16,
+    "n_commits": 6,
+    "n_new": 76,
+    "n_new_testlike_path": 0,
+    "n_test": 12,
+    "n_wake": 48,
+    "start_date": "2024-12-12T11:28:59Z",
+    "window": 1
+   },
+   {
+    "end_commit": "f202e04219a84ce8f56b2c3fffa3409237c5daea",
+    "end_date": "2025-07-22T10:52:17Z",
+    "end_index": 11,
+    "first_commit": "46ab8ce6652b27f4cc7463ed86f44f7cbb6414be",
+    "n_benchmark": 5,
+    "n_commits": 6,
+    "n_new": 101,
+    "n_new_testlike_path": 0,
+    "n_test": 19,
+    "n_wake": 77,
+    "start_date": "2025-02-26T18:27:29Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "4a12da01571e50e52075d52808f76e029be0e7c9",
+   "head_date": "2026-02-03T12:38:36Z",
+   "n_commits": 1,
+   "n_new": 0
+  },
+  "repo": "lean-formal-reasoning-program",
+  "windows": [
+   {
+    "end_commit": "c28999cb3d13c25a5201e6bb97870dda77248730",
+    "end_date": "2024-07-30T06:25:36Z",
+    "end_index": 38,
+    "first_commit": "1b1aaa9dd3e41460b178c4397c717490b10f53fe",
+    "n_benchmark": 11,
+    "n_commits": 39,
+    "n_new": 158,
+    "n_new_testlike_path": 0,
+    "n_test": 29,
+    "n_wake": 118,
+    "start_date": "2024-06-17T22:17:54Z",
+    "window": 1
+   },
+   {
+    "end_commit": "d00c7ea879e51ee664b75d062404bcc901b6936e",
+    "end_date": "2025-07-25T06:30:13Z",
+    "end_index": 76,
+    "first_commit": "6b8c10f83cb134f7642f34a9e45a1a1cb9c6a199",
+    "n_benchmark": 7,
+    "n_commits": 38,
+    "n_new": 167,
+    "n_new_testlike_path": 0,
+    "n_test": 32,
+    "n_wake": 128,
+    "start_date": "2024-08-08T11:46:47Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "aa2d88ae418d58ee22460a9097a2fad62c47eb38",
+   "head_date": "2026-01-28T16:51:39Z",
+   "n_commits": 1,
+   "n_new": 0
+  },
+  "repo": "lean-hoare",
+  "windows": [
+   {
+    "end_commit": "1659bea091b3bd232565a780af4ba16e46210211",
+    "end_date": "2025-05-15T12:07:46Z",
+    "end_index": 18,
+    "first_commit": "7400c2f92ed5f60f219579a4a58ae56be4f5d768",
+    "n_benchmark": 4,
+    "n_commits": 19,
+    "n_new": 12,
+    "n_new_testlike_path": 3,
+    "n_test": 2,
+    "n_wake": 6,
+    "start_date": "2024-10-24T17:18:29Z",
+    "window": 1
+   },
+   {
+    "end_commit": "46f12825c69f397488f198e4dffe4cd9b7820794",
+    "end_date": "2025-07-23T09:46:40Z",
+    "end_index": 22,
+    "first_commit": "46342853946d985be0fc3dab1f8e9348323f9cf8",
+    "n_benchmark": 0,
+    "n_commits": 4,
+    "n_new": 24,
+    "n_new_testlike_path": 0,
+    "n_test": 5,
+    "n_wake": 19,
+    "start_date": "2025-05-15T19:09:58Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "b8c4a771319a044854a4bbb49b8821381ef86ff8",
+   "head_date": "2026-07-28T08:16:27Z",
+   "n_commits": 87,
+   "n_new": 127
+  },
+  "repo": "lean-mlir",
+  "windows": [
+   {
+    "end_commit": "d55368a524f4bd88a3026830c667f126b2a3301d",
+    "end_date": "2025-01-27T19:07:52Z",
+    "end_index": 1014,
+    "first_commit": "ed8deeb806e1aff957ddb4ff458d1c093495b7ad",
+    "n_benchmark": 29,
+    "n_commits": 1015,
+    "n_new": 12629,
+    "n_new_testlike_path": 8360,
+    "n_test": 2520,
+    "n_wake": 10080,
+    "start_date": "2023-02-17T14:18:41Z",
+    "window": 1
+   },
+   {
+    "end_commit": "72aca6a6692278844744025459ac3eaec2ebd81b",
+    "end_date": "2025-12-01T11:12:51Z",
+    "end_index": 1848,
+    "first_commit": "7e89814e84aba1d63c0dfdacd25a79e1e117043b",
+    "n_benchmark": 38,
+    "n_commits": 834,
+    "n_new": 11926,
+    "n_new_testlike_path": 10538,
+    "n_test": 2378,
+    "n_wake": 9510,
+    "start_date": "2025-01-27T23:35:38Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "78928abc9054b31d0bea85985496490baae95244",
+   "head_date": "2026-02-21T14:29:22Z",
+   "n_commits": 11,
+   "n_new": 0
+  },
+  "repo": "loom",
+  "windows": [
+   {
+    "end_commit": "59c55820d04539c202970d0f84d81e0d5f7f88c4",
+    "end_date": "2025-05-28T10:52:20Z",
+    "end_index": 38,
+    "first_commit": "620f081a05e4d3624466d1d8cde252822544ca30",
+    "n_benchmark": 7,
+    "n_commits": 39,
+    "n_new": 152,
+    "n_new_testlike_path": 0,
+    "n_test": 29,
+    "n_wake": 116,
+    "start_date": "2025-02-12T08:34:26Z",
+    "window": 1
+   },
+   {
+    "end_commit": "e0f37f6caf9baa706b4562ed0f337c2b0420b018",
+    "end_date": "2025-11-17T18:25:20Z",
+    "end_index": 183,
+    "first_commit": "d931b3e120f5533c4bbae28cb877ef5643640a6f",
+    "n_benchmark": 19,
+    "n_commits": 145,
+    "n_new": 152,
+    "n_new_testlike_path": 0,
+    "n_test": 27,
+    "n_wake": 106,
+    "start_date": "2025-05-28T12:21:29Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "288668629a0a1ee8062db75da29a1fde789de4d1",
+   "head_date": "2026-02-05T12:46:25Z",
+   "n_commits": 1,
+   "n_new": 0
+  },
+  "repo": "pcf-lean",
+  "windows": [
+   {
+    "end_commit": "d7f6bc86b56129136b80075daf5bdb13b98ef727",
+    "end_date": "2024-06-11T23:40:11Z",
+    "end_index": 6,
+    "first_commit": "36cd0cb95c1d7ba1109c2885b9c870e4cf3f6f61",
+    "n_benchmark": 2,
+    "n_commits": 7,
+    "n_new": 25,
+    "n_new_testlike_path": 0,
+    "n_test": 5,
+    "n_wake": 18,
+    "start_date": "2024-06-07T02:17:37Z",
+    "window": 1
+   },
+   {
+    "end_commit": "3d133f2f5c96bba2df9cb7f70a5270ad3318aaf5",
+    "end_date": "2024-06-14T20:13:22Z",
+    "end_index": 14,
+    "first_commit": "624e814e2ee722cbdce3806eb16355c3ee24f039",
+    "n_benchmark": 5,
+    "n_commits": 8,
+    "n_new": 31,
+    "n_new_testlike_path": 0,
+    "n_test": 5,
+    "n_wake": 21,
+    "start_date": "2024-06-12T01:43:46Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "e24286f51bd9ee207197d47ec587d592cdfb0ddc",
+   "head_date": "2026-01-28T07:17:40Z",
+   "n_commits": 1,
+   "n_new": 0
+  },
+  "repo": "splean",
+  "windows": [
+   {
+    "end_commit": "9ff1631a7cccef793116050958f15598e5a07c3a",
+    "end_date": "2024-07-29T09:46:12Z",
+    "end_index": 67,
+    "first_commit": "5acae16757f00eea28f1b11b65bdc8028ec29c0e",
+    "n_benchmark": 7,
+    "n_commits": 68,
+    "n_new": 332,
+    "n_new_testlike_path": 0,
+    "n_test": 65,
+    "n_wake": 260,
+    "start_date": "2024-06-18T05:34:26Z",
+    "window": 1
+   },
+   {
+    "end_commit": "c5530d40affb45272e1d8b411cc1a4120c2c4d84",
+    "end_date": "2024-12-12T08:38:49Z",
+    "end_index": 236,
+    "first_commit": "4d4276d065be3f9e061e1c2ff9ac03b7f5ceb1f3",
+    "n_benchmark": 24,
+    "n_commits": 169,
+    "n_new": 330,
+    "n_new_testlike_path": 0,
+    "n_test": 61,
+    "n_wake": 245,
+    "start_date": "2024-07-29T09:46:29Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "b1128cc5e0df337443b268e3c78dd2aaabf2706e",
+   "head_date": "2026-11-25T06:28:51Z",
+   "n_commits": 115,
+   "n_new": 555
+  },
+  "repo": "veil",
+  "windows": [
+   {
+    "end_commit": "07876d1067190223e7da2d940e36d5f6c98cf118",
+    "end_date": "2025-01-31T14:12:11Z",
+    "end_index": 419,
+    "first_commit": "8bf1d1dd6d3b5ffbb41d6244a08327643f429cf9",
+    "n_benchmark": 1,
+    "n_commits": 420,
+    "n_new": 41,
+    "n_new_testlike_path": 6,
+    "n_test": 8,
+    "n_wake": 32,
+    "start_date": "2024-02-01T08:38:48Z",
+    "window": 1
+   },
+   {
+    "end_commit": "4a17cf16032546db6c429fa3fafefe1863d5132c",
+    "end_date": "2025-10-22T10:21:37Z",
+    "end_index": 555,
+    "first_commit": "3f261e5f00f7af093c2bf87f9e84a1118f194604",
+    "n_benchmark": 5,
+    "n_commits": 136,
+    "n_new": 40,
+    "n_new_testlike_path": 9,
+    "n_test": 7,
+    "n_wake": 28,
+    "start_date": "2025-01-31T15:26:18Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": "6940e67e5ec2d846310a927c2211d2b94f69162c",
+   "head_date": "2026-04-07T10:26:11Z",
+   "n_commits": 2,
+   "n_new": 0
+  },
+  "repo": "verified-compiler",
+  "windows": [
+   {
+    "end_commit": "b0ac93c01f0643c46b6706e743876299b14b0c67",
+    "end_date": "2025-01-18T16:11:33Z",
+    "end_index": 0,
+    "first_commit": "b0ac93c01f0643c46b6706e743876299b14b0c67",
+    "n_benchmark": 6,
+    "n_commits": 1,
+    "n_new": 27,
+    "n_new_testlike_path": 0,
+    "n_test": 4,
+    "n_wake": 17,
+    "start_date": "2025-01-18T16:11:33Z",
+    "window": 1
+   },
+   {
+    "end_commit": "4c79694f5b96c6789b307e2911088af6b19540ac",
+    "end_date": "2025-04-23T16:41:00Z",
+    "end_index": 5,
+    "first_commit": "fd631c422408e308107c3094ca6e30705c561db5",
+    "n_benchmark": 0,
+    "n_commits": 5,
+    "n_new": 0,
+    "n_new_testlike_path": 0,
+    "n_test": 0,
+    "n_wake": 0,
+    "start_date": "2025-01-18T16:14:35Z",
+    "window": 2
+   }
+  ]
+ },
+ {
+  "W": 2,
+  "forward": {
+   "head": null,
+   "head_date": null,
+   "n_commits": 0,
+   "n_new": 0
+  },
+  "repo": "wadray_verification",
+  "windows": [
+   {
+    "end_commit": "954115f33a89c18ac98159c53f92bab3006f2ed5",
+    "end_date": "2024-01-13T20:05:51Z",
+    "end_index": 33,
+    "first_commit": "40a1d98101b26dcbb89de7346d6033c55a007f8b",
+    "n_benchmark": 11,
+    "n_commits": 34,
+    "n_new": 58,
+    "n_new_testlike_path": 0,
+    "n_test": 9,
+    "n_wake": 38,
+    "start_date": "2023-12-22T19:40:58Z",
+    "window": 1
+   },
+   {
+    "end_commit": "2e0d2e5d2397fd3cdfd1ff289674e915d5ed5905",
+    "end_date": "2024-06-21T16:01:46Z",
+    "end_index": 84,
+    "first_commit": "c20bb51ca2bcc4ade013a65e154f2ca9079ddb5f",
+    "n_benchmark": 9,
+    "n_commits": 51,
+    "n_new": 49,
+    "n_new_testlike_path": 0,
+    "n_test": 8,
+    "n_wake": 32,
+    "start_date": "2024-01-15T14:52:21Z",
+    "window": 2
+   }
+  ]
+ }
+]

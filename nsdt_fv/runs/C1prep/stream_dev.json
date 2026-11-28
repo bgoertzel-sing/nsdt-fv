@@ -1,0 +1,51 @@
+{
+ "repos": [
+  "clean",
+  "lean-mlir",
+  "iris-lean",
+  "lean-formal-reasoning-program",
+  "capless-lean"
+ ],
+ "stages": [
+  [
+   "capless-lean@w1",
+   "2024-07-19T14:48:48Z"
+  ],
+  [
+   "lean-formal-reasoning-program@w1",
+   "2024-07-30T06:25:36Z"
+  ],
+  [
+   "iris-lean@w1",
+   "2025-01-22T20:33:51Z"
+  ],
+  [
+   "lean-mlir@w1",
+   "2025-01-27T19:07:52Z"
+  ],
+  [
+   "clean@w1",
+   "2025-06-25T13:55:15Z"
+  ],
+  [
+   "capless-lean@w2",
+   "2025-06-27T13:40:16Z"
+  ],
+  [
+   "lean-formal-reasoning-program@w2",
+   "2025-07-25T06:30:13Z"
+  ],
+  [
+   "iris-lean@w2",
+   "2025-10-15T10:50:26Z"
+  ],
+  [
+   "clean@w2",
+   "2025-11-17T09:27:56Z"
+  ],
+  [
+   "lean-mlir@w2",
+   "2025-12-01T11:12:51Z"
+  ]
+ ]
+}

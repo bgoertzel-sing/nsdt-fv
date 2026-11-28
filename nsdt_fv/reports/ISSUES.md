@@ -253,3 +253,52 @@ choices are in CHANGES.md ("S3").
     and agrees with the README. The 200k-token threshold was not checked.
 54. **target_theorem is truncated on 38 tasks** at the first `:=` inside the statement (let-bindings, named
     arguments). The statement is taken from thm_stmt.
+
+## C1prep
+
+55. **All declaration counts are source-level estimates.** bench/vsb_history.py finds 'theorem'/'lemma' at line start
+    with a namespace/section/mutual stack; macros, Prop-valued defs, instances, 'open ... in' prefixes and generated
+    names are missed or misnamed. Canary: 488 of the 500 benchmark thm_names are found live at c* (misses: clean 9,
+    iris-lean 1, lean-formal-reasoning-program 2; runs/C1prep/canary.json). The Lean extractor decides at C1.
+56. **lean-mlir is the only Compiler repository that reaches 300 estimated obligations**, and it is one of the two
+    'large' repositories (benchmark prompts over 200k tokens), on a nightly toolchain, with 77% of its keys under
+    test-like paths (generated InstCombine/LLVM tests). If its build exceeds 30 minutes at C0, no set of five
+    categories satisfies 5.1 (LeroyCompilerVerificationCourse has an estimated 166 window obligations, 114 at c*).
+    That case needs a decision (relax the 300 threshold for one category, accept four categories, or count only
+    non-test paths of lean-mlir).
+57. **lean-formal-reasoning-program is borderline** (estimated 307 window obligations net of benchmark names, 325 at
+    c*); a Lean count a little lower would fail 5.1. Semantics has no other eligible repository.
+58. **The plan's provisional shortlist does not satisfy 5.1 on the estimates**: loom 279/252 and veil 75/57 estimated
+    obligations, veil 6 tasks, and iris-lean, loom and veil share one category. Chosen instead (rule in
+    eval/c1prep.shortlist): clean, lean-mlir, iris-lean, lean-formal-reasoning-program, capless-lean; alternates
+    VCV-io, splean (both only replace Applied verif./Framework).
+59. **Histories are first-parent and therefore coarse where projects squash or merge** (max keys entering in one commit:
+    lean-mlir 7861, FVIntmax 279 of 316 entries, verified-compiler all 27 in its first commit;
+    runs/C1prep/history_summary.json). verified-compiler's window 2 is empty.
+60. **thm_stmt carries the whole proof on 36 benchmark tasks** (term-mode proofs after the signature). The stream uses
+    data/stream.benchmark_statement, which cuts thm_stmt at the start of ground_truth_proof; any other consumer of
+    thm_stmt must do the same or the statement view leaks the proof.
+61. **Equal statement texts in different namespaces** (e.g. clean's Gadgets.*.completeness / soundness: 4 benchmark
+    tasks share one statement text) are one statement for the source-level guard key, which has no elaborated
+    constants. The stream builder resolves such collisions conservatively (data/stream.resolve_statement_collisions:
+    benchmark or first-held-out wins, wake copies dropped); counts are in the T3 summaries. At C1 the key should use
+    the elaborated type.
+62. **The same declaration can be both wake and held out** when it is deleted and re-added (by name and statement), or
+    renamed: 5.2's "absent from the previous snapshot" makes it new again. Rule chosen: the first appearance decides
+    (a re-added test declaration becomes wake; a re-added forward declaration is dropped).
+63. **Benchmark-named declarations are held out in every window**, not only in the last: their proofs at c* usually
+    already exist in window 1, so training on window 1 would train on benchmark ground truth (5.4). 'bench' column of
+    the windows table.
+64. **Forward sets are large for active repositories** (VCV-io 17873 new keys after c*, ArkLib 12597, iris-lean 5170,
+    clean 3920; capless-lean and lean-formal-reasoning-program have none): forward metrics will rest on clean,
+    iris-lean and lean-mlir among the chosen five.
+65. **Proof states are not available without Lean**, so the Lean guard's L1 check on intermediate goal states only
+    runs when obligations carry 'proof_states' (C1 extractor). Proof text is matched by 12-token shingles that occur
+    in no non-held-out proof, statement or wake file prefix; held-out proofs of 8-11 tokens are whole needles.
+66. **Residuals of the real-source T3 run** (texts from the local clones, cut by the regex scanner; counts in
+    runs/C1prep/t3_real_summary.json): 4 of 65,432 dream injections not raised (2 forward obligations whose scanned
+    statement the alpha-variant does not preserve), and 41 of 134,357 legitimate examples raised (L1: a short
+    distinctive held-out proof, or a 12-token shingle of one, occurring inside a longer wake text; conservative, the
+    example is dropped). On the placeholder texts that the tests use, all 327,290 injections raise and none of the
+    203,494 controls do. Both residuals come from source-level text; at C1 the extractor's statements, proof terms
+    and goal states replace them.

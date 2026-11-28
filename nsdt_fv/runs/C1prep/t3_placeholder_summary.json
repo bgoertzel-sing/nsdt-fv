@@ -1,0 +1,130 @@
+{
+ "control_raises": [],
+ "data_version": "112272c6cd4caf18",
+ "distinctive": 24606,
+ "held_by_split": {
+  "benchmark": 270,
+  "forward": 26807,
+  "test": 5652,
+  "wake": 23006
+ },
+ "missed_leaks": [],
+ "obligations": 55735,
+ "repos": [
+  "clean",
+  "lean-mlir",
+  "iris-lean",
+  "lean-formal-reasoning-program",
+  "capless-lean",
+  "VCV-io",
+  "splean"
+ ],
+ "seconds": 36.7,
+ "summary": {
+  "L2": {
+   "edges_in": 166491,
+   "edges_removed": 98757,
+   "removed_exactly_held_out": true
+  },
+  "controls": {
+   "n": 203494,
+   "raised": 0
+  },
+  "decoys": {
+   "n": 24606,
+   "raised": 24606
+  },
+  "leaks": {
+   "annotation_with_proof": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53614,
+      "raised": 53614
+     },
+     "test": {
+      "n": 11304,
+      "raised": 11304
+     }
+    },
+    "n": 65458,
+    "raised": 65458
+   },
+   "dream_equals_test": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53614,
+      "raised": 53614
+     },
+     "test": {
+      "n": 11304,
+      "raised": 11304
+     }
+    },
+    "n": 65458,
+    "raised": 65458
+   },
+   "premise_list": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53614,
+      "raised": 53614
+     },
+     "test": {
+      "n": 11304,
+      "raised": 11304
+     }
+    },
+    "n": 65458,
+    "raised": 65458
+   },
+   "proof_text": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53614,
+      "raised": 53614
+     },
+     "test": {
+      "n": 11304,
+      "raised": 11304
+     }
+    },
+    "n": 65458,
+    "raised": 65458
+   },
+   "repair_pair": {
+    "by_split": {
+     "benchmark": {
+      "n": 540,
+      "raised": 540
+     },
+     "forward": {
+      "n": 53614,
+      "raised": 53614
+     },
+     "test": {
+      "n": 11304,
+      "raised": 11304
+     }
+    },
+    "n": 65458,
+    "raised": 65458
+   }
+  }
+ }
+}

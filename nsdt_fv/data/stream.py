@@ -196,3 +196,407 @@ def write_stream(s: Stream, out_dir: str) -> dict:
         with open(os.path.join(out_dir, "projects", p.name + ".toyeq"), "w") as f:
             f.write(p.world.source(with_proofs=True) + "\n")
     return {"obligations": len(s.obligations), "edges": len(s.edges), "data_version": s.data_version()}
+
+
+
+# =============================================================================================== Lean
+# C1-prep: the same stream, built from a Lean repository's history (plan 5.2) instead of the toy generator.
+# Nothing above this line changed. The Lean functions below use nothing from ToyEq (the module still imports
+# it at the top for the toy path).
+#
+# Inputs are history records of bench/vsb_history.py (one per repository): the first-parent commit sequence
+# up to the pinned commit c*_r followed by the forward commits, and for every declaration key (qualified name,
+# statement hash) its presence intervals over that sequence. Texts (statement, proof, file prefix) come from a
+# materializer: PlaceholderMaterializer (metadata only, synthetic Lean-like texts; used by the tests and
+# before Lean exists), eval/c1prep.SourceScanMaterializer (local clones, source-level regex; used for the
+# guard's real-source check, nothing written to the repository) or, at C1, the Lean extractor.
+#
+# Definitions (5.2): snapshot S_k = declarations live after commit k. Window j covers commits
+# (k_{j-1}, k_j], k_W = c*. A declaration is new in window j if live in S_{k_j} and not in S_{k_{j-1}}
+# (S_{k_0} = empty), by qualified name and statement hash. Its entry commit is the start of the presence
+# interval containing k_j. The last 20% of a window's new declarations by entry commit date (ties: commit
+# position, then key) are its test set, the rest its wake set. Forward set F_r: live at the last forward
+# commit and not live at c*. Cuts give the windows roughly equal numbers of new declarations: W = 2 exactly
+# (minimise the difference); W >= 3 greedily (each cut closest to an equal share of what is left).
+# Held out (5.4): in-window test sets, the benchmark tasks (read from verisoftbench.jsonl; a history
+# declaration with a benchmark task's qualified name is replaced by the benchmark record and never enters a
+# wake set, in any window) and the forward sets. Materializers redact every held-out proof in file prefixes.
+
+LEAN_W_STAGE_C = 2
+
+
+def load_history(path: str) -> dict:
+    import gzip
+    op = gzip.open if path.endswith(".gz") else open
+    with op(path, "rt") as f:
+        return json.load(f)
+
+
+def _live_at(intervals, k) -> int:
+    """Index of the interval containing commit k, or -1."""
+    for i, (a, b) in enumerate(intervals):
+        if a <= k and (b is None or b > k):
+            return i
+    return -1
+
+
+def _counts_live(hist, keys_mask=None):
+    """n[k] = number of declarations (optionally restricted to keys_mask) live after commit k."""
+    n = len(hist["commits"])
+    diff = [0] * (n + 1)
+    for i, d in enumerate(hist["decls"]):
+        if keys_mask is not None and not keys_mask[i]:
+            continue
+        for a, b in d[4]:
+            diff[a] += 1
+            diff[n if b is None else b] -= 1
+    out, run = [], 0
+    for k in range(n):
+        run += diff[k]
+        out.append(run)
+    return out
+
+
+def window_cuts(hist: dict, W: int = LEAN_W_STAGE_C) -> list:
+    """End commit index of each window (the last is c*). ValueError if the history is too short."""
+    nh = hist["n_history_commits"]
+    last = nh - 1
+    if nh < W:
+        raise ValueError(f"{hist['repo']}: {nh} commits before c*, cannot cut {W} windows")
+    in_final = [_live_at(d[4], last) >= 0 for d in hist["decls"]]
+    n_final = sum(in_final)
+    final_and_k = _counts_live(hist, in_final)             # live at k and at c*
+    cuts, prev = [], -1
+    for j in range(1, W):
+        not_prev = [not (prev >= 0 and _live_at(d[4], prev) >= 0) for d in hist["decls"]]
+        new_cnt = _counts_live(hist, not_prev)              # live at k and not at prev
+        best = None
+        for k in range(prev + 1, last - (W - j) + 1):
+            a = new_cnt[k]
+            rest = n_final - final_and_k[k]
+            score = abs(a - rest) if W - j == 1 else abs(a - (a + rest) / (W - j + 1))
+            if best is None or score < best[0]:
+                best = (score, k)
+        prev = best[1]
+        cuts.append(prev)
+    cuts.append(last)
+    return cuts
+
+
+def window_members(hist: dict, cuts: list) -> list:
+    """For each window: [(decl_index, entry_commit_index)] of its new declarations."""
+    out, prev = [], -1
+    for k in cuts:
+        mem = []
+        for i, d in enumerate(hist["decls"]):
+            ii = _live_at(d[4], k)
+            if ii < 0 or (prev >= 0 and _live_at(d[4], prev) >= 0):
+                continue
+            mem.append((i, d[4][ii][0]))
+        out.append(mem)
+        prev = k
+    return out
+
+
+def forward_members(hist: dict) -> list:
+    nh, n = hist["n_history_commits"], len(hist["commits"])
+    if n == nh:
+        return []
+    out = []
+    for i, d in enumerate(hist["decls"]):
+        ii = _live_at(d[4], n - 1)
+        if ii >= 0 and _live_at(d[4], nh - 1) < 0:
+            out.append((i, d[4][ii][0]))
+    return out
+
+
+def split_window(hist: dict, members: list, test_fraction: float = TEST_FRACTION):
+    """(wake, test): members ordered by entry commit date (ties: position, key); the last 20% are test."""
+    commits, decls = hist["commits"], hist["decls"]
+    order = sorted(members, key=lambda m: (commits[m[1]][1], m[1], decls[m[0]][0], decls[m[0]][1]))
+    n_test = int(round(test_fraction * len(order)))
+    if n_test == 0 and len(order) >= 2:
+        n_test = 1
+    return order[: len(order) - n_test], order[len(order) - n_test:]
+
+
+def repo_windows(hist: dict, W: int = LEAN_W_STAGE_C, test_fraction: float = TEST_FRACTION,
+                 exclude_names=()) -> dict:
+    """Window summary of one repository (counts only). exclude_names: name hashes held out as benchmark tasks
+    (removed before the wake/test split, counted in n_benchmark)."""
+    cuts = window_cuts(hist, W)
+    mem = window_members(hist, cuts)
+    commits, decls = hist["commits"], hist["decls"]
+    ex = set(exclude_names)
+    out = {"repo": hist["repo"], "W": W, "windows": []}
+    prev = -1
+    for j, (k, m) in enumerate(zip(cuts, mem), 1):
+        keep = [x for x in m if decls[x[0]][0] not in ex]
+        wake, test = split_window(hist, keep, test_fraction)
+        out["windows"].append({
+            "window": j, "first_commit": commits[prev + 1][0], "end_commit": commits[k][0], "end_index": k,
+            "start_date": commits[prev + 1][1], "end_date": commits[k][1], "n_commits": k - prev,
+            "n_new": len(m), "n_benchmark": len(m) - len(keep), "n_wake": len(wake), "n_test": len(test),
+            "n_new_testlike_path": sum(decls[i][3] for i, _ in m),
+        })
+        prev = k
+    fw = forward_members(hist)
+    out["forward"] = {"n_commits": hist["n_forward_commits"], "n_new": len(fw),
+                      "head": commits[-1][0] if hist["n_forward_commits"] else None,
+                      "head_date": commits[-1][1] if hist["n_forward_commits"] else None}
+    return out
+
+
+def merge_stages(window_summaries: list) -> list:
+    """5.2: windows of all repositories in one sequence by window end date, ties by repository name."""
+    st = [(f"{w['repo']}@w{x['window']}", x["end_date"], w["repo"], x["window"]) for w in window_summaries
+          for x in w["windows"]]
+    st.sort(key=lambda s: (s[1], s[2], s[3]))
+    return [(sid, end) for sid, end, _, _ in st]
+
+
+# ------------------------------------------------------------------ materializers (texts of obligations)
+def _ns(repo):
+    return "".join(c if c.isalnum() else "_" for c in repo)
+
+
+class PlaceholderMaterializer:
+    """Synthetic, deterministic Lean-like texts from the hashes only (no repository source), marked by the
+    '«ph»' token. A fifth of the declarations (by name hash) get the generic proof ':= by simp', so that the
+    guard's non-distinctive-proof path is exercised. Prefixes are synthetic, so there is nothing to redact."""
+    kind = "placeholder"
+
+    def texts(self, repo, commit, decl_rows, held_keys):
+        out = {}
+        for d in decl_rows:
+            nh, sh = d[0], d[1]
+            v = "xyzabn"[int(sh[0], 16) % 6]
+            name = f"{_ns(repo)}.d_{nh}"
+            stmt = (f"theorem {name} ({v} : T_{sh[:4]}) (h : P_{sh[4:8]} {v}) :\n"
+                    f"    f_{sh[8:12]} ({v} + 1) = g_{sh[12:16]} {v} «ph»")
+            if int(nh[0], 16) % 5 == 0:
+                proof = ":= by simp"
+            else:
+                proof = (f":= by\n  induction {v} with\n  | zero => simp [f_{sh[8:12]}, g_{sh[12:16]}]\n"
+                         f"  | succ n ih =>\n    rw [lem_{nh[:6]}, ← lem_{nh[6:12]} h]\n"
+                         f"    simp_all [ih, aux_{sh[:6]}_{nh[12:]}]")
+            deps = [f"lem_{nh[:6]}", f"lem_{nh[6:12]}", f"aux_{sh[:6]}_{nh[12:]}"]
+            out[(nh, sh)] = {"decl": name, "statement": stmt, "proof": proof, "module": f"{_ns(repo)}.M_{d[2][:6]}",
+                             "src_up_to_decl": f"import {_ns(repo)}.Prelude «ph»\n",
+                             "scope": f"namespace {_ns(repo)}", "deps_project": deps, "deps_library": []}
+        return out
+
+
+def lean_obligation(repo, commit, snapshot_id, t, window, split, first_seen, entered_commit, entered,
+                    n_deps_transitive=0, materializer="placeholder"):
+    """An Appendix B obligation in the internal field names (schemas.to_benchmark_names gives the stored,
+    benchmark-named record). entered_commit/entered/materializer are C1-prep provenance extras."""
+    o = {
+        "id": f"{repo}@{commit}:{t['decl']}", "repo": repo, "commit": commit, "snapshot_id": snapshot_id,
+        "module": t["module"], "decl": t["decl"], "kind": "theorem", "statement": t["statement"],
+        "src_up_to_decl": t["src_up_to_decl"], "scope": t["scope"],
+        "deps_project": list(t["deps_project"]), "deps_library": list(t["deps_library"]),
+        "n_deps_direct": len(t["deps_project"]) + len(t["deps_library"]), "n_deps_transitive": n_deps_transitive,
+        "proof": t["proof"], "first_seen": first_seen, "window": window, "split": split,
+        "closed_by_baseline_tactics": False,
+        "entered_commit": entered_commit, "entered": entered, "materializer": materializer,
+    }
+    if t.get("proof_states"):
+        o["proof_states"] = list(t["proof_states"])
+    validate_obligation(o)
+    return o
+
+
+def benchmark_statement(task: dict) -> str:
+    """thm_stmt without the proof: on some tasks thm_stmt carries the whole ground_truth_proof after the
+    signature (counted in reports/C1prep.md); a statement shown in a view or stored must not (5.4 L1)."""
+    st, gt = task["thm_stmt"], (task.get("ground_truth_proof") or "").strip()
+    if gt:
+        i = st.find(gt[: min(len(gt), 60)])
+        if i > 0:
+            return st[:i].rstrip()
+    return st
+
+
+def benchmark_obligation(task: dict, commit: str, snapshot_id: str, window: int) -> dict:
+    """A VeriSoftBench task as an obligation (split 'benchmark'); its fields are the benchmark's own."""
+    deps_p = [x["name"] for f in ("used_repo_defs", "repo_lemmas", "used_local_defs", "used_local_lemmas")
+              for x in task.get(f) or []]
+    deps_l = [x["name"] for f in ("used_lib_defs", "lib_lemmas") for x in task.get(f) or []]
+    t = {"decl": task["thm_name"], "statement": benchmark_statement(task), "proof": task["ground_truth_proof"],
+         "module": task["rel_path"][:-5].replace("/", ".") if task["rel_path"].endswith(".lean") else task["rel_path"],
+         "src_up_to_decl": task.get("local_ctx") or "", "scope": "\n".join(task.get("imports") or []),
+         "deps_project": deps_p, "deps_library": deps_l}
+    o = lean_obligation(task["lean_root"], commit, snapshot_id, t, window, "benchmark", "", "", "",
+                        n_deps_transitive=int(task.get("transitive_dep_count") or 0), materializer="verisoftbench")
+    o["benchmark_task_id"] = task["id"]
+    return o
+
+
+@dataclass
+class LeanStream:
+    """Same interface as Stream (obligations, edges, stages, config, backend(), by_id(), test_sets(),
+    data_version()) for Lean repositories. stages: [(snapshot_id, end date 'YYYY-MM-DDTHH:MM:SSZ')]."""
+    repos: list
+    obligations: list
+    edges: list
+    snapshots: dict                 # snapshot_id -> {repo, commit, window, end_date, end_index}
+    stages: list
+    windows: list                   # repo_windows summaries
+    config: dict
+
+    def backend(self, kind: str = "vsb"):
+        if kind == "repl":
+            from ..backends.lean_repl import LeanReplBackend
+            return LeanReplBackend(self.snapshots, self.obligations)
+        from ..backends.lean_vsb import LeanVSBBackend
+        return LeanVSBBackend(self.snapshots, self.obligations)
+
+    def by_id(self):
+        return {o["id"]: o for o in self.obligations}
+
+    def test_sets(self) -> dict:
+        """Stage index j (1-based) -> in-window test obligation ids."""
+        out = {}
+        for j, (sid, _) in enumerate(self.stages, 1):
+            out[j] = [o["id"] for o in self.obligations if o["snapshot_id"] == sid and o["split"] == "test"]
+        return out
+
+    def held_out(self, split: str) -> list:
+        return [o["id"] for o in self.obligations if o["split"] == split]
+
+    def data_version(self) -> str:
+        h = hashlib.sha256()
+        for o in self.obligations:
+            h.update(json.dumps(o, sort_keys=True).encode())
+        return h.hexdigest()[:16]
+
+
+def name_hash(name: str) -> str:
+    return hashlib.sha256(name.encode()).hexdigest()[:16]
+
+
+def resolve_statement_collisions(obligations: list, stages: list):
+    """The guard compares statements up to normalisation (holdout.lean_statement_key), across repositories. Two
+    obligations with equal keys are one theorem for the guard, so a key must not be both trained and held out.
+    The first appearance decides (stage order; forward and benchmark after every window): if any member is a
+    benchmark task, or the first member is held out (test), every wake member is dropped; if the first member
+    is a wake obligation, later test members are not new and become wake, and forward members are dropped.
+    Returns (obligations, counts)."""
+    from .holdout import lean_statement_key
+    order = {sid: i for i, (sid, _) in enumerate(stages)}
+    late = len(order) + 1
+
+    def stage(o):
+        return late if o["split"] in ("forward", "benchmark") else order.get(o["snapshot_id"], late)
+    groups = {}
+    for i, o in enumerate(obligations):
+        groups.setdefault(lean_statement_key(o["statement"]), []).append(i)
+    drop, counts = set(), {"wake_dropped": 0, "test_to_wake": 0, "forward_dropped": 0, "groups": 0}
+    for idx in groups.values():
+        splits = {obligations[i]["split"] for i in idx}
+        if len(idx) < 2 or "wake" not in splits or splits == {"wake"}:
+            continue
+        counts["groups"] += 1
+        first = min(idx, key=lambda i: (stage(obligations[i]), obligations[i]["split"] != "test"))
+        if "benchmark" in splits or obligations[first]["split"] != "wake":
+            for i in idx:
+                if obligations[i]["split"] == "wake":
+                    drop.add(i)
+                    counts["wake_dropped"] += 1
+        else:
+            for i in idx:
+                if obligations[i]["split"] == "test":
+                    obligations[i] = dict(obligations[i], split="wake")
+                    counts["test_to_wake"] += 1
+                elif obligations[i]["split"] == "forward":
+                    drop.add(i)
+                    counts["forward_dropped"] += 1
+    return [o for i, o in enumerate(obligations) if i not in drop], counts
+
+
+def build_lean_stream(histories: list, W: int = LEAN_W_STAGE_C, materializer=None, benchmark_tasks=None,
+                      test_fraction: float = TEST_FRACTION, include_forward: bool = True) -> LeanStream:
+    """histories: vsb_history records. benchmark_tasks: VeriSoftBench task dicts (benchmark field names)."""
+    mat = materializer or PlaceholderMaterializer()
+    obligations, snapshots, summaries, edges = [], {}, [], []
+    matched = {}
+    dup_names = {}
+    for hist in histories:
+        repo = hist["repo"]
+        commits, decls = hist["commits"], hist["decls"]
+        tasks = [t for t in (benchmark_tasks or []) if t["lean_root"] == repo]
+        bench_names = {name_hash(t["thm_name"]) for t in tasks}
+        summ = repo_windows(hist, W, test_fraction, exclude_names=bench_names)
+        summaries.append(summ)
+        cuts = [w["end_index"] for w in summ["windows"]]
+        mem = window_members(hist, cuts)
+        groups = []
+        for j, (k, m) in enumerate(zip(cuts, mem), 1):
+            sid = f"{repo}@w{j}"
+            snapshots[sid] = {"repo": repo, "commit": commits[k][0], "window": j, "end_date": commits[k][1],
+                              "end_index": k}
+            keep = [x for x in m if decls[x[0]][0] not in bench_names]
+            wake, test = split_window(hist, keep, test_fraction)
+            groups.append((sid, commits[k][0], j, [(x, "wake") for x in wake] + [(x, "test") for x in test]))
+        if include_forward and hist["n_forward_commits"]:
+            sid = f"{repo}@fwd"
+            snapshots[sid] = {"repo": repo, "commit": commits[-1][0], "window": 0, "end_date": commits[-1][1],
+                              "end_index": len(commits) - 1}
+            groups.append((sid, commits[-1][0], 0, [(x, "forward") for x in forward_members(hist)]))
+        held_keys = {(decls[i][0], decls[i][1]) for _, _, _, rows in groups for (i, _), s in rows if s != "wake"}
+        held_keys |= {(decls[i][0], decls[i][1]) for i, d in enumerate(decls) if d[0] in bench_names}
+        matched[repo] = {"tasks": len(tasks), "found_in_history": len({d[0] for d in decls} & bench_names)}
+        dup_names[repo] = 0
+        for sid, commit, j, rows in groups:
+            texts = mat.texts(repo, commit, [decls[i] for (i, _), _ in rows], held_keys)
+            seen = set()
+            for (i, entry), split in rows:
+                d = decls[i]
+                t = texts.get((d[0], d[1]))
+                if t is None:
+                    continue            # the materializer could not locate it (real-source path only)
+                if t["decl"] in seen:
+                    # one qualified name with two statements in one snapshot (private declarations in different
+                    # files, or a namespace the scanner got wrong): keep both, disambiguated by statement hash
+                    t = dict(t, decl=f"{t['decl']}~{d[1][:8]}")
+                    dup_names[repo] += 1
+                seen.add(t["decl"])
+                o = lean_obligation(repo, commit, sid, t, j, split, commits[d[4][0][0]][1][:10], commits[entry][0],
+                                    commits[entry][1], materializer=mat.kind)
+                obligations.append(o)
+                for dep in o["deps_project"]:
+                    edges.append({"snapshot_id": sid, "src": o["decl"], "dst": dep, "type": "proof_uses"})
+        last_sid = f"{repo}@w{W}"
+        names = [t["thm_name"] for t in tasks]
+        for t in tasks:
+            o = benchmark_obligation(t, snapshots[last_sid]["commit"], last_sid, W)
+            if names.count(t["thm_name"]) > 1:
+                # two benchmark tasks with one thm_name (different files): keep both, disambiguated by task id
+                o = dict(o, decl=f"{o['decl']}~task{t['id']}", id=f"{o['id']}~task{t['id']}")
+                dup_names[repo] += 1
+            obligations.append(o)
+    stages = merge_stages(summaries)
+    obligations, collisions = resolve_statement_collisions(obligations, stages)
+    kept_decls = {(o["repo"], o["decl"]) for o in obligations}
+    edges = [e for e in edges if (e["snapshot_id"].split("@")[0], e["src"]) in kept_decls]
+    for e in edges:
+        validate_edge(e)
+    cfg = {"W": W, "test_fraction": test_fraction, "materializer": mat.kind,
+           "repos": [h["repo"] for h in histories], "benchmark": matched, "collisions": collisions,
+           "duplicate_names": dup_names,
+           "scan_version": sorted({h.get("scan_version", "") for h in histories})}
+    return LeanStream([h["repo"] for h in histories], obligations, edges, snapshots, stages, summaries, cfg)
+
+
+def write_lean_stream(s: LeanStream, out_dir: str) -> dict:
+    """Obligations are written with the benchmark's field names (5.3; schemas.to_benchmark_names)."""
+    from .schemas import to_benchmark_names
+    os.makedirs(out_dir, exist_ok=True)
+    with open(os.path.join(out_dir, "obligations.jsonl"), "w") as f:
+        for o in s.obligations:
+            f.write(json.dumps(to_benchmark_names(o), sort_keys=True) + "\n")
+    with open(os.path.join(out_dir, "stream.json"), "w") as f:
+        json.dump({"stages": s.stages, "snapshots": s.snapshots, "windows": s.windows, "config": s.config,
+                   "data_version": s.data_version()}, f, indent=1, sort_keys=True)
+    return {"obligations": len(s.obligations), "stages": len(s.stages), "data_version": s.data_version()}
